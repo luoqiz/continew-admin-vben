@@ -19,9 +19,8 @@ export interface UserInfo {
 export interface RouteItem {
   id: string;
   title: string;
-  locale: string;
   parentId: string;
-  type: 1 | 2 | 3;
+  type: 1 | 2 | 3 | 4 | 5; // 1目录 2菜单 3按钮 4内嵌 5外链
   path: string;
   name: string;
   component: string;
@@ -42,8 +41,24 @@ export interface RouteItem {
   affix: boolean;
 }
 
+/** 认证类型 */
+export type AuthType = 'ACCOUNT' | 'EMAIL' | 'PHONE' | 'SOCIAL';
+
+export const AuthTypeConstants = {
+  ACCOUNT: 'ACCOUNT',
+  PHONE: 'PHONE',
+  EMAIL: 'EMAIL',
+  SOCIAL: 'SOCIAL',
+} as const;
+
+/** 基础认证请求接口 */
+export interface AuthReq {
+  clientId?: string;
+  authType?: AuthType;
+}
+
 /** 账号登录请求参数 */
-export interface AccountLoginReq {
+export interface AccountLoginReq extends AuthReq {
   username: string;
   password: string;
   captcha: string;
@@ -51,23 +66,23 @@ export interface AccountLoginReq {
 }
 
 /** 手机号登录请求参数 */
-export interface PhoneLoginReq {
+export interface PhoneLoginReq extends AuthReq {
   phone: string;
   captcha: string;
 }
 
 /** 邮箱登录请求参数 */
-export interface EmailLoginReq {
+export interface EmailLoginReq extends AuthReq {
   email: string;
   captcha: string;
 }
 
-// 登录响应类型
+/** 登录响应类型 */
 export interface LoginResp {
   token: string;
 }
 
-// 第三方登录授权类型
+/** 第三方登录授权类型 */
 export interface SocialAuthAuthorizeResp {
   authorizeUrl: string;
 }

@@ -52,7 +52,7 @@ const formSchema = computed((): VbenFormSchema[] => {
         .string()
         .min(1, { message: $t('authentication.selectAccount') })
         .optional()
-        .default('vben'),
+        .default('admin'),
     },
     {
       component: 'VbenInput',
@@ -67,7 +67,7 @@ const formSchema = computed((): VbenFormSchema[] => {
             );
             if (findUser) {
               form.setValues({
-                password: '123456',
+                password: 'admin123',
                 username: findUser.value,
               });
             }
@@ -101,11 +101,29 @@ const formSchema = computed((): VbenFormSchema[] => {
         if: () => captchaInfo.value.isEnabled,
         triggerFields: [''],
       },
-      fieldName: 'code',
+      fieldName: 'captcha',
       label: $t('authentication.code'),
       rules: z
         .string()
         .min(1, { message: $t('authentication.verifyRequiredTip') }),
+    },
+    {
+      component: 'VbenInput',
+      defaultValue: captchaInfo.value.uuid,
+      componentProps: {},
+      dependencies: {
+        show: true,
+        disabled: true,
+        triggerFields: ['captcha'],
+        trigger(values, form) {
+          if (values.captcha) {
+            form.setValues({
+              uuid: captchaInfo.value.uuid,
+            });
+          }
+        },
+      },
+      fieldName: 'uuid',
     },
   ];
 });
