@@ -2,11 +2,14 @@
 import type { VbenFormSchema } from '@vben/common-ui';
 import type { BasicOption } from '@vben/types';
 
-import { computed, markRaw } from 'vue';
+import type { ImageCaptchaResp } from '#/api';
 
-import { AuthenticationLogin, SliderCaptcha, z } from '@vben/common-ui';
+import { computed, onMounted, ref } from 'vue';
+
+import { AuthenticationLogin, z } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
+import { getImageCaptcha } from '#/api';
 import { useAuthStore } from '#/store';
 
 defineOptions({ name: 'Login' });
@@ -27,6 +30,13 @@ const MOCK_USER_OPTIONS: BasicOption[] = [
     value: 'jack',
   },
 ];
+
+const captchaInfo = ref<ImageCaptchaResp>({
+  uuid: '',
+  img: '',
+  expireTime: 0,
+  isEnabled: false,
+});
 
 const formSchema = computed((): VbenFormSchema[] => {
   return [
@@ -79,13 +89,39 @@ const formSchema = computed((): VbenFormSchema[] => {
       rules: z.string().min(1, { message: $t('authentication.passwordTip') }),
     },
     {
-      component: markRaw(SliderCaptcha),
-      fieldName: 'captcha',
-      rules: z.boolean().refine((value) => value, {
-        message: $t('authentication.verifyRequiredTip'),
-      }),
+      component: 'VbenInputCaptcha',
+      componentProps: {
+        captcha: captchaInfo.value.img,
+        class: 'focus:border-primary',
+        onCaptchaClick: getCaptcha,
+        placeholder: $t('authentication.code'),
+        expireTime: captchaInfo.value.expireTime,
+      },
+      dependencies: {
+        if: () => captchaInfo.value.isEnabled,
+        triggerFields: [''],
+      },
+      fieldName: 'code',
+      label: $t('authentication.code'),
+      rules: z
+        .string()
+        .min(1, { message: $t('authentication.verifyRequiredTip') }),
     },
   ];
+});
+
+// 获取验证码
+const getCaptcha = async () => {
+  const res = await getImageCaptcha();
+  const { uuid, img, expireTime, isEnabled } = res;
+  captchaInfo.value.isEnabled = isEnabled;
+  captchaInfo.value.img = img;
+  captchaInfo.value.uuid = uuid;
+  captchaInfo.value.expireTime = expireTime;
+};
+
+onMounted(() => {
+  getCaptcha();
 });
 </script>
 

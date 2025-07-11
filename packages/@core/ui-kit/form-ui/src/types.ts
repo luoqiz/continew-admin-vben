@@ -15,6 +15,7 @@ export type BaseFormComponentType =
   | 'PrimaryButton'
   | 'VbenCheckbox'
   | 'VbenInput'
+  | 'VbenInputCaptcha'
   | 'VbenInputPassword'
   | 'VbenPinInput'
   | 'VbenSelect'

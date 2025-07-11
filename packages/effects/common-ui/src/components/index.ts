@@ -21,6 +21,7 @@ export {
   VbenCheckButtonGroup,
   VbenCountToAnimator,
   VbenFullScreen,
+  VbenInputCaptcha,
   VbenInputPassword,
   VbenLoading,
   VbenLogo,
