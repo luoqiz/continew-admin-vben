@@ -18,6 +18,7 @@ import { ElMessage } from 'element-plus';
 import { useAuthStore } from '#/store';
 
 import { refreshTokenApi } from './core';
+import { code2statusResponseInterceptor } from './helper';
 
 const { apiURL } = useAppConfig(import.meta.env, import.meta.env.PROD);
 
@@ -32,6 +33,9 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
    */
   async function doReAuthenticate() {
     console.warn('Access token or refresh token is invalid or expired. ');
+    console.error(
+      '---------------------------Access token or refresh token is invalid or expired. ',
+    );
     const accessStore = useAccessStore();
     const authStore = useAuthStore();
     accessStore.setAccessToken(null);
@@ -79,6 +83,9 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
       successCode: '0',
     }),
   );
+
+  // 处理code转为status的处理
+  client.addResponseInterceptor(code2statusResponseInterceptor());
 
   // token过期的处理
   client.addResponseInterceptor(
