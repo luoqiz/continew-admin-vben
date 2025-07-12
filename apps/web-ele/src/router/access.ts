@@ -17,6 +17,37 @@ import { $t } from '#/locales';
 
 const forbiddenComponent = () => import('#/views/_core/fallback/forbidden.vue');
 
+// /**
+//  * 后端返回的meta有时候不包括需要的信息 比如activePath等
+//  * 在这里定义映射
+//  */
+// const routeMetaMapping: Record<string, Omit<RouteMeta, 'title'>> = {
+//   '/system/role-auth/user/:roleId': {
+//     activePath: '/system/role',
+//     requireHomeRedirect: true,
+//   },
+
+//   '/system/oss-config/index': {
+//     activePath: '/system/oss',
+//     requireHomeRedirect: true,
+//   },
+
+//   '/tool/gen-edit/index/:tableId': {
+//     activePath: '/tool/gen',
+//     requireHomeRedirect: true,
+//   },
+
+//   '/workflow/design/index': {
+//     activePath: '/workflow/processDefinition',
+//     requireHomeRedirect: true,
+//   },
+
+//   '/workflow/leaveEdit/index': {
+//     activePath: '/demo/leave',
+//     requireHomeRedirect: true,
+//   },
+// };
+
 /**
  * 后台路由转vben路由
  * @param menuList 后台菜单
@@ -86,7 +117,7 @@ function backMenuToVbenMenu(
         // 当前路由不在菜单显示 但是可以通过链接访问
         // 不可访问的路由由后端控制隐藏(不返回对应路由)
         hideInMenu: menu.isHidden,
-        icon: menu.icon,
+        icon: menu.icon?.includes(':') ? menu.icon : `svg:${menu.icon}`,
         keepAlive: !menu.isCache,
         title: menu.title,
       },
@@ -125,7 +156,7 @@ function backMenuToVbenMenu(
       case 'IFrameView': {
         vbenRoute.component = 'IFrameView';
         if (vbenRoute.meta) {
-          vbenRoute.meta.iframeSrc = menu.meta.link;
+          vbenRoute.meta.iframeSrc = menu.path;
         }
         /**
          * 需要判断特殊情况  比如vue的hash是带#的
@@ -150,7 +181,7 @@ function backMenuToVbenMenu(
        */
       case 'Link': {
         if (vbenRoute.meta) {
-          vbenRoute.meta.link = menu.meta.link;
+          vbenRoute.meta.link = menu.path;
         }
         vbenRoute.component = 'BasicLayout';
         break;
