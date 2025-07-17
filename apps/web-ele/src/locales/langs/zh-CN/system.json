@@ -1,0 +1,37 @@
+{
+  "code": {
+    "id": "id",
+    "config": "配置",
+    "tableName": "表名称",
+    "comment": "备注",
+    "moduleName": "所属模块",
+    "packageName": "模块包名",
+    "businessName": "业务模块名称",
+    "author": "作者名称",
+    "tablePrefix": "表前缀",
+    "isOverride": "是否覆盖",
+    "createTime": "配置时间",
+    "updateTime": "修改时间",
+    "classNamePrefix": "类名前缀",
+    "list": "代码生成管理列表"
+  },
+  "genField": {
+    "id": "",
+    "tableName": "表名称",
+    "columnName": "列名称",
+    "columnType": "列类型",
+    "columnSize": "列大小",
+    "fieldName": "字段名称",
+    "fieldType": "字段类型",
+    "fieldSort": "字段排序",
+    "comment": "注释",
+    "isRequired": "是否必填",
+    "showInList": "是否在列表中显示",
+    "showInForm": "是否在表单中显示",
+    "showInQuery": "是否在查询中显示",
+    "formType": "表单类型",
+    "queryType": "查询方式",
+    "dictCode": "字典编码",
+    "createTime": "创建时间"
+  }
+}

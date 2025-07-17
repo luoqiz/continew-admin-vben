@@ -6,6 +6,8 @@ import { useAccessStore, useUserStore } from '@vben/stores';
 function useAccess() {
   const accessStore = useAccessStore();
   const userStore = useUserStore();
+  const all_permission = '*:*:*';
+
   const accessMode = computed(() => {
     return preferences.app.accessMode;
   });
@@ -28,7 +30,9 @@ function useAccess() {
    */
   function hasAccessByCodes(codes: string[]) {
     const userCodesSet = new Set(accessStore.accessCodes);
-
+    if (userCodesSet.has(all_permission)) {
+      return true;
+    }
     const intersection = codes.filter((item) => userCodesSet.has(item));
     return intersection.length > 0;
   }

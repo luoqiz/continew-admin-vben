@@ -1,0 +1,18 @@
+{
+  "code": {
+    "id": "id",
+    "config": "config",
+    "tableName": "table name",
+    "comment": "comment",
+    "moduleName": "module name",
+    "packageName": "package name",
+    "businessName": "business name",
+    "author": "author",
+    "tablePrefix": "table prefix",
+    "isOverride": "is overide",
+    "createTime": "create time",
+    "updateTime": "update time",
+    "classNamePrefix": "class name prefix",
+    "list": "code genrate table list"
+  }
+}

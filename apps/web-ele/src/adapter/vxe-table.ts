@@ -25,9 +25,9 @@ setupVbenVxeTable({
         proxyConfig: {
           autoLoad: true,
           response: {
-            result: 'items',
+            result: 'list',
             total: 'total',
-            list: 'items',
+            list: 'list',
           },
           showActiveMsg: true,
           showResponseMsg: false,
@@ -66,5 +66,13 @@ setupVbenVxeTable({
 });
 
 export { useVbenVxeGrid };
+
+export type OnActionClickParams<T = Recordable<any>> = {
+  code: string;
+  row: T;
+};
+export type OnActionClickFn<T = Recordable<any>> = (
+  params: OnActionClickParams<T>,
+) => void;
 
 export type * from '@vben/plugins/vxe-table';

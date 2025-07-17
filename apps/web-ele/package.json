@@ -43,11 +43,14 @@
     "@vueuse/core": "catalog:",
     "dayjs": "catalog:",
     "element-plus": "catalog:",
+    "es-toolkit": "^1.39.7",
     "pinia": "catalog:",
     "vue": "catalog:",
     "vue-router": "catalog:"
   },
   "devDependencies": {
-    "unplugin-element-plus": "catalog:"
+    "unplugin-auto-import": "^19.3.0",
+    "unplugin-element-plus": "catalog:",
+    "unplugin-vue-components": "^28.8.0"
   }
 }
