@@ -1467,6 +1467,9 @@ importers:
       '@vben-core/icons':
         specifier: workspace:*
         version: link:../../base/icons
+      '@vben-core/preferences':
+        specifier: workspace:*
+        version: link:../../preferences
       '@vben-core/shared':
         specifier: workspace:*
         version: link:../../base/shared

@@ -46,6 +46,7 @@
     "@ddietr/codemirror-themes": "^1.5.1",
     "@vben-core/composables": "workspace:*",
     "@vben-core/icons": "workspace:*",
+    "@vben-core/preferences": "workspace:*",
     "@vben-core/shared": "workspace:*",
     "@vben-core/typings": "workspace:*",
     "@vueuse/core": "catalog:",

@@ -18,6 +18,7 @@ import App from './app.vue';
 import { router } from './router';
 
 import 'element-plus/dist/index.css';
+import 'element-plus/theme-chalk/dark/css-vars.css';
 
 async function bootstrap(namespace: string) {
   // 初始化组件适配器
