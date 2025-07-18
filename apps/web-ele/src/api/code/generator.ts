@@ -42,6 +42,7 @@ export function downloadCode(tableNames: Array<string>) {
   return http.request(`${BASE_URL}/${tableNames}/download`, {
     method: 'post',
     responseType: 'blob',
+    responseReturn: 'raw',
   });
 }
 

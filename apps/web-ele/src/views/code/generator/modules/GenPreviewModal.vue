@@ -3,7 +3,7 @@ import type { TreeNodeData } from 'element-plus';
 
 import type { GeneratePreviewResp } from '#/api/code/generator';
 
-import { computed, nextTick, ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 import {
   CnCodeView,
@@ -178,29 +178,13 @@ const onOpen = async (tableNames: Array<string>) => {
   }
   selectedKeys.value = [genPreviewList.value[0]!.fileName];
   currentPreview.value = genPreviewList.value[0];
-  await nextTick(() => {
-    // treeRef.value.expandAll(true);
-  });
   visible.value = true;
 };
 
 const [Modal, modalApi] = useVbenModal({
-  async onConfirm() {
-    // const { valid } = await formApi.validate();
-    // if (valid) {
-    //   modalApi.lock();
-    //   const data = await formApi.getValues();
-    //   try {
-    //     await (formData.value?.id
-    //       ? updateDept(formData.value.id, data)
-    //       : createDept(data));
-    //     modalApi.close();
-    //     emit('success');
-    //   } finally {
-    //     modalApi.lock(false);
-    //   }
-    // }
-  },
+  centered: true,
+  showCancelButton: false,
+  showConfirmButton: false,
   onOpenChange(isOpen) {
     if (isOpen) {
       const data = modalApi.getData<string[]>();
@@ -240,25 +224,27 @@ const allNodeKeys = computed(() => {
 <template>
   <Modal class="h-[90%] w-[90%]" :title="getTitle">
     <template #title>
-      {{
-        previewTableNames.length === 1
-          ? `生成 ${previewTableNames[0]} 表预览`
-          : '批量生成预览'
-      }}
-      <ElLink
-        v-access:code="['code:generator:generate']"
-        style="margin-left: 10px"
-        @click="onDownload"
-      >
-        下载源码
-      </ElLink>
-      <ElLink
-        v-access:code="['code:generator:generate']"
-        style="margin-left: 10px"
-        @click="onGenerator"
-      >
-        生成源码
-      </ElLink>
+      <div style="display: flex; align-items: center; justify-content: center">
+        {{
+          previewTableNames.length === 1
+            ? `生成 ${previewTableNames[0]} 表预览`
+            : '批量生成预览'
+        }}
+        <ElLink
+          v-access:code="['code:generator:generate']"
+          style="margin-left: 10px"
+          @click="onDownload"
+        >
+          下载源码
+        </ElLink>
+        <ElLink
+          v-access:code="['code:generator:generate']"
+          style="margin-left: 10px"
+          @click="onGenerator"
+        >
+          生成源码
+        </ElLink>
+      </div>
     </template>
     <div class="preview-content">
       <ResizablePanelGroup direction="horizontal">

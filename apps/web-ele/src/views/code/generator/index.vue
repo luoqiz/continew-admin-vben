@@ -100,6 +100,7 @@ function refreshGrid() {
             配置
           </ElButton>
           <ElButton
+            :disabled="!row.author"
             @click="onPreview([row.tableName])"
             v-access:code="['code:generator:preview']"
           >
