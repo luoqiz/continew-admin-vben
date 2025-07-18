@@ -31,7 +31,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
   return [
     {
       component: 'Input',
-      fieldName: 'name',
+      fieldName: 'tableName',
       label: $t('system.code.tableName'),
     },
   ];
