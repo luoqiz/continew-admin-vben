@@ -167,6 +167,7 @@ export type ComponentType =
   | 'Select'
   | 'Space'
   | 'Switch'
+  | 'Textarea'
   | 'TimePicker'
   | 'TreeSelect'
   | 'Upload'
@@ -238,7 +239,8 @@ async function initComponentAdapter() {
       modelValueProp: 'model-value',
       inputComponent: ElInput,
     }),
-    Input: withDefaultPlaceholder(ElInput, 'input'),
+    Input: withDefaultPlaceholder(ElInput, 'input', { clearable: true }),
+    Textarea: withDefaultPlaceholder(ElInput, 'input', { type: 'textarea' }),
     InputNumber: withDefaultPlaceholder(ElInputNumber, 'input'),
     RadioGroup: (props, { attrs, slots }) => {
       let defaultSlot;

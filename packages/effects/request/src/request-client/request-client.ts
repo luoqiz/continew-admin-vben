@@ -100,7 +100,11 @@ class RequestClient {
    * GET请求方法
    */
   public get<T = any>(url: string, config?: RequestClientConfig): Promise<T> {
-    return this.request<T>(url, { ...config, method: 'GET' });
+    return this.request<T>(url, {
+      ...config,
+      paramsSerializer: (obj) => qs.stringify(obj),
+      method: 'GET',
+    });
   }
 
   /**

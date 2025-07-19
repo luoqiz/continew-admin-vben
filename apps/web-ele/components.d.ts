@@ -11,7 +11,11 @@ declare module 'vue' {
     ElAutoResizer: typeof import('element-plus/es')['ElAutoResizer']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElIcon: typeof import('element-plus/es')['ElIcon']
+    ElPopconfirm: typeof import('element-plus/es')['ElPopconfirm']
+    ElSpace: typeof import('element-plus/es')['ElSpace']
+    ElTag: typeof import('element-plus/es')['ElTag']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    Src: typeof import('./src/components/dict/src/index.vue')['default']
   }
 }

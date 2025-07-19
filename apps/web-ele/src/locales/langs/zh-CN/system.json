@@ -33,5 +33,32 @@
     "queryType": "查询方式",
     "dictCode": "字典编码",
     "createTime": "创建时间"
+  },
+  "dict": {
+    "id": "",
+    "name": "名称",
+    "code": "编码",
+    "isSystem": "内置",
+    "description": "描述",
+    "createUserString": "创建人",
+    "createTime": "创建时间",
+    "updateUserString": "更新人",
+    "updateTime": "更新时间",
+    "list": "字典列表"
+  },
+  "dictItem": {
+    "id": "",
+    "label": "标签",
+    "value": "值",
+    "color": "颜色",
+    "sort": "排序",
+    "description": "描述",
+    "status": "状态",
+    "dictId": "字典id",
+    "createUserString": "创建人",
+    "createTime": "创建时间",
+    "updateUserString": "更新人",
+    "updateTime": "更新时间",
+    "list": "字典条目列表"
   }
 }

@@ -14,5 +14,32 @@
     "updateTime": "update time",
     "classNamePrefix": "class name prefix",
     "list": "code genrate table list"
+  },
+  "dict": {
+    "id": "",
+    "name": "name",
+    "code": "code",
+    "isSystem": "Is system",
+    "description": "Description",
+    "createUserString": "Creator",
+    "createTime": "Create time",
+    "updateUserString": "Updater",
+    "updateTime": "Update time",
+    "list": "Dict type list"
+  },
+  "dictItem": {
+    "id": "",
+    "label": "Label",
+    "value": "Value",
+    "color": "Color",
+    "sort": "Sort",
+    "description": "Description",
+    "status": "Status",
+    "dictId": "Dict type id",
+    "createUserString": "Creator",
+    "createTime": "Create time",
+    "updateUserString": "Updater",
+    "updateTime": "Update time",
+    "list": "Dict item list"
   }
 }

@@ -46,7 +46,8 @@
     "es-toolkit": "^1.39.7",
     "pinia": "catalog:",
     "vue": "catalog:",
-    "vue-router": "catalog:"
+    "vue-router": "catalog:",
+    "xe-utils": "^3.7.8"
   },
   "devDependencies": {
     "unplugin-auto-import": "^19.3.0",
