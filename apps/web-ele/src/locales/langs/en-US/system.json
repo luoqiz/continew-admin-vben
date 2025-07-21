@@ -41,5 +41,40 @@
     "updateUserString": "Updater",
     "updateTime": "Update time",
     "list": "Dict item list"
+  },
+  "menu": {
+    "id": "",
+    "title": "Title",
+    "parentId": "Parent",
+    "type": "Type",
+    "path": "Router path",
+    "name": "Component",
+    "component": "Component path",
+    "redirect": "Redirect",
+    "icon": "Icon",
+    "isExternal": "Is external",
+    "isCache": "Is cache",
+    "isHidden": "Is hidden",
+    "permission": "Permission",
+    "sort": "Sort",
+    "status": "Status",
+    "createUserString": "Creator",
+    "createTime": "Create time",
+    "updateUserString": "Update",
+    "updateTime": "Update time",
+    "root": "Root path"
+  },
+  "dept": {
+    "id": "",
+    "name": "Name",
+    "sort": "Sort",
+    "status": "Status",
+    "parentId": "Parent Dept",
+    "isSystem": "Is system",
+    "description": "Description",
+    "createUserString": "Creator",
+    "createTime": "Create time",
+    "updateUserString": "Update",
+    "updateTime": "Update time"
   }
 }
