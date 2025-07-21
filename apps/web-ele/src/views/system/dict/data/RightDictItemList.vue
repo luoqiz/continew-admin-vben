@@ -137,7 +137,7 @@ const onSuccess = () => {
           v-access:code="['code:generator:preview']"
         >
           <template #reference>
-            <ElButton :disabled="row.isSystem"> 删除 </ElButton>
+            <ElButton> 删除 </ElButton>
           </template>
         </ElPopconfirm>
       </ElSpace>
