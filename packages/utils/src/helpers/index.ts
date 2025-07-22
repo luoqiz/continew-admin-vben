@@ -6,5 +6,4 @@ export * from './get-popup-container';
 export * from './merge-route-modules';
 export * from './mitt';
 export * from './reset-routes';
-export * from './tree';
 export * from './unmount-global-loading';

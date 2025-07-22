@@ -125,6 +125,7 @@ const clearCache = async () => {
     <template #toolbar-tools>
       <ElSpace>
         <ElButton
+          :disabled="dictType === ''"
           type="primary"
           v-access:code="['system:dict:add']"
           @click="handleAdd"
