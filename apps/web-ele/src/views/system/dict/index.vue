@@ -15,8 +15,8 @@ const props = reactive({
   leftWidth: 50,
   resizable: true,
   rightWidth: 50,
-  splitHandle: false,
-  splitLine: false,
+  splitHandle: true,
+  splitLine: true,
 });
 </script>
 
