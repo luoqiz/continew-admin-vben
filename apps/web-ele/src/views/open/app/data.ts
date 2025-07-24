@@ -104,7 +104,7 @@ export function useColumns<T = OpenAppApi.AppResp>(
       field: 'secretKey',
       title: 'Secret Key',
       width: 450,
-      align:'center',
+      align: 'center',
       slots: { default: 'secretKey' },
     },
     {
