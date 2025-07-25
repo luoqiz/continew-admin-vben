@@ -37,7 +37,7 @@ export function tagSelectOptions() {
     const color = tagTypes[key].color;
     selectArray.push({
       label: (
-        <ElTag key={color} type={color}>
+        <ElTag color={color} key={color}>
           {label}
         </ElTag>
       ),
