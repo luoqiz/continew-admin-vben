@@ -192,7 +192,7 @@ export function dictItemFormSchema(): VbenFormSchema[] {
 export function useDictItemSearchFormFields(): VbenFormSchema[] {
   return [
     {
-      component: 'VbenInput',
+      component: 'Input',
       fieldName: 'dictId',
       dependencies: {
         show: () => false,
@@ -202,7 +202,7 @@ export function useDictItemSearchFormFields(): VbenFormSchema[] {
       disabled: true,
     },
     {
-      component: 'VbenInput',
+      component: 'Input',
       fieldName: 'value',
       label: $t('system.dictItem.value'),
     },
