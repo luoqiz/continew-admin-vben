@@ -60,5 +60,40 @@
     "updateUserString": "更新人",
     "updateTime": "更新时间",
     "list": "字典条目列表"
+  },
+  "menu": {
+    "id": "",
+    "title": "菜单标题",
+    "parentId": "父级id",
+    "type": "类型",
+    "path": "路由地址",
+    "name": "组件名称",
+    "component": "组件路径",
+    "redirect": "重定向",
+    "icon": "图标",
+    "isExternal": "外链",
+    "isCache": "缓存",
+    "isHidden": "隐藏",
+    "permission": "权限标识",
+    "sort": "排序",
+    "status": "状态",
+    "createUserString": "创建人",
+    "createTime": "创建时间",
+    "updateUserString": "更新人",
+    "updateTime": "更新时间",
+    "root": "根目录"
+  },
+  "dept": {
+    "id": "",
+    "name": "名称",
+    "sort": "排序",
+    "status": "状态",
+    "parentId": "上级部门",
+    "isSystem": "内置",
+    "description": "描述",
+    "createUserString": "创建人",
+    "createTime": "创建时间",
+    "updateUserString": "更新人",
+    "updateTime": "更新时间"
   }
 }
