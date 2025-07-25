@@ -4,7 +4,7 @@ import type { LabelValueState } from '#/types/global';
 
 import { requestClient as http } from '#/api/request';
 
-const BASE_URL = '/common';
+const BASE_URL = '/system/common';
 
 /** @desc 查询部门树 */
 export function listDeptTree(query: { description: string | unknown }) {
