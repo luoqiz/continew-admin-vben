@@ -21,7 +21,6 @@ export function useDeptFormSchema(): VbenFormSchema[] {
     },
     {
       component: 'TreeSelect',
-      defaultValue: 0,
       fieldName: 'parentId',
       label: $t('system.dept.parentId'),
       rules: 'selectRequired',
@@ -37,7 +36,7 @@ export function useDeptFormSchema(): VbenFormSchema[] {
       fieldName: 'sort',
       help: '排序, 数字越小越靠前',
       label: $t('system.dept.sort'),
-      defaultValue: 0,
+      defaultValue: 1,
       rules: 'required',
     },
     {

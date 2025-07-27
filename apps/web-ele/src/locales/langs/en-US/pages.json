@@ -22,6 +22,12 @@
     "tip": "Tip",
     "enable": "On",
     "disable": "Off",
-    "beforeCloseTip": "You have unsaved changes. Are you sure you want to exit?"
+    "modifySuccess": "Modify success",
+    "addSuccess": "Add success",
+    "deleteSuccess": "Delete success",
+    "beforeCloseTip": "You have unsaved changes. Are you sure you want to exit?",
+    "notificationWarning": "Friendly reminder",
+    "downloadDataTooBig": "If the data is large, it may cause slow downloads. Please be patient!",
+    "exportError": "Export failed, please try again later!"
   }
 }
