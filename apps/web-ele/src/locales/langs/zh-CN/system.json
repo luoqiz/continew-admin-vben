@@ -13,6 +13,12 @@
     "createTime": "配置时间",
     "updateTime": "修改时间",
     "classNamePrefix": "类名前缀",
+    "entityName": "实体类名称",
+    "listType": "列表类型",
+    "treeId": "树编码",
+    "treePid": "树父编码",
+    "treeLabel": "树名称",
+    "dialogType": "弹窗类型",
     "list": "代码生成管理列表"
   },
   "genField": {

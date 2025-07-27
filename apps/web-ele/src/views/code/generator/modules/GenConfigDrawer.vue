@@ -49,10 +49,9 @@ const dictList = ref<LabelValueState[]>([]);
 
 // 生成配置表单
 function onFirstSubmit(values: Record<string, any>) {
-  message.success({
-    message: `form1 values: ${JSON.stringify(values)}`,
-  });
-  currentTab.value = 1;
+  if (values) {
+    currentTab.value = 1;
+  }
 }
 
 // 表名称 表描述 实体类名称 作者
@@ -66,9 +65,11 @@ function onFirstSubmit(values: Record<string, any>) {
 // 树表 树级编码字段  树级父级编码字段  树级名称
 const [FirstForm, firstFormApi] = useVbenForm({
   commonConfig: {
-    componentProps: {
-      class: 'w-full',
-    },
+    // componentProps: {
+    //   class: 'w-full',
+    // },
+    colon: true,
+    formItemClass: 'col-span-2 md:col-span-1',
   },
   handleSubmit: onFirstSubmit,
   layout: 'horizontal',
@@ -90,7 +91,7 @@ const [FirstForm, firstFormApi] = useVbenForm({
       componentProps: {
         placeholder: '请输入',
       },
-      fieldName: 'author',
+      fieldName: 'entityName',
       label: '实体类名称',
       rules: 'required',
     },
@@ -98,13 +99,15 @@ const [FirstForm, firstFormApi] = useVbenForm({
       component: 'RadioGroup',
       componentProps: {
         placeholder: '请输入',
+        isButton: true,
         options: [
-          { value: 'table', label: '表格列表' },
-          { value: 'tree', label: '树状列表' },
+          { value: 1, label: '表格列表' },
+          { value: 2, label: '树状列表' },
         ],
       },
-      fieldName: 'author',
-      label: '实体类名称',
+      defaultValue: 1,
+      fieldName: 'listType',
+      label: '列表类型',
       rules: 'required',
     },
     {
@@ -114,7 +117,11 @@ const [FirstForm, firstFormApi] = useVbenForm({
         maxLength: 60,
         showWordLimit: true,
       },
-      fieldName: 'moduleName',
+      dependencies: {
+        if: (values) => values.listType === 'tree',
+        triggerFields: ['listType'],
+      },
+      fieldName: 'treeId',
       label: '树编码字段',
       rules: 'required',
     },
@@ -125,7 +132,11 @@ const [FirstForm, firstFormApi] = useVbenForm({
         maxLength: 60,
         showWordLimit: true,
       },
-      fieldName: 'moduleName',
+      dependencies: {
+        if: (values) => values.listType === 'tree',
+        triggerFields: ['listType'],
+      },
+      fieldName: 'treePid',
       label: '树父编码字段',
       rules: 'required',
     },
@@ -136,18 +147,12 @@ const [FirstForm, firstFormApi] = useVbenForm({
         maxLength: 60,
         showWordLimit: true,
       },
-      fieldName: 'moduleName',
-      label: '树名称字段',
-      rules: 'required',
-    },
-    {
-      component: 'Input',
-      componentProps: {
-        placeholder: '自定义业务名称，例如：用户',
-        maxLength: 50,
+      dependencies: {
+        if: (values) => values.listType === 'tree',
+        triggerFields: ['listType'],
       },
-      fieldName: 'businessName',
-      label: '业务名称',
+      fieldName: 'treeLabel',
+      label: '树名称字段',
       rules: 'required',
     },
     {
@@ -159,6 +164,16 @@ const [FirstForm, firstFormApi] = useVbenForm({
       },
       fieldName: 'moduleName',
       label: '所属模块',
+      rules: 'required',
+    },
+    {
+      component: 'Input',
+      componentProps: {
+        placeholder: '自定义业务名称，例如：用户',
+        maxLength: 50,
+      },
+      fieldName: 'businessName',
+      label: '业务名称',
       rules: 'required',
     },
     {
@@ -182,28 +197,24 @@ const [FirstForm, firstFormApi] = useVbenForm({
       rules: 'required',
     },
     {
-      component: 'RadioGroup',
+      component: 'Input',
       componentProps: {
         placeholder: '请输入',
-        options: [
-          { value: 'table', label: '表格列表' },
-          { value: 'tree', label: '树状列表' },
-        ],
       },
-      fieldName: 'author',
-      label: '上级菜单',
-      rules: 'required',
+      fieldName: 'frontPath',
+      label: '前端项目路径',
     },
     {
       component: 'RadioGroup',
       componentProps: {
         placeholder: '请输入',
         options: [
-          { value: 'modal', label: 'modal弹窗' },
-          { value: 'drawer', label: 'drawer抽屉' },
+          { value: 1, label: 'modal弹窗' },
+          { value: 2, label: 'drawer抽屉' },
         ],
       },
-      fieldName: 'author',
+      defaultValue: 1,
+      fieldName: 'dialogType',
       label: '弹窗组件类型',
       rules: 'required',
     },
@@ -212,8 +223,8 @@ const [FirstForm, firstFormApi] = useVbenForm({
       componentProps: {
         buttonStyle: 'solid',
         options: [
-          { label: $t('common.enabled'), value: true },
-          { label: $t('common.disabled'), value: false },
+          { label: $t('common.yes'), value: true },
+          { label: $t('common.no'), value: false },
         ],
         optionType: 'button',
       },
@@ -221,7 +232,6 @@ const [FirstForm, firstFormApi] = useVbenForm({
       fieldName: 'isOverride',
       label: '是否覆盖',
     },
-    
   ],
   submitButtonOptions: {
     content: '下一步',
@@ -306,7 +316,11 @@ const [Drawer, drawerApi] = useVbenDrawer({
 });
 
 const getDrawerTitle = computed(() => {
-  return genTable.value?.comment + $t('common.config');
+  let comment = '';
+  if (genTable.value?.comment) {
+    comment = `(${genTable.value?.comment})`;
+  }
+  return `${genTable.value?.tableName}${comment}${$t('common.config')} `;
 });
 </script>
 <template>

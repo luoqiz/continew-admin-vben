@@ -10,7 +10,7 @@ import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { listGenConfig } from '#/api';
 import { $t } from '#/locales';
 
-import { useColumns, useGridFormSchema } from './data';
+import { useGenConfigColumns, useGridFormSchema } from './data';
 import GenConfigDrawer from './modules/GenConfigDrawer.vue';
 import GenPreviewModal from './modules/GenPreviewModal.vue';
 
@@ -26,7 +26,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
     submitOnChange: true,
   },
   gridOptions: {
-    columns: useColumns(),
+    columns: useGenConfigColumns(),
     border: true,
     height: 'auto',
     keepSource: true,
@@ -93,17 +93,11 @@ function refreshGrid() {
       <template #toolbar-tools> </template>
       <template #action="{ row }">
         <ElSpace>
-          <ElButton
-            @click="openConfig(row)"
-            v-access:code="['code:generator:config']"
-          >
+          <ElButton @click="openConfig(row)" v-access:code="['code:generator:config']">
             配置
           </ElButton>
-          <ElButton
-            :disabled="!row.author"
-            @click="onPreview([row.tableName])"
-            v-access:code="['code:generator:preview']"
-          >
+          <ElButton :disabled="!row.author" @click="onPreview([row.tableName])"
+            v-access:code="['code:generator:preview']">
             生成
           </ElButton>
         </ElSpace>

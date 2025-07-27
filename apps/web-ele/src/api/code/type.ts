@@ -11,6 +11,13 @@ export interface GenConfigResp {
   createTime?: string;
   updateTime?: string;
   classNamePrefix?: string;
+  listType: number;
+  entityName: string;
+  dialogType: number;
+  treeId: string;
+  treePid: string;
+  treeLabel: string;
+  frontPath: string;
 }
 export interface GenConfigQuery {
   tableName?: string;

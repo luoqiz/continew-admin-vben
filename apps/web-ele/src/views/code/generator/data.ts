@@ -74,7 +74,7 @@ export function useFiledColumns(): VxeTableGridOptions['columns'] {
   ];
 }
 
-export function useColumns(): VxeTableGridOptions['columns'] {
+export function useGenConfigColumns(): VxeTableGridOptions['columns'] {
   return [
     { type: 'checkbox', width: 50, fixed: 'left' },
     { type: 'seq', width: 70, fixed: 'left' },
@@ -93,6 +93,21 @@ export function useColumns(): VxeTableGridOptions['columns'] {
       field: 'classNamePrefix',
       minWidth: 120,
       title: $t('system.code.classNamePrefix'),
+    },
+    {
+      field: 'entityName',
+      minWidth: 120,
+      title: $t('system.code.entityName'),
+    },
+    {
+      field: 'listType',
+      minWidth: 120,
+      title: $t('system.code.listType'),
+    },
+    {
+      field: 'dialogType',
+      minWidth: 120,
+      title: $t('system.code.dialogType'),
     },
     {
       field: 'moduleName',
