@@ -13,6 +13,7 @@ import {
   useVbenModal,
 } from '@vben/common-ui';
 import {
+  SvgCopyIcon,
   SvgDirectoryBlueIcon,
   SvgFileJavaIcon,
   SvgFileJavascriptIcon,
@@ -333,7 +334,7 @@ const allNodeKeys = computed(() => {
                     title="复制"
                     @click="onCopy"
                   >
-                    <template #icon><icon-copy size="large" /></template>
+                    <template #icon><SvgCopyIcon /></template>
                     <template #default>复制</template>
                   </ElLink>
                   <CnCodeView
