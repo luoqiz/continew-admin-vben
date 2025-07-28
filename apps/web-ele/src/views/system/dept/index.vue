@@ -2,6 +2,8 @@
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 import type { DeptQuery, DeptResp } from '#/api/system/dept';
 
+import { ref } from 'vue';
+
 import { Page, useVbenDrawer } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
@@ -104,7 +106,15 @@ const handleDelete = async (row: DeptResp) => {
 const handleExport = () => {
   useDownload(() => exportDept(gridApi.formApi.getValues as DeptQuery));
 };
+
+// 树列表折叠状态
+const expanded = ref<boolean>(true);
+const handleExpand = () => {
+  expanded.value = !expanded.value;
+  gridApi.grid.setAllTreeExpand(expanded.value);
+};
 </script>
+
 <template>
   <Page auto-content-height>
     <Grid :table-title="$t('system.dict.list')">
@@ -123,6 +133,12 @@ const handleExport = () => {
             @click="handleExport"
           >
             {{ $t('pages.common.export') }}
+          </ElButton>
+          <ElButton v-if="!expanded" @click="handleExpand">
+            {{ $t('pages.common.expand') }}
+          </ElButton>
+          <ElButton v-if="expanded" @click="handleExpand">
+            {{ $t('pages.common.collapse') }}
           </ElButton>
         </ElSpace>
       </template>
@@ -144,7 +160,7 @@ const handleExport = () => {
             {{ $t('pages.common.edit') }}
           </ElButton>
           <ElPopconfirm
-            title="确认删除?"
+            :title="$t('ui.actionMessage.deleteConfirm', [row.name])"
             icon-color="red"
             @confirm="handleDelete(row)"
             v-access:code="['system:dept:delete']"
