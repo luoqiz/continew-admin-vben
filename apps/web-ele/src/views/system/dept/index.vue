@@ -1,16 +1,15 @@
 <script setup lang="ts">
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { MenuResp } from '#/api';
-
-import { ref } from 'vue';
+import type { DeptQuery, DeptResp } from '#/api/system/dept';
 
 import { Page, useVbenDrawer } from '@vben/common-ui';
+import { $t } from '@vben/locales';
 
 import { ElButton, ElMessage, ElPopconfirm, ElSpace } from 'element-plus';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { deleteMenu } from '#/api';
-import { listDept } from '#/api/system/dept';
+import { deleteDept, exportDept, listDept } from '#/api/system/dept';
+import { useDownload } from '#/hooks/app/useDownload';
 
 import { useDeptColumns, useDeptSearchFormFields } from './data';
 import EditModal from './EditModal.vue';
@@ -50,6 +49,9 @@ const [Grid, gridApi] = useVbenVxeGrid({
           });
           return { list: res, total: res.length };
         },
+        querySuccess: ({ $grid }) => {
+          $grid.setAllTreeExpand(true);
+        },
       },
     },
     rowConfig: {
@@ -62,11 +64,15 @@ const [Grid, gridApi] = useVbenVxeGrid({
     toolbarConfig: {
       custom: true,
       export: false,
-      refresh: { code: 'query' },
+      refresh: true,
+      refreshOptions: {
+        code: 'query',
+      },
       search: true,
       zoom: true,
+      zoomOptions: {},
     },
-  } as VxeTableGridOptions<MenuResp>,
+  } as VxeTableGridOptions<DeptResp>,
 });
 
 const [FormDrawer, formDrawerApi] = useVbenDrawer({
@@ -74,7 +80,7 @@ const [FormDrawer, formDrawerApi] = useVbenDrawer({
   destroyOnClose: true,
 });
 
-const handleEdit = (record: MenuResp) => {
+const handleEdit = (record: DeptResp) => {
   formDrawerApi.setData({ id: record.id });
   formDrawerApi.open();
 };
@@ -84,10 +90,10 @@ const handleAdd = () => {
   formDrawerApi.open();
 };
 
-const handleDelete = async (row: MenuResp) => {
+const handleDelete = async (row: DeptResp) => {
   try {
-    await deleteMenu(row.id);
-    ElMessage.success('删除成功');
+    await deleteDept(row.id);
+    ElMessage.success($t('pages.common.deleteSuccess'));
     await gridApi.query();
     return true;
   } catch {
@@ -95,10 +101,8 @@ const handleDelete = async (row: MenuResp) => {
   }
 };
 
-// 清除缓存
-const centerDialogVisible = ref(false);
-const handleClearCache = () => {
-  centerDialogVisible.value = true;
+const handleExport = () => {
+  useDownload(() => exportDept(gridApi.formApi.getValues as DeptQuery));
 };
 </script>
 <template>
@@ -115,10 +119,10 @@ const handleClearCache = () => {
           </ElButton>
           <ElButton
             type="danger"
-            v-access:code="['system:dict:item:clearCache']"
-            @click="handleClearCache"
+            v-access:code="['system:dept:export']"
+            @click="handleExport"
           >
-            导出
+            {{ $t('pages.common.export') }}
           </ElButton>
         </ElSpace>
       </template>
@@ -133,25 +137,28 @@ const handleClearCache = () => {
       <template #action="{ row }">
         <ElSpace>
           <ElButton
+            type="primary"
             @click="handleEdit(row)"
-            v-access:code="['code:generator:config']"
+            v-access:code="['system:dept:update']"
           >
-            编辑
+            {{ $t('pages.common.edit') }}
           </ElButton>
           <ElPopconfirm
             title="确认删除?"
             icon-color="red"
             @confirm="handleDelete(row)"
-            v-access:code="['code:generator:preview']"
+            v-access:code="['system:dept:delete']"
           >
             <template #reference>
-              <ElButton> 删除 </ElButton>
+              <ElButton type="danger">
+                {{ $t('pages.common.delete') }}
+              </ElButton>
             </template>
           </ElPopconfirm>
         </ElSpace>
       </template>
     </Grid>
-    <FormDrawer @success="gridApi.query()" />
   </Page>
+  <FormDrawer @success="gridApi.query()" />
 </template>
 <style lang="scss" scoped></style>

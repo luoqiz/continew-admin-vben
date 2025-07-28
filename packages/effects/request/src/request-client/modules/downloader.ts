@@ -27,7 +27,7 @@ class FileDownloader {
     config?: DownloadRequestConfig,
   ): Promise<T> {
     const finalConfig: DownloadRequestConfig = {
-      responseReturn: 'body',
+      responseReturn: 'raw',
       ...config,
       responseType: 'blob',
     };
