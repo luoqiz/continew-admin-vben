@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { CascaderNode, TreeNodeData } from 'element-plus';
+
 import type { DeptResp } from '#/api';
 
 import { computed, ref } from 'vue';
@@ -39,7 +41,7 @@ const [DeptForm, deptFormApi] = useVbenForm({
 // 加载所有菜单
 async function setupDeptSelect() {
   const deptArray = await listDept({});
-  const defaultExpandedKeys = deptArray[0]?.id;
+  // const defaultExpandedKeys = [deptArray[0]?.id];
   deptFormApi.updateSchema([
     {
       componentProps: {
@@ -47,12 +49,27 @@ async function setupDeptSelect() {
           label: 'name',
           value: 'id',
         },
+        // 是否在点击节点的时候展开或者收缩节点， 默认值为 true，如果为 false，则只有点箭头图标的时候才会展开或者收缩节点。
+        expandOnClickNode: false,
+        // 是否默认展开所有节点
+        defaultExpandAll: true,
+        // 是否在点击节点的时候选中节点，默认值为 false，即只有在点击复选框时才会选中节点。
+        checkOnClickNode: true,
+        // checkOnClickLeaf: false,
         getPopupContainer,
         // 设置弹窗滚动高度 默认256
         listHeight: 300,
         data: deptArray,
-        // 默认展开的树节点
-        defaultExpandedKeys: [defaultExpandedKeys],
+        nodeKey: 'id',
+        onNodeClick: (
+          data: TreeNodeData,
+          node: CascaderNode,
+          // treeNode: TreeNode,
+        ) => {
+          // treeNode.expanded = false;
+          node.checked = !node.checked;
+          deptFormApi.form.setFieldValue('parentId', data.id);
+        },
       },
       fieldName: 'parentId',
     },
@@ -81,12 +98,12 @@ const [Drawer, drawerApi] = useVbenDrawer({
     try {
       if (isUpdate.value) {
         await updateDept(deptFormApi.form.values, dataId.value);
-        ElMessage.success('修改成功');
+        ElMessage.success($t('pages.common.modifySuccess'));
       } else {
         await addDept({
           ...deptFormApi.form.values,
         });
-        ElMessage.success('新增成功');
+        ElMessage.success($t('pages.common.addSuccess'));
       }
       resetInitialized();
       emits('success');
