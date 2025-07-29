@@ -122,7 +122,7 @@ const handleExport = () => {
             v-access:code="['system:dept:export']"
             @click="handleExport"
           >
-            导出
+            {{ $t('pages.common.export') }}
           </ElButton>
         </ElSpace>
       </template>
@@ -141,7 +141,7 @@ const handleExport = () => {
             @click="handleEdit(row)"
             v-access:code="['system:dept:update']"
           >
-            编辑
+            {{ $t('pages.common.edit') }}
           </ElButton>
           <ElPopconfirm
             title="确认删除?"
@@ -150,7 +150,9 @@ const handleExport = () => {
             v-access:code="['system:dept:delete']"
           >
             <template #reference>
-              <ElButton type="danger"> 删除 </ElButton>
+              <ElButton type="danger">
+                {{ $t('pages.common.delete') }}
+              </ElButton>
             </template>
           </ElPopconfirm>
         </ElSpace>

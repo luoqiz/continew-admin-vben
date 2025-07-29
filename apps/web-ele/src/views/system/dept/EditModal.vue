@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { CascaderNode, TreeNodeData } from 'element-plus';
+
 import type { DeptResp } from '#/api';
 
 import { computed, ref } from 'vue';
@@ -39,7 +41,7 @@ const [DeptForm, deptFormApi] = useVbenForm({
 // 加载所有菜单
 async function setupDeptSelect() {
   const deptArray = await listDept({});
-  const defaultExpandedKeys = [deptArray[0]?.id];
+  // const defaultExpandedKeys = [deptArray[0]?.id];
   deptFormApi.updateSchema([
     {
       componentProps: {
@@ -53,18 +55,21 @@ async function setupDeptSelect() {
         defaultExpandAll: true,
         // 是否在点击节点的时候选中节点，默认值为 false，即只有在点击复选框时才会选中节点。
         checkOnClickNode: true,
+        // checkOnClickLeaf: false,
         getPopupContainer,
         // 设置弹窗滚动高度 默认256
         listHeight: 300,
         data: deptArray,
-        // 默认展开的树节点
-        defaultExpandedKeys: [defaultExpandedKeys],
-        // onNodeClick: (data, node, treeNode) => {
-        //   // console.log('--', data);
-        //   // console.log('**', node);
-        //   // console.log('**', treeNode);
-        //   // treeNode.refs.setCurrentKey(data.id);
-        // },
+        nodeKey: 'id',
+        onNodeClick: (
+          data: TreeNodeData,
+          node: CascaderNode,
+          // treeNode: TreeNode,
+        ) => {
+          // treeNode.expanded = false;
+          node.checked = !node.checked;
+          deptFormApi.form.setFieldValue('parentId', data.id);
+        },
       },
       fieldName: 'parentId',
     },
