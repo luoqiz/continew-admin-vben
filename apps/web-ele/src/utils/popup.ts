@@ -1,9 +1,9 @@
-import type { ExtendedFormApi } from '@vben/common-ui';
+import type { BeforeCloseScope, ExtendedFormApi } from '@vben/common-ui';
 import type { MaybePromise } from '@vben/types';
 
 import { ref } from 'vue';
 
-import { Dialog } from '@vben/common-ui';
+import { confirm } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 import { isFunction } from '@vben/utils';
 
@@ -85,18 +85,23 @@ export function useBeforeCloseDiff(props: BeforeCloseDiffProps) {
 
       // 数据有变化，显示确认对话框
       return new Promise<boolean>((resolve) => {
-        Dialog.confirm({
+        confirm({
+          beforeClose: (scope: BeforeCloseScope) => {
+            if (scope.isConfirm) {
+              resolve(true);
+              isInitialized.value = false;
+              return new Promise<boolean>((resolve) => resolve(true));
+            } else {
+              resolve(false);
+              return new Promise<boolean>((resolve) => resolve(true));
+            }
+          },
           title: $t('pages.common.tip'),
           content: $t('pages.common.beforeCloseTip'),
+          icon: 'warning',
           centered: true,
-          okButtonProps: { danger: true },
           cancelText: $t('common.cancel'),
-          okText: $t('common.confirm'),
-          onOk: () => {
-            resolve(true);
-            isInitialized.value = false;
-          },
-          onCancel: () => resolve(false),
+          confirmText: $t('common.confirm'),
         });
       });
     } catch (error) {
