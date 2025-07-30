@@ -130,17 +130,18 @@ export const errorMessageResponseInterceptor = (
         return Promise.reject(error);
       }
 
-      const { responseReturn } = error.config;
-      let errorMessage = error?.response[responseReturn].msg;
-      if (errorMessage) {
-        makeErrorMessage?.(errorMessage, error);
-        return Promise.reject(error);
-      }
-
+      let errorMessage = '';
       const status = error?.response?.status;
+
       switch (status) {
         case 400: {
-          errorMessage = $t('ui.fallback.http.badRequest');
+          try {
+            const { responseReturn } = error.config;
+            errorMessage = error?.response[responseReturn].msg;
+          } catch {}
+          if (!errorMessage) {
+            errorMessage = $t('ui.fallback.http.badRequest');
+          }
           break;
         }
         case 401: {
