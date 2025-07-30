@@ -54,15 +54,10 @@ function onFirstSubmit(values: Record<string, any>) {
   }
 }
 
-// 表名称 表描述 实体类名称 作者
-// 模板类型（表格、树表）  生成包路径（生成在哪个java包下, 例如 com.ruoyi.system）
-// 生成模块名 生成业务名
-// 生成功能名  上级菜单
-// 弹窗组件类型（modal弹窗，drawer抽屉）
-// 生成表单类型（vben form   elform）
-// 生成代码方式 （zip压缩包，自定义路径）
+// 字段列表
+const fields = ref<{ label: string; value: string }[]>([]);
 
-// 树表 树级编码字段  树级父级编码字段  树级名称
+// 创建from
 const [FirstForm, firstFormApi] = useVbenForm({
   commonConfig: {
     // componentProps: {
@@ -111,14 +106,19 @@ const [FirstForm, firstFormApi] = useVbenForm({
       rules: 'required',
     },
     {
-      component: 'Input',
+      component: 'Select',
       componentProps: {
         placeholder: '树编码字段',
         maxLength: 60,
         showWordLimit: true,
+        // props: {
+        //   label: 'comment',
+        //   value: 'columnName',
+        // },
+        options: fields,
       },
       dependencies: {
-        if: (values) => values.listType === 'tree',
+        if: (values) => values.listType === 2,
         triggerFields: ['listType'],
       },
       fieldName: 'treeId',
@@ -126,14 +126,15 @@ const [FirstForm, firstFormApi] = useVbenForm({
       rules: 'required',
     },
     {
-      component: 'Input',
+      component: 'Select',
       componentProps: {
         placeholder: '',
         maxLength: 60,
         showWordLimit: true,
+        options: fields,
       },
       dependencies: {
-        if: (values) => values.listType === 'tree',
+        if: (values) => values.listType === 2,
         triggerFields: ['listType'],
       },
       fieldName: 'treePid',
@@ -141,14 +142,15 @@ const [FirstForm, firstFormApi] = useVbenForm({
       rules: 'required',
     },
     {
-      component: 'Input',
+      component: 'Select',
       componentProps: {
         placeholder: '',
         maxLength: 60,
         showWordLimit: true,
+        options: fields,
       },
       dependencies: {
-        if: (values) => values.listType === 'tree',
+        if: (values) => values.listType === 2,
         triggerFields: ['listType'],
       },
       fieldName: 'treeLabel',
@@ -261,6 +263,10 @@ const [Grid, gridApi] = useVbenVxeGrid({
       ajax: {
         query: async () => {
           const res = await listFieldConfig(genTable.value?.tableName!, false);
+          fields.value = res.map((item) => ({
+            label: `${item.fieldName}  ${item.comment ? `---  ${item.comment}` : ''}`,
+            value: item.fieldName,
+          }));
           return { list: res, total: res.length };
         },
       },
@@ -358,7 +364,13 @@ const getDrawerTitle = computed(() => {
             <ElInput v-model="row.fieldName" />
           </template>
           <template #fieldType="{ row }">
-            <ElSelect v-model="row.fieldType" placeholder="请选择字段类型" allow-search allow-create :error="!row.fieldType">
+            <ElSelect
+              v-model="row.fieldType"
+              placeholder="请选择字段类型"
+              allow-search
+              allow-create
+              :error="!row.fieldType"
+            >
               <ElOption value="String">String</ElOption>
               <ElOption value="Integer">Integer</ElOption>
               <ElOption value="Long">Long</ElOption>
@@ -381,33 +393,68 @@ const getDrawerTitle = computed(() => {
             <ElCheckbox v-model="row.showInForm" value="true" />
           </template>
           <template #isRequired="{ row }">
-            <ElCheckbox v-if="row.showInForm" v-model="row.isRequired" value="true" />
+            <ElCheckbox
+              v-if="row.showInForm"
+              v-model="row.isRequired"
+              value="true"
+            />
             <ElCheckbox v-else disabled />
           </template>
           <template #showInQuery="{ row }">
             <ElCheckbox v-model="row.showInQuery" value="true" />
           </template>
           <template #formType="{ row }">
-            <ElSelect v-if="row.showInForm || row.showInQuery" v-model="row.formType" :options="form_type_enum"
-              :default-value="1" placeholder="请选择表单类型">
-              <ElOption v-for="item in form_type_enum" :key="item.value" :label="item.label" :value="item.value" />
+            <ElSelect
+              v-if="row.showInForm || row.showInQuery"
+              v-model="row.formType"
+              :options="form_type_enum"
+              :default-value="1"
+              placeholder="请选择表单类型"
+            >
+              <ElOption
+                v-for="item in form_type_enum"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
             </ElSelect>
             <span v-else>无需设置</span>
           </template>
           <template #queryType="{ row }">
-            <ElSelect v-if="row.showInQuery" v-model="row.queryType" :default-value="1" placeholder="请选择查询方式">
-              <ElOption v-for="item in query_type_enum" :key="item.value" :label="item.label" :value="item.value" />
+            <ElSelect
+              v-if="row.showInQuery"
+              v-model="row.queryType"
+              :default-value="1"
+              placeholder="请选择查询方式"
+            >
+              <ElOption
+                v-for="item in query_type_enum"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
             </ElSelect>
             <span v-else>无需设置</span>
           </template>
           <template #dictCode="{ row }">
-            <ElSelect v-model="row.dictCode" placeholder="请选择字典类型" allow-search allow-clear>
-              <ElOption v-for="item in dictList" :key="item.value" :label="item.label" :value="item.value" />
+            <ElSelect
+              v-model="row.dictCode"
+              placeholder="请选择字典类型"
+              allow-search
+              allow-clear
+            >
+              <ElOption
+                v-for="item in dictList"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
             </ElSelect>
           </template>
         </Grid>
       </div>
     </div>
+    {{ fieldOptions }}
   </Drawer>
 </template>
 <style lang="css" scoped></style>
