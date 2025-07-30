@@ -14,6 +14,7 @@ import { ApiComponent, globalShareState, IconPicker } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
 import { ElNotification } from 'element-plus';
+import { isFunction } from 'xe-utils';
 
 const ElButton = defineAsyncComponent(() =>
   Promise.all([
@@ -211,7 +212,10 @@ async function initComponentAdapter() {
       if (Reflect.has(slots, 'default')) {
         defaultSlot = slots.default;
       } else {
-        const { options, isButton } = attrs;
+        let { options, isButton } = attrs;
+        if (isFunction(options)) {
+          options = options();
+        }
         if (Array.isArray(options)) {
           defaultSlot = () =>
             options.map((option) =>
@@ -247,7 +251,10 @@ async function initComponentAdapter() {
       if (Reflect.has(slots, 'default')) {
         defaultSlot = slots.default;
       } else {
-        const { options } = attrs;
+        let { options } = attrs;
+        if (isFunction(options)) {
+          options = options();
+        }
         if (Array.isArray(options)) {
           defaultSlot = () =>
             options.map((option) =>
