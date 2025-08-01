@@ -13,7 +13,8 @@
     "createTime": "create time",
     "updateTime": "update time",
     "classNamePrefix": "class name prefix",
-    "list": "code genrate table list"
+    "list": "code genrate table list",
+    "parentMenuId": "Parent Menu Id"
   },
   "dict": {
     "id": "",

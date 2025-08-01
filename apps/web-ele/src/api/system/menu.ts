@@ -11,6 +11,11 @@ export function listMenu(query?: T.MenuQuery) {
   return http.get<T.MenuResp[]>(`${BASE_URL}/tree`, { params: query });
 }
 
+/** @desc 查询菜单列表 */
+export function listDictMenu(query?: T.MenuQuery) {
+  return http.get<T.MenuResp[]>(`${BASE_URL}/dict/tree`, { params: query });
+}
+
 /** @desc 查询菜单详情 */
 export function getMenu(id: string) {
   return http.get<T.MenuResp>(`${BASE_URL}/${id}`);

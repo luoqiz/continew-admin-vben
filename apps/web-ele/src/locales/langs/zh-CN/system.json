@@ -19,7 +19,8 @@
     "treePid": "树父编码",
     "treeLabel": "树名称",
     "dialogType": "弹窗类型",
-    "list": "代码生成管理列表"
+    "list": "代码生成管理列表",
+    "parentMenuId": "上级菜单"
   },
   "genField": {
     "id": "",

@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import type { CascaderNode, TreeNodeData } from 'element-plus';
+
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 import type {
   FieldConfigResp,
@@ -10,6 +12,7 @@ import type { LabelValueState } from '#/types/global';
 import { computed, ref } from 'vue';
 
 import { useVbenDrawer } from '@vben/common-ui';
+import { getPopupContainer } from '@vben/utils';
 
 import {
   ElCheckbox,
@@ -25,6 +28,7 @@ import { useVbenForm } from '#/adapter/form';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import {
   getGenConfig,
+  listDictMenu,
   listFieldConfig,
   listFieldConfigDict,
   saveGenConfig,
@@ -72,6 +76,44 @@ const [FirstForm, firstFormApi] = useVbenForm({
     show: false,
   },
   schema: [
+    {
+      component: 'ApiTreeSelect',
+      // 对应组件的参数
+      componentProps: {
+        // 菜单接口
+        api: listDictMenu,
+        childrenField: 'children',
+        // 菜单接口转options格式
+        props: {
+          label: 'title',
+          value: 'key',
+        },
+        // 是否在点击节点的时候展开或者收缩节点， 默认值为 true，如果为 false，则只有点箭头图标的时候才会展开或者收缩节点。
+        expandOnClickNode: false,
+        // 是否默认展开所有节点
+        defaultExpandAll: true,
+        // 是否在点击节点的时候选中节点，默认值为 false，即只有在点击复选框时才会选中节点。
+        checkOnClickNode: true,
+        // checkOnClickLeaf: false,
+        getPopupContainer,
+        // 设置弹窗滚动高度 默认256
+        listHeight: 300,
+        nodeKey: 'key',
+        onNodeClick: (
+          data: TreeNodeData,
+          node: CascaderNode,
+          // treeNode: TreeNode,
+        ) => {
+          // treeNode.expanded = false;
+          node.checked = !node.checked;
+          firstFormApi.form.setFieldValue('parentMenuId', data.key);
+        },
+      },
+      // 字段名
+      fieldName: 'parentMenuId',
+      // 界面显示的label
+      label: '上级菜单',
+    },
     {
       component: 'Input',
       componentProps: {
