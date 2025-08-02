@@ -35,7 +35,13 @@ const storeSetup = () => {
     dictData.value = {};
   };
 
+  // 手动实现 $reset 方法
+  function $reset() {
+    cleanDict();
+  }
+
   return {
+    $reset,
     dictData,
     setDict,
     getDict,
