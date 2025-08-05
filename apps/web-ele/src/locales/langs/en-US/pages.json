@@ -28,6 +28,7 @@
     "beforeCloseTip": "You have unsaved changes. Are you sure you want to exit?",
     "notificationWarning": "Friendly reminder",
     "downloadDataTooBig": "If the data is large, it may cause slow downloads. Please be patient!",
-    "exportError": "Export failed, please try again later!"
+    "exportError": "Export failed, please try again later!",
+    "resetAdminPwd": "Reset admin password"
   }
 }

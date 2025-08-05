@@ -8,3 +8,4 @@ export * from './core';
 export * from './open';
 
 export * from './system';
+export * from './tenant';

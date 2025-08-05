@@ -1,0 +1,32 @@
+{
+  "management": {
+    "listTitle": "租户管理",
+    "id": "ID",
+    "name": "名称",
+    "code": "编码",
+    "domain": "域名",
+    "expireTime": "过期时间",
+    "description": "描述",
+    "status": "状态",
+    "adminUser": "管理员用户",
+    "adminUsername": "管理员用户名",
+    "packageId": "套餐ID",
+    "createUser": "创建人",
+    "createTime": "创建时间",
+    "updateUser": "修改人",
+    "updateTime": "修改时间"
+  },
+  "package": {
+    "listTitle": "租户套餐管理",
+    "id": "ID",
+    "name": "名称",
+    "sort": "排序",
+    "menuCheckStrictly": "菜单选择是否父子节点关联",
+    "description": "描述",
+    "status": "状态",
+    "createUser": "创建人",
+    "createTime": "创建时间",
+    "updateUser": "修改人",
+    "updateTime": "修改时间"
+  }
+}

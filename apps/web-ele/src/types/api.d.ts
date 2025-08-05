@@ -1,3 +1,16 @@
+export type ID = number | string;
+export type IDS = (number | string)[];
+
+export interface BaseEntity {
+  createUser?: string;
+  createTime?: string;
+  updateUser?: string;
+  updateTime?: string;
+  createUserString?: string;
+  updateUserString?: string;
+  disabled: boolean;
+}
+
 /** 接口返回数据格式 */
 interface ApiRes<T> {
   code: number;

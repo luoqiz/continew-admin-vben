@@ -1,0 +1,31 @@
+{
+  "tenant": {
+    "id": "ID",
+    "name": "Name",
+    "code": "Code",
+    "domain": "Domain",
+    "expireTime": "Expire Time",
+    "description": "Description",
+    "status": "Status",
+    "adminUser": "Admin User",
+    "adminUsername": "Admin Username",
+    "packageId": "Package Id",
+    "createUser": "Create User",
+    "createTime": "Create Time",
+    "updateUser": "Update User",
+    "updateTime": "Update Time"
+  },
+  "package": {
+    "listTitle": "Tenant Package Manage",
+    "id": "ID",
+    "name": "Name",
+    "sort": "Sort",
+    "menuCheckStrictly": "Menu Check Strictly",
+    "description": "Description",
+    "status": "Status",
+    "createUser": "Create User",
+    "createTime": "Create Time",
+    "updateUser": "Update User",
+    "updateTime": "Update Time"
+  }
+}
