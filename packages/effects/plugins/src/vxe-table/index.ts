@@ -4,7 +4,10 @@ export * from './use-vxe-grid';
 
 export { default as VbenVxeGrid } from './use-vxe-grid.vue';
 export type {
+  VxeGridDefines,
+  VxeGridEvents,
   VxeGridListeners,
   VxeGridProps,
   VxeGridPropTypes,
+  VxeTableEvents,
 } from 'vxe-table';

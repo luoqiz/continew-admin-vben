@@ -118,6 +118,12 @@ const ElUpload = defineAsyncComponent(() =>
     import('element-plus/es/components/upload/style/css'),
   ]).then(([res]) => res.ElUpload),
 );
+const ElAlert = defineAsyncComponent(() =>
+  Promise.all([
+    import('element-plus/es/components/alert/index'),
+    import('element-plus/es/components/alert/style/css'),
+  ]).then(([res]) => res.ElAlert),
+);
 
 const withDefaultPlaceholder = <T extends Component>(
   component: T,
@@ -155,6 +161,7 @@ const withDefaultPlaceholder = <T extends Component>(
 
 // 这里需要自行根据业务组件库进行适配，需要用到的组件都需要在这里类型说明
 export type ComponentType =
+  | 'Alert'
   | 'ApiSelect'
   | 'ApiTreeSelect'
   | 'Checkbox'
@@ -164,6 +171,7 @@ export type ComponentType =
   | 'IconPicker'
   | 'Input'
   | 'InputNumber'
+  | 'Radio'
   | 'RadioGroup'
   | 'Select'
   | 'Space'
@@ -179,6 +187,7 @@ async function initComponentAdapter() {
     // 如果你的组件体积比较大，可以使用异步加载
     // Button: () =>
     // import('xxx').then((res) => res.Button),
+    Alert: ElAlert,
     ApiSelect: withDefaultPlaceholder(
       {
         ...ApiComponent,
@@ -231,6 +240,10 @@ async function initComponentAdapter() {
     },
     // 自定义默认按钮
     DefaultButton: (props, { attrs, slots }) => {
+      return h(ElButton, { ...props, attrs }, slots);
+    },
+    // 自定义默认按钮
+    InfoButton: (props, { attrs, slots }) => {
       return h(ElButton, { ...props, attrs, type: 'info' }, slots);
     },
     // 自定义主要按钮
@@ -246,6 +259,7 @@ async function initComponentAdapter() {
     Input: withDefaultPlaceholder(ElInput, 'input', { clearable: true }),
     Textarea: withDefaultPlaceholder(ElInput, 'input', { type: 'textarea' }),
     InputNumber: withDefaultPlaceholder(ElInputNumber, 'input'),
+    Radio: ElRadio,
     RadioGroup: (props, { attrs, slots }) => {
       let defaultSlot;
       if (Reflect.has(slots, 'default')) {
@@ -258,7 +272,10 @@ async function initComponentAdapter() {
         if (Array.isArray(options)) {
           defaultSlot = () =>
             options.map((option) =>
-              h(attrs.isButton ? ElRadioButton : ElRadio, option),
+              h(
+                attrs.isButton || attrs['is-button'] ? ElRadioButton : ElRadio,
+                option,
+              ),
             );
         }
       }
@@ -335,6 +352,8 @@ async function initComponentAdapter() {
       });
     },
   });
+
+  return components;
 }
 
 export { initComponentAdapter };

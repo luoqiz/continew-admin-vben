@@ -22,7 +22,7 @@ import 'element-plus/theme-chalk/dark/css-vars.css';
 
 async function bootstrap(namespace: string) {
   // 初始化组件适配器
-  await initComponentAdapter();
+  const components = await initComponentAdapter();
 
   // 初始化表单组件
   await initSetupVbenForm();
@@ -36,6 +36,15 @@ async function bootstrap(namespace: string) {
   //   zIndex: 2000,
   // });
   const app = createApp(App);
+
+  // 注册适配的组件
+  // 遍历并注册所有组件
+  Object.entries(components).forEach(([name, component]) => {
+    if (component) {
+      // 过滤掉 undefined 值
+      app.component(name, component);
+    }
+  });
 
   // 注册Element Plus提供的v-loading指令
   app.directive('loading', ElLoading.directive);
