@@ -225,7 +225,7 @@ const allNodeKeys = computed(() => {
 <template>
   <Modal class="h-[90%] w-[90%]" :title="getTitle">
     <template #title>
-      <div style="display: flex; align-items: center; justify-content: center">
+      <div style="display: flex; align-items: end; justify-content: center">
         {{
           previewTableNames.length === 1
             ? `生成 ${previewTableNames[0]} 表预览`
@@ -334,7 +334,9 @@ const allNodeKeys = computed(() => {
                     title="复制"
                     @click="onCopy"
                   >
-                    <template #icon><SvgCopyIcon /></template>
+                    <template #icon>
+                      <SvgCopyIcon />
+                    </template>
                     <template #default>复制</template>
                   </ElLink>
                   <CnCodeView
