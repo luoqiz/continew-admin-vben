@@ -1,5 +1,6 @@
 {
   "tenant": {
+    "listTitle": "Tenant Manage",
     "id": "ID",
     "name": "Name",
     "code": "Code",
@@ -9,7 +10,7 @@
     "status": "Status",
     "adminUser": "Admin User",
     "adminUsername": "Admin Username",
-    "packageId": "Package Id",
+    "packageId": "Package",
     "createUser": "Create User",
     "createTime": "Create Time",
     "updateUser": "Update User",

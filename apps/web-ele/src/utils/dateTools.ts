@@ -1,4 +1,4 @@
-export const dateShortcuts = [
+export const dateRangeShortcuts = [
   {
     text: 'Last week',
     value: () => {
@@ -24,6 +24,45 @@ export const dateShortcuts = [
       const start = new Date();
       start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
       return [start, end];
+    },
+  },
+];
+
+export const datetimeFutrueShortcuts = [
+  {
+    text: 'Today',
+    value: new Date(),
+  },
+  {
+    text: '明天',
+    value: () => {
+      const date = new Date();
+      date.setDate(date.getDate() + 1);
+      return date;
+    },
+  },
+  {
+    text: '一星期后',
+    value: () => {
+      const date = new Date();
+      date.setDate(date.getDate() + 7);
+      return date;
+    },
+  },
+  {
+    text: '两星期后',
+    value: () => {
+      const date = new Date();
+      date.setDate(date.getDate() + 14);
+      return date;
+    },
+  },
+  {
+    text: '30天后',
+    value: () => {
+      const date = new Date();
+      date.setDate(date.getDate() + 30);
+      return date;
     },
   },
 ];
