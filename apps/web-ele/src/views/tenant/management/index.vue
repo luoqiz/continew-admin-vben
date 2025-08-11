@@ -97,8 +97,10 @@ const handleDelete = async (row: TenantResp) => {
 };
 
 const handleExport = () => {
-  useDownload(async () =>
-    exportTenant(await tableGridApi.formApi.getValues<TenantQuery>()),
+  useDownload(
+    async () =>
+      exportTenant(await tableGridApi.formApi.getValues<TenantQuery>()),
+    `${$t('tenant.management.listTitle')}-${Date.now()}.xlsx`,
   );
 };
 
