@@ -1,4 +1,5 @@
 import type { BaseEntity, PageQuery, PageRes } from '#/types/api';
+import type { LabelValueState } from '#/types/global';
 
 import { requestClient as http } from '#/api/request';
 
@@ -68,5 +69,15 @@ export function listAllTenantPackage() {
 export function listTenantPackageMenu() {
   return http.get<any>(`${BASE_URL}/menu/tree`, {
     params: { isSample: false },
+  });
+}
+
+/** @desc 查询租户套餐字典 */
+export function listTenantPackageDict(query?: {
+  description: string;
+  status: number;
+}) {
+  return http.get<LabelValueState[]>(`${BASE_URL}/dict`, {
+    params: query,
   });
 }

@@ -10,11 +10,13 @@
     "status": "状态",
     "adminUser": "管理员用户",
     "adminUsername": "管理员用户名",
-    "packageId": "套餐ID",
+    "adminPassword": "管理员用户密码",
+    "packageId": "套餐",
     "createUser": "创建人",
     "createTime": "创建时间",
     "updateUser": "修改人",
-    "updateTime": "修改时间"
+    "updateTime": "修改时间",
+    "newPassword": "新密码"
   },
   "package": {
     "listTitle": "租户套餐管理",

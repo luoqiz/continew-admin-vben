@@ -1,34 +1,56 @@
-import type { PageQuery, PageRes } from '#/types/api';
+import type { BaseEntity, PageQuery, PageRes } from '#/types/api';
 
 import { requestClient as http } from '#/api/request';
 
 const BASE_URL = '/tenant/management';
 
-/** 租户 */
-export interface TenantResp {
+export interface TenantResp extends BaseEntity {
+  /** ID */
+  id: string;
+  /** 名称 */
+  name: string;
+  /** 编码 */
+  code: string;
+  /** 域名 */
+  domain: string;
+  /** 过期时间 */
+  expireTime: string;
+  /** 描述 */
+  description: string;
+  /** 状态（1：启用；2：禁用） */
+  status: number;
+  /** 管理员用户 */
+  adminUser: string;
+  /** 管理员用户名 */
+  adminUsername: string;
+  /** 管理员密码 */
+  adminPassword: string;
+  /** 套餐ID */
+  packageId: string;
+}
+
+export interface TenantDetailResp extends BaseEntity {
   id: string;
   name: string;
   code: string;
   domain: string;
   expireTime: string;
-  description: number;
-  status: number;
-  packageId: string;
-  createUser: string;
-  createTime: string;
-  updateUser: string;
-  updateTime: string;
-  createUserString: string;
-  updateUserString: string;
+  description: string;
+  status: string;
+  adminUser: string;
   adminUsername: string;
-  packageName: string;
+  adminPassword: string;
+  packageId: string;
 }
+
 export interface TenantQuery {
-  description?: string;
-  packageId?: string;
-  status?: string;
-  sort: Array<string>;
+  name: string | undefined;
+  code: string | undefined;
+  domain: string | undefined;
+  packageId: string | undefined;
+  sort: Array<string> | string;
 }
+
 export interface TenantPageQuery extends PageQuery, TenantQuery {}
 
 /** @desc 查询租户列表 */
