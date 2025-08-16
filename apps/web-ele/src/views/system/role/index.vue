@@ -3,7 +3,7 @@ import { reactive } from 'vue';
 
 import { ColPage } from '@vben/common-ui';
 
-import RoleList from './left/RoleList.vue';
+import RoleList from './left/index.vue';
 import Details from './right/Details.vue';
 
 defineOptions({ name: 'SystemDict' });

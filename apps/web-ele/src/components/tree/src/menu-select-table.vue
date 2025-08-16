@@ -36,9 +36,11 @@ defineOptions({
 
 const props = withDefaults(
   defineProps<{
-    checkedKeys: (number | string)[];
+    checkedKeys?: (number | string)[];
     defaultExpandAll?: boolean;
     menus: MenuResp[];
+    onCheckChangeEvent?: (values: (number | string)[]) => void;
+    onRefresh?: () => void;
   }>(),
   {
     /**
@@ -49,6 +51,8 @@ const props = withDefaults(
      * 注意这里不是双向绑定 需要调用getCheckedKeys实例方法来获取真正选中的节点
      */
     checkedKeys: () => [],
+    onCheckChangeEvent: () => {},
+    onRefresh: undefined,
   },
 );
 
@@ -114,6 +118,9 @@ const checkedNum = ref(0);
  */
 function updateCheckedNumber() {
   checkedNum.value = getCheckedKeys().length;
+  if (props.onCheckChangeEvent) {
+    props.onCheckChangeEvent(getCheckedKeys());
+  }
 }
 
 const [BasicTable, tableApi] = useVbenVxeGrid({
@@ -190,8 +197,17 @@ onMounted(() => {
     async (menus) => {
       const clonedMenus = cloneDeep(menus);
       menusWithPermissions(clonedMenus);
-      // console.log(clonedMenus);
       await tableApi.grid.loadData(clonedMenus);
+
+      lastCheckedKeys.value = getCheckedKeys();
+      // 清空全部permissions选中
+      const records = tableApi.grid.getData();
+      records.forEach((item) => {
+        rowAndChildrenChecked(item, false);
+      });
+      // 需要清空全部勾选
+      await tableApi.grid.clearCheckboxRow();
+
       // 展开全部 默认true
       if (props.defaultExpandAll) {
         await nextTick();
@@ -339,11 +355,16 @@ function getCheckedKeys() {
   return allIds;
 }
 
+// 加载锁定
+const setLoading = (loading: boolean) => {
+  tableApi.setLoading(loading);
+};
 /**
  * 暴露给外部使用 获取已选中的key
  */
 defineExpose({
   getCheckedKeys,
+  setLoading,
 });
 </script>
 
@@ -373,12 +394,17 @@ defineExpose({
       </template>
       <template #toolbar-tools>
         <Space>
+          <slot name="toolbar-tools-left"></slot>
           <DefaultButton @click="setExpandOrCollapse(false)">
             {{ $t('pages.common.collapse') }}
           </DefaultButton>
           <DefaultButton @click="setExpandOrCollapse(true)">
             {{ $t('pages.common.expand') }}
           </DefaultButton>
+          <DefaultButton @click="props.onRefresh" v-if="!!props.onRefresh">
+            {{ $t('pages.common.refresh') }}
+          </DefaultButton>
+          <slot name="toolbar-tools-right"></slot>
         </Space>
       </template>
       <template #permissions="{ row }">

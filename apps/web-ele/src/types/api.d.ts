@@ -16,6 +16,8 @@ export interface BaseEntity {
   updateUserString?: string;
   /** 此记录禁止更新 */
   disabled: boolean;
+  /** 租户ID */
+  tenantId: string;
 }
 
 /** 接口返回数据格式 */

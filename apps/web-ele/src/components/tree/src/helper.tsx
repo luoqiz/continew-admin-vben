@@ -57,15 +57,19 @@ export function menusWithPermissions(menus: MenuResp[]) {
        * 需要注意 这里需要过滤目录下直接是按钮的情况item.type !== 'M'
        * 将按钮往children添加而非加到permissions
        */
-      // const permissions = item.children.filter(
-      //   (child: MenuResp) => child.type === 3,
-      // );
+      let permissions = item.children.filter(
+        (child: MenuResp) => child.type === 3,
+      );
       // // 取差集
       // const diffCollection = difference(item.children, permissions);
       // // 更新后的children  即去除按钮
       // item.children = diffCollection;
-      const permissions = item.children;
-      item.children = [];
+
+      // 此处更改为若是子级中包含按钮了，就将所有子级更改为权限选择
+      if (permissions.length > 0) {
+        permissions = item.children;
+        item.children = [];
+      }
 
       // permissions作为字段添加到item
       const permissionsArr = permissions.map((permission) => {
