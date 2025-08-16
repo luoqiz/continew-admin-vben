@@ -199,15 +199,6 @@ onMounted(() => {
       menusWithPermissions(clonedMenus);
       await tableApi.grid.loadData(clonedMenus);
 
-      lastCheckedKeys.value = getCheckedKeys();
-      // 清空全部permissions选中
-      const records = tableApi.grid.getData();
-      records.forEach((item) => {
-        rowAndChildrenChecked(item, false);
-      });
-      // 需要清空全部勾选
-      await tableApi.grid.clearCheckboxRow();
-
       // 展开全部 默认true
       if (props.defaultExpandAll) {
         await nextTick();
@@ -234,10 +225,19 @@ onMounted(() => {
    */
   watch(
     () => props.checkedKeys,
-    (value) => {
-      const allCheckedKeys = uniq([...value]);
+    async (value) => {
       // 获取表格data 如果checkedKeys在menus的watch之前触发 这里会拿到空 导致勾选异常
       const records = tableApi.grid.getData();
+
+      // 清空全部permissions选中
+      records.forEach((item) => {
+        rowAndChildrenChecked(item, false);
+      });
+      // 需要清空全部勾选
+      await tableApi.grid.clearCheckboxRow();
+
+      const allCheckedKeys = uniq([...value]);
+
       setCheckedByKeys(records, allCheckedKeys, association.value);
       updateCheckedNumber();
     },

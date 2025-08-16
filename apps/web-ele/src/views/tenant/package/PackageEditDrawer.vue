@@ -127,7 +127,6 @@ const [Drawer, drawerApi] = useVbenDrawer({
         }
         // init菜单 注意顺序要放在赋值record之后 内部watch会依赖record
         await setupMenuTree(menuIds);
-        await markInitialized();
       } finally {
         await markInitialized();
         drawerApi.unlock();
