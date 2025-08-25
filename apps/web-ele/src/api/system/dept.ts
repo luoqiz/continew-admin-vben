@@ -1,3 +1,5 @@
+import type { TreeNodeData } from 'element-plus';
+
 import type * as T from './type';
 
 import { requestClient as http } from '#/api/request';
@@ -34,4 +36,11 @@ export function deleteDept(id: string) {
 /** @desc 导出部门 */
 export function exportDept(query: T.DeptQuery) {
   return http.download(`${BASE_URL}/export`, { params: query });
+}
+
+/** @desc 查询部门字典树 */
+export function listDeptDictTree(query: { description: string | unknown }) {
+  return http.get<TreeNodeData[]>(`${BASE_URL}/dict/tree`, {
+    params: query,
+  });
 }

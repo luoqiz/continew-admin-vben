@@ -95,5 +95,27 @@
     "updateTime": "Update Time",
     "updateUser": "Update User",
     "searchKey": "Search Name Or Code"
+  },
+  "user": {
+    "listTitle": "sys_user manage",
+    "id": "Id",
+    "username": "Username",
+    "nickname": "Nickname",
+    "password": "Password",
+    "gender": "Gender",
+    "email": "Email",
+    "phone": "Phone",
+    "avatar": "Avatar",
+    "description": "Description",
+    "status": "Status",
+    "isSystem": "Is System",
+    "pwdResetTime": "Pwd Reset Time",
+    "deptId": "Dept Id",
+    "createUser": "Create User",
+    "createTime": "Create Time",
+    "updateUser": "Update User",
+    "updateTime": "Update Time",
+    "tenantId": "Tenant Id",
+    "roleIds": "Role"
   }
 }

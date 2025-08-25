@@ -1,27 +1,28 @@
 <script setup lang="ts">
-import type { CascaderNode, TreeNodeData } from 'element-plus';
+import type { TreeNodeData } from 'element-plus';
 
-import type { DeptResp } from '#/api';
+import type { UserResp } from '#/api/system/user';
 
 import { computed, ref } from 'vue';
 
 import { useVbenDrawer } from '@vben/common-ui';
 import { $t } from '@vben/locales';
-import { getPopupContainer } from '@vben/utils';
+import { encryptByRsa, getPopupContainer } from '@vben/utils';
 
 import { ElMessage } from 'element-plus';
 
 import { useVbenForm } from '#/adapter/form';
-import { addDept, getDept, listDept, updateDept } from '#/api';
+import { listDeptDictTree } from '#/api';
+import { addUser, getUser, updateUser } from '#/api/system/user';
 import { defaultFormValueGetter, useBeforeCloseDiff } from '#/utils/popup';
 
-import { useDeptFormSchema } from './data';
+import { useUserEditFormSchema } from './UserData';
 
 const emits = defineEmits(['success']);
 const dataId = ref('');
 const isUpdate = computed(() => !!dataId.value);
 
-const [DeptForm, deptFormApi] = useVbenForm({
+const [EditorForm, editorFormApi] = useVbenForm({
   commonConfig: {
     componentProps: {
       class: 'w-full',
@@ -31,22 +32,29 @@ const [DeptForm, deptFormApi] = useVbenForm({
   resetButtonOptions: {
     show: false,
   },
-  schema: useDeptFormSchema(),
+  schema: useUserEditFormSchema(),
   submitButtonOptions: {
     show: false,
   },
   wrapperClass: 'grid-cols-1 md:grid-cols-1 lg:grid-cols-1',
 });
 
-// 加载所有菜单
+// 加载部门树
 async function setupDeptSelect() {
-  const deptArray = await listDept({});
-  deptFormApi.updateSchema([
+  editorFormApi.updateSchema([
     {
+      label: $t('system.user.deptId'),
+      fieldName: 'deptId',
+      component: 'ApiTreeSelect',
+      // 对应组件的参数
       componentProps: {
+        // 接口
+        api: listDeptDictTree,
+        childrenField: 'children',
+        // 接口转options格式
         props: {
-          label: 'name',
-          value: 'id',
+          label: 'title',
+          value: 'key',
         },
         // 是否在点击节点的时候展开或者收缩节点， 默认值为 true，如果为 false，则只有点箭头图标的时候才会展开或者收缩节点。
         expandOnClickNode: false,
@@ -58,32 +66,25 @@ async function setupDeptSelect() {
         getPopupContainer,
         // 设置弹窗滚动高度 默认256
         listHeight: 300,
-        data: deptArray,
-        nodeKey: 'id',
-        onNodeClick: (
-          data: TreeNodeData,
-          node: CascaderNode,
-          // treeNode: TreeNode,
-        ) => {
-          // treeNode.expanded = false;
-          node.checked = !node.checked;
-          deptFormApi.form.setFieldValue('parentId', data.id);
+        nodeKey: 'key',
+        onNodeClick: (data: TreeNodeData) => {
+          editorFormApi.setFieldValue('deptId', data.key);
         },
+        rules: 'selectRequired',
       },
-      fieldName: 'parentId',
     },
   ]);
 }
 
 const { onBeforeClose, markInitialized, resetInitialized } = useBeforeCloseDiff(
   {
-    initializedGetter: defaultFormValueGetter(deptFormApi),
-    currentGetter: defaultFormValueGetter(deptFormApi),
+    initializedGetter: defaultFormValueGetter(editorFormApi),
+    currentGetter: defaultFormValueGetter(editorFormApi),
   },
 );
 
 async function handleClosed() {
-  await deptFormApi.resetForm();
+  await editorFormApi.resetForm();
   resetInitialized();
 }
 
@@ -91,16 +92,18 @@ const [Drawer, drawerApi] = useVbenDrawer({
   onBeforeClose,
   onClosed: handleClosed,
   async onConfirm() {
-    const { valid } = await deptFormApi.validate();
+    const { valid } = await editorFormApi.validate();
     if (!valid) return false;
     drawerApi.lock();
     try {
       if (isUpdate.value) {
-        await updateDept(deptFormApi.form.values, dataId.value);
+        await updateUser(editorFormApi.form.values, dataId.value);
         ElMessage.success($t('pages.common.modifySuccess'));
       } else {
-        await addDept({
-          ...deptFormApi.form.values,
+        const password = encryptByRsa(editorFormApi.form.values.password) || '';
+        await addUser({
+          ...editorFormApi.form.values,
+          password,
         });
         ElMessage.success($t('pages.common.addSuccess'));
       }
@@ -118,16 +121,16 @@ const [Drawer, drawerApi] = useVbenDrawer({
     if (isOpen) {
       try {
         drawerApi.lock(true);
-        const data = drawerApi.getData<DeptResp>();
+        const data = drawerApi.getData<UserResp>();
         dataId.value = data.id;
-        // 加载部门列表
-        await setupDeptSelect();
+
         if (data && data.id) {
           dataId.value = data.id;
-          const res = await getDept(data.id);
-          deptFormApi.form.setValues(res);
+          const res = await getUser(data.id);
+          await editorFormApi.form.setValues(res);
         }
       } finally {
+        await setupDeptSelect();
         await markInitialized();
         drawerApi.unlock();
       }
@@ -143,7 +146,7 @@ const getDrawerTitle = computed(() => {
 <template>
   <Drawer :title="getDrawerTitle" class="w-[40%]">
     <div class="mx-auto flex h-full w-full flex-col">
-      <DeptForm />
+      <EditorForm />
     </div>
   </Drawer>
 </template>

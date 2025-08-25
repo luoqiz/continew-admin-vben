@@ -1,3 +1,5 @@
+import type { PageQuery } from '#/types/api';
+
 /** 用户类型 */
 export interface UserResp {
   id: string;
@@ -16,7 +18,7 @@ export interface UserResp {
   updateTime: string;
   deptId: string;
   deptName: string;
-  roleIds: Array<number>;
+  roleIds: Array<number | string>;
   roleNames: Array<string>;
   disabled: boolean;
 }
@@ -42,27 +44,6 @@ export interface UserQuery {
 }
 export interface UserPageQuery extends PageQuery, UserQuery {}
 
-/** 角色类型 */
-export interface RoleResp {
-  id: string;
-  name: string;
-  code: string;
-  sort: number;
-  description: string;
-  dataScope: number;
-  isSystem: boolean;
-  createUserString: string;
-  createTime: string;
-  updateUserString: string;
-  updateTime: string;
-  disabled: boolean;
-}
-export type RoleDetailResp = RoleResp & {
-  deptCheckStrictly: boolean;
-  deptIds: Array<number>;
-  menuCheckStrictly: boolean;
-  menuIds: Array<number>;
-};
 export interface RoleUserResp {
   id: string;
   username: string;
@@ -77,15 +58,6 @@ export interface RoleUserResp {
   roleNames: Array<string>;
   disabled: boolean;
 }
-export interface RoleQuery {
-  description?: string;
-  sort: Array<string>;
-}
-export interface RoleUserQuery {
-  description?: string;
-  sort: Array<string>;
-}
-export interface RoleUserPageQuery extends PageQuery, RoleUserQuery {}
 
 /** 菜单类型 */
 export interface MenuResp {

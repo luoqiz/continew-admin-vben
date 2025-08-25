@@ -115,10 +115,32 @@
     "listTitle": "角色管理",
     "menuCheckStrictly": "菜单父子关联",
     "name": "名称",
+    "searchKey": "搜索名称或者编码",
     "sort": "排序",
     "tenantId": "租户名称",
     "updateTime": "修改时间",
+    "updateUser": "修改人"
+  },
+  "user": {
+    "avatar": "头像",
+    "createTime": "创建时间",
+    "createUser": "创建人",
+    "deptId": "所属部门",
+    "description": "描述",
+    "email": "邮箱",
+    "gender": "性别",
+    "id": "ID",
+    "isSystem": "系统内置数据",
+    "listTitle": "用户管理",
+    "nickname": "昵称",
+    "password": "密码",
+    "phone": "手机号码",
+    "pwdResetTime": "最后修改密码时间",
+    "roleIds": "角色",
+    "status": "状态",
+    "tenantId": "租户ID",
+    "updateTime": "修改时间",
     "updateUser": "修改人",
-    "searchKey": "搜索名称或者编码"
+    "username": "用户名"
   }
 }
