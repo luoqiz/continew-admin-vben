@@ -5,7 +5,7 @@ import type {
 } from '#/adapter/vxe-table';
 import type { RoleResp } from '#/api/system/role';
 
-import { useVbenModal } from '@vben/common-ui';
+import { Card, CardContent, useVbenModal } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
 import { ElButton, ElMessage, ElPopconfirm, ElSpace } from 'element-plus';
@@ -109,20 +109,21 @@ const handleDelete = async (row: RoleResp) => {
 </script>
 
 <template>
-  <div class="h-full">
-    <TableGrid :table-title="$t('system.role.listTitle')">
-      <template #toolbar-tools>
-        <ElSpace>
-          <ElButton
-            type="primary"
-            v-access:code="['system:role:create']"
-            @click="handleAdd"
-          >
-            {{ $t('pages.common.add') }}
-          </ElButton>
-        </ElSpace>
-      </template>
-      <!-- <template #status="{ row }">
+  <Card class="flex h-full flex-col">
+    <CardContent class="flex-1 overflow-auto">
+      <TableGrid :table-title="$t('system.role.listTitle')">
+        <template #toolbar-tools>
+          <ElSpace>
+            <ElButton
+              type="primary"
+              v-access:code="['system:role:create']"
+              @click="handleAdd"
+            >
+              {{ $t('pages.common.add') }}
+            </ElButton>
+          </ElSpace>
+        </template>
+        <!-- <template #status="{ row }">
         <ElTag v-if="row.status === 1" type="success">
           {{ $t('common.enabled') }}
         </ElTag>
@@ -130,32 +131,33 @@ const handleDelete = async (row: RoleResp) => {
           {{ $t('common.disabled') }}
         </ElTag>
       </template> -->
-      <template #action="{ row }">
-        <ElSpace>
-          <ElButton
-            size="small"
-            type="primary"
-            @click="handleEdit(row)"
-            v-access:code="['system:role:update']"
-          >
-            {{ $t('pages.common.edit') }}
-          </ElButton>
-          <ElPopconfirm
-            :title="$t('ui.actionMessage.deleteConfirm', [row.name])"
-            icon-color="red"
-            @confirm="handleDelete(row)"
-            v-access:code="['system:role:delete']"
-          >
-            <template #reference>
-              <ElButton size="small" type="danger">
-                {{ $t('pages.common.delete') }}
-              </ElButton>
-            </template>
-          </ElPopconfirm>
-        </ElSpace>
-      </template>
-    </TableGrid>
+        <template #action="{ row }">
+          <ElSpace>
+            <ElButton
+              size="small"
+              type="primary"
+              @click="handleEdit(row)"
+              v-access:code="['system:role:update']"
+            >
+              {{ $t('pages.common.edit') }}
+            </ElButton>
+            <ElPopconfirm
+              :title="$t('ui.actionMessage.deleteConfirm', [row.name])"
+              icon-color="red"
+              @confirm="handleDelete(row)"
+              v-access:code="['system:role:delete']"
+            >
+              <template #reference>
+                <ElButton size="small" type="danger">
+                  {{ $t('pages.common.delete') }}
+                </ElButton>
+              </template>
+            </ElPopconfirm>
+          </ElSpace>
+        </template>
+      </TableGrid>
+    </CardContent>
     <EditorWindow @success="tableGridApi.query()" />
-  </div>
+  </Card>
 </template>
 <style lang="scss" scoped></style>

@@ -11,6 +11,7 @@ import {
   Card,
   CardContent,
   CardHeader,
+  CardTitle,
   useVbenDrawer,
   useVbenModal,
 } from '@vben/common-ui';
@@ -163,7 +164,9 @@ const onUpdateRole = (record: UserResp) => {
 
 <template>
   <Card class="flex h-full flex-col">
-    <CardHeader>{{ deptInfo?.title }}</CardHeader>
+    <CardHeader>
+      <CardTitle>{{ deptInfo?.title }}</CardTitle>
+    </CardHeader>
     <CardContent class="flex-1 overflow-auto">
       <TableGrid :table-title="$t('system.user.listTitle')">
         <template #toolbar-tools>

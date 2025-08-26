@@ -115,7 +115,7 @@
     "listTitle": "角色管理",
     "menuCheckStrictly": "菜单父子关联",
     "name": "名称",
-    "searchKey": "搜索名称或者编码",
+    "searchKey": "名称或编码",
     "sort": "排序",
     "tenantId": "租户名称",
     "updateTime": "修改时间",
