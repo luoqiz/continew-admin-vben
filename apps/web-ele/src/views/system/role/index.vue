@@ -4,7 +4,7 @@ import { reactive } from 'vue';
 import { ColPage } from '@vben/common-ui';
 
 import RoleList from './left/index.vue';
-import Details from './right/Details.vue';
+import Permission from './right/Permission.vue';
 
 defineOptions({ name: 'SystemDict' });
 const props = reactive({
@@ -25,7 +25,7 @@ const props = reactive({
     <template #left>
       <RoleList />
     </template>
-    <Details />
+    <Permission />
   </ColPage>
 </template>
 

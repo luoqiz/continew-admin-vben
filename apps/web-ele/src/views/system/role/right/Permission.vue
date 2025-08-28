@@ -17,13 +17,18 @@ import {
 } from '#/api/system/role';
 
 import { emitter } from '../mitt';
-
+import RoleUser from './RoleUser.vue';
+// 角色id
 const dataId = ref<string>();
+// 角色详情
 const roleDetail = ref<RoleDetailResp>();
+// 菜单树
 const menuTree = ref<any>([]);
+// 菜单选中的key
 const selectKeys = ref<any>([]);
+// 菜单选择组件实例引用
 const menuSelectRef = ref<InstanceType<typeof MenuSelectTable>>();
-
+// 监听左侧角色管理行点击时，右侧的数据处理
 emitter.on('rowClick', async (value) => {
   menuSelectRef.value?.setLoading(true);
   try {
@@ -64,10 +69,13 @@ const handleSave = async () => {
   });
   ElMessage.success('保存成功');
 };
+// 菜单id列表
 const menuIds = ref<(number | string)[]>([]);
+// 处理菜单选择变化
 const handleCheckEvent = (values: (number | string)[]) => {
   menuIds.value = values;
 };
+// 刷新当前角色权限
 const handleRefresh = () => {
   emitter.emit('rowClick', roleDetail.value!.id);
 };
@@ -100,9 +108,7 @@ const handleRefresh = () => {
           </div>
         </ElTabPane>
         <ElTabPane label="角色用户" class="h-full">
-          {{ roleDetail }}
-
-          {{ dataId }}
+          <RoleUser :role-id="dataId!" :role-name="roleDetail?.name!" />
         </ElTabPane>
       </ElTabs>
     </CardContent>

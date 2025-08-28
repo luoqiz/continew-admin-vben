@@ -43,7 +43,7 @@ export interface UserResp extends BaseEntity {
   /** 租户ID */
   tenantId: string;
   deptName: string;
-  roleIds: Array<number>;
+  roleIds: Array<number | string>;
   roleNames: Array<string>;
   disabled: boolean;
 }

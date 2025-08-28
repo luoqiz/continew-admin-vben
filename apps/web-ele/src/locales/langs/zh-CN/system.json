@@ -119,7 +119,10 @@
     "sort": "排序",
     "tenantId": "租户名称",
     "updateTime": "修改时间",
-    "updateUser": "修改人"
+    "updateUser": "修改人",
+    "cancelAssignment": "取消分配",
+    "assignRole": "分配{0}角色",
+    "cancelRoleConfirm": "确定取消{0}的[{1}]角色?"
   },
   "user": {
     "avatar": "头像",
@@ -141,6 +144,7 @@
     "tenantId": "租户ID",
     "updateTime": "修改时间",
     "updateUser": "修改人",
-    "username": "用户名"
+    "username": "用户名",
+    "searchKey": "用户名、昵称或描述"
   }
 }
