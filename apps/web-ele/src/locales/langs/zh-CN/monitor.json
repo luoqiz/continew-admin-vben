@@ -1,0 +1,13 @@
+{
+  "onlineUser": {
+    "clientType": "终端类型",
+    "ip": "登录 IP",
+    "address": "登录地点",
+    "browser": "浏览器",
+    "os": "终端系统",
+    "nickname": "用户昵称",
+    "loginTime": "登录时间",
+    "lastActiveTime": "最后活跃时间",
+    "kickout": "强退{0}"
+  }
+}

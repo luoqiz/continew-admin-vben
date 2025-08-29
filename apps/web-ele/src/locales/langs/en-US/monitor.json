@@ -1,0 +1,13 @@
+{
+  "onlineUser": {
+    "clientType": "Client Type",
+    "ip": "Login IP",
+    "address": "Login Location",
+    "browser": "Browser",
+    "os": "Terminal System",
+    "nickname": "User Nickname",
+    "loginTime": "Login Time",
+    "lastActiveTime": "Last Active Time",
+    "kickout": "Kick Out {0}"
+  }
+}

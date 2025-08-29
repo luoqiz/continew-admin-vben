@@ -135,7 +135,6 @@ defineExpose({
       <component
         :is="COMPONENT_MAP.PrimaryButton"
         v-if="submitButtonOptions.show"
-        type="button"
         @click="handleSubmit"
         v-bind="submitButtonOptions"
       >
@@ -149,7 +148,6 @@ defineExpose({
     <component
       :is="COMPONENT_MAP.DefaultButton"
       v-if="resetButtonOptions.show"
-      type="button"
       @click="handleReset"
       v-bind="resetButtonOptions"
     >
@@ -163,7 +161,6 @@ defineExpose({
       <component
         :is="COMPONENT_MAP.PrimaryButton"
         v-if="submitButtonOptions.show"
-        type="button"
         @click="handleSubmit"
         v-bind="submitButtonOptions"
       >

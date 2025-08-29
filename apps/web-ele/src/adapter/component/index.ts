@@ -167,6 +167,7 @@ export type ComponentType =
   | 'Checkbox'
   | 'CheckboxGroup'
   | 'DatePicker'
+  | 'DateRangePicker'
   | 'Divider'
   | 'IconPicker'
   | 'Input'
@@ -328,6 +329,26 @@ async function initComponentAdapter() {
           ...props,
           ...attrs,
           ...extraProps,
+        },
+        slots,
+      );
+    },
+    DateRangePicker: (props, { attrs, slots }) => {
+      const { name, id } = props;
+      const extraProps: Recordable<any> = {};
+      if (name && !Array.isArray(name)) {
+        extraProps.name = [name, `${name}_end`];
+      }
+      if (id && !Array.isArray(id)) {
+        extraProps.id = [id, `${id}_end`];
+      }
+      return h(
+        ElDatePicker,
+        {
+          ...props,
+          ...attrs,
+          ...extraProps,
+          type: 'daterange',
         },
         slots,
       );
