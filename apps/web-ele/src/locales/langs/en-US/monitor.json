@@ -9,5 +9,39 @@
     "loginTime": "Login Time",
     "lastActiveTime": "Last Active Time",
     "kickout": "Kick Out {0}"
+  },
+  "loginLog": {
+    "title": "Login Log",
+    "account": "User Account",
+    "createUserString": "User Nickname",
+    "ip": "Login IP",
+    "address": "Login Location",
+    "browser": "Browser",
+    "os": "Terminal System",
+    "status": "Login Status",
+    "description": "Login Behavior",
+    "createTime": "Login Time",
+    "searchForm": {
+      "account": "User Account",
+      "status": "Login Status",
+      "createTime": "Login Time"
+    }
+  },
+  "operationLog": {
+    "title": "Operation Log",
+    "account": "User Account",
+    "createUserString": "User Nickname",
+    "ip": "Login IP",
+    "address": "Login Location",
+    "browser": "Browser",
+    "os": "Terminal System",
+    "status": "Login Status",
+    "description": "Login Behavior",
+    "createTime": "Login Time",
+    "searchForm": {
+      "account": "User Account",
+      "status": "Login Status",
+      "createTime": "Login Time"
+    }
   }
 }

@@ -1,13 +1,47 @@
 {
-  "onlineUser": {
-    "clientType": "终端类型",
-    "ip": "登录 IP",
+  "loginLog": {
+    "account": "用户账号",
     "address": "登录地点",
     "browser": "浏览器",
+    "createTime": "登录时间",
+    "createUserString": "用户昵称",
+    "description": "登录行为",
+    "ip": "登录 IP",
     "os": "终端系统",
-    "nickname": "用户昵称",
-    "loginTime": "登录时间",
+    "searchForm": {
+      "account": "用户账号",
+      "createTime": "登录时间",
+      "status": "登录状态"
+    },
+    "status": "登录状态",
+    "title": "登录日志"
+  },
+  "onlineUser": {
+    "address": "登录地点",
+    "browser": "浏览器",
+    "clientType": "终端类型",
+    "ip": "登录 IP",
+    "kickout": "强退{0}",
     "lastActiveTime": "最后活跃时间",
-    "kickout": "强退{0}"
+    "loginTime": "登录时间",
+    "nickname": "用户昵称",
+    "os": "终端系统"
+  },
+  "operationLog": {
+    "account": "用户账号",
+    "address": "登录地点",
+    "browser": "浏览器",
+    "createTime": "登录时间",
+    "createUserString": "用户昵称",
+    "description": "登录行为",
+    "ip": "登录 IP",
+    "os": "终端系统",
+    "searchForm": {
+      "account": "用户账号",
+      "createTime": "登录时间",
+      "status": "登录状态"
+    },
+    "status": "登录状态",
+    "title": "操作日志"
   }
 }

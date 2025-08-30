@@ -22,5 +22,7 @@
   "showSearchPanel": "显示搜索面板",
   "hideSearchPanel": "隐藏搜索面板",
   "operation": "操作",
-  "config": "配置"
+  "config": "配置",
+  "success": "成功",
+  "failed": "失败"
 }

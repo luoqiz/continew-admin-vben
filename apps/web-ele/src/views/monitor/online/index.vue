@@ -116,9 +116,6 @@ const [TableGrid, tableGridApi] = useVbenVxeGrid({
           });
           return res;
         },
-        querySuccess: ({ $grid }) => {
-          $grid.setAllTreeExpand(true);
-        },
       },
     },
     rowConfig: {
