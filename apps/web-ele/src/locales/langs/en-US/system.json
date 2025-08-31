@@ -57,6 +57,7 @@
     "value": "Value"
   },
   "menu": {
+    "listTitle": "System Menu Manager",
     "component": "Component path",
     "createTime": "Create time",
     "createUserString": "Creator",
@@ -73,7 +74,6 @@
     "root": "Root path",
     "sort": "Sort",
     "status": "Status",
-    "title": "Title",
     "type": "Type",
     "updateTime": "Update time",
     "updateUserString": "Update"

@@ -308,22 +308,25 @@ export function useMenuSearchFormFields(): VbenFormSchema[] {
 // 字典类型表格字段配置
 export function useMenuColumns(): VxeTableGridOptions['columns'] {
   return [
-    { type: 'seq', width: 60, fixed: 'left' },
+    { type: 'seq', width: 80, fixed: 'left' },
     {
       title: $t('system.menu.name'),
       field: 'title',
       treeNode: true,
       width: 200,
+      fixed: 'left',
     },
     {
       title: $t('system.menu.type'),
       field: 'type',
       slots: { default: 'type' },
+      width: 80,
     },
     {
       title: $t('system.menu.status'),
       field: 'status',
       slots: { default: 'status' },
+      width: 80,
     },
     {
       title: $t('system.menu.sort'),
@@ -333,14 +336,17 @@ export function useMenuColumns(): VxeTableGridOptions['columns'] {
     {
       title: $t('system.menu.path'),
       field: 'path',
+      width: 150,
     },
     {
       title: $t('system.menu.name'),
       field: 'name',
+      width: 150,
     },
     {
       title: $t('system.menu.component'),
       field: 'component',
+      width: 150,
     },
     {
       title: $t('system.menu.permission'),
@@ -369,6 +375,7 @@ export function useMenuColumns(): VxeTableGridOptions['columns'] {
     {
       title: $t('system.menu.createUserString'),
       field: 'createUserString',
+      width: 150,
     },
     {
       title: $t('system.menu.createTime'),
@@ -378,6 +385,7 @@ export function useMenuColumns(): VxeTableGridOptions['columns'] {
     {
       title: $t('system.menu.updateUserString'),
       field: 'updateUserString',
+      width: 150,
     },
     {
       title: $t('system.menu.updateTime'),

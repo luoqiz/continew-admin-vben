@@ -29,6 +29,7 @@
     "notificationWarning": "Friendly reminder",
     "downloadDataTooBig": "If the data is large, it may cause slow downloads. Please be patient!",
     "exportError": "Export failed, please try again later!",
-    "resetAdminPwd": "Reset admin password"
+    "resetAdminPwd": "Reset admin password",
+    "clearCache": "Clear Cache"
   }
 }

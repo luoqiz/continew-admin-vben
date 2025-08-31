@@ -68,7 +68,10 @@ const [Grid, gridApi] = useVbenVxeGrid({
     toolbarConfig: {
       custom: true,
       export: false,
-      refresh: { code: 'query' },
+      refresh: true,
+      refreshOptions: {
+        code: 'query',
+      },
       search: true,
       zoom: true,
     },
@@ -111,26 +114,36 @@ const clearCache = async () => {
   ElMessage.success('清除成功');
   centerDialogVisible.value = false;
 };
+
+/**
+ * 全部展开/折叠
+ * @param expand 是否展开
+ */
+function setExpandOrCollapse(expand: boolean) {
+  gridApi.grid?.setAllTreeExpand(expand);
+}
 </script>
 <template>
   <Page auto-content-height>
-    <Grid :table-title="$t('system.dict.list')">
+    <Grid :table-title="$t('system.menu.listTitle')">
       <template #toolbar-tools>
         <ElSpace>
-          <ElButton
-            type="primary"
-            v-access:code="['system:dict:add']"
-            @click="handleAdd"
-          >
-            {{ $t('pages.common.add') }}
-          </ElButton>
-          <ElButton
-            type="danger"
-            v-access:code="['system:dict:item:clearCache']"
-            @click="handleClearCache"
-          >
-            清除缓存
-          </ElButton>
+          <span v-access:code="['system:menu:create']">
+            <ElButton type="primary" @click="handleAdd">
+              {{ $t('pages.common.add') }}
+            </ElButton>
+          </span>
+          <span v-access:code="['system:menu:clearCache']">
+            <ElButton type="danger" @click="handleClearCache">
+              {{ $t('pages.common.clearCache') }}
+            </ElButton>
+          </span>
+          <DefaultButton @click="setExpandOrCollapse(false)">
+            {{ $t('pages.common.collapse') }}
+          </DefaultButton>
+          <DefaultButton @click="setExpandOrCollapse(true)">
+            {{ $t('pages.common.expand') }}
+          </DefaultButton>
         </ElSpace>
       </template>
       <template #type="{ row }">
@@ -158,40 +171,46 @@ const clearCache = async () => {
 
       <template #action="{ row }">
         <ElSpace>
-          <ElButton
-            @click="handleEdit(row)"
-            v-access:code="['code:generator:config']"
-          >
-            编辑
-          </ElButton>
-          <ElPopconfirm
-            title="确认删除?"
-            icon-color="red"
-            @confirm="handleDelete(row)"
-            v-access:code="['code:generator:preview']"
-          >
-            <template #reference>
-              <ElButton> 删除 </ElButton>
-            </template>
-          </ElPopconfirm>
+          <span v-access:code="['system:menu:update']">
+            <ElButton @click="handleEdit(row)">
+              {{ $t('common.edit') }}
+            </ElButton>
+          </span>
+          <span v-access:code="['system:menu:delete']">
+            <ElPopconfirm
+              title="确认删除?"
+              icon-color="red"
+              @confirm="handleDelete(row)"
+            >
+              <template #reference>
+                <ElButton> {{ $t('common.delete') }} </ElButton>
+              </template>
+            </ElPopconfirm>
+          </span>
         </ElSpace>
       </template>
     </Grid>
     <FormDrawer @success="gridApi.query()" />
-    <ElDialog
-      v-model="centerDialogVisible"
-      title="清空缓存"
-      width="500"
-      align-center
-    >
-      <span>是否确定清除菜单缓存？</span>
-      <template #footer>
-        <div class="dialog-footer">
-          <ElButton @click="centerDialogVisible = false">取消</ElButton>
-          <ElButton type="primary" @click="clearCache"> 确认 </ElButton>
-        </div>
-      </template>
-    </ElDialog>
+    <div v-access:code="['system:menu:clearCache']">
+      <ElDialog
+        v-model="centerDialogVisible"
+        title="清空缓存"
+        width="500"
+        align-center
+      >
+        <span>是否确定清除菜单缓存？</span>
+        <template #footer>
+          <div class="dialog-footer">
+            <ElButton @click="centerDialogVisible = false">
+              {{ $t('common.cancel') }}
+            </ElButton>
+            <ElButton type="primary" @click="clearCache">
+              {{ $t('common.confirm') }}
+            </ElButton>
+          </div>
+        </template>
+      </ElDialog>
+    </div>
   </Page>
 </template>
 <style lang="scss" scoped></style>

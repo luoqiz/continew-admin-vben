@@ -29,6 +29,7 @@
     "notificationWarning": "温馨提示",
     "downloadDataTooBig": "如果数据庞大会导致下载缓慢哦，请您耐心等待！",
     "exportError": "导出失败，请稍后再试！",
-    "resetAdminPwd": "重置管理员密码"
+    "resetAdminPwd": "重置管理员密码",
+    "clearCache": "清除缓存"
   }
 }

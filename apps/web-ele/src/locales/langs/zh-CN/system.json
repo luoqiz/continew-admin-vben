@@ -82,11 +82,11 @@
     "tableName": "表名称"
   },
   "menu": {
+    "listTitle": "菜单管理",
     "component": "组件路径",
     "createTime": "创建时间",
     "createUserString": "创建人",
     "icon": "图标",
-    "id": "",
     "isCache": "缓存",
     "isExternal": "外链",
     "isHidden": "隐藏",
@@ -98,7 +98,6 @@
     "root": "根目录",
     "sort": "排序",
     "status": "状态",
-    "title": "菜单标题",
     "type": "类型",
     "updateTime": "更新时间",
     "updateUserString": "更新人"
