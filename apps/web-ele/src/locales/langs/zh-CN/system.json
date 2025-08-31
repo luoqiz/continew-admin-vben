@@ -23,6 +23,7 @@
     "updateTime": "修改时间"
   },
   "dept": {
+    "listTitle": "部门管理",
     "createTime": "创建时间",
     "createUserString": "创建人",
     "description": "描述",

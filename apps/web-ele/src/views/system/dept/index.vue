@@ -52,7 +52,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
           return { list: res, total: res.length };
         },
         querySuccess: ({ $grid }) => {
-          $grid.setAllTreeExpand(true);
+          $grid?.setAllTreeExpand(true);
         },
       },
     },
@@ -117,29 +117,29 @@ const handleExpand = () => {
 
 <template>
   <Page auto-content-height>
-    <Grid :table-title="$t('system.dict.list')">
+    <Grid :table-title="$t('system.dept.listTitle')">
       <template #toolbar-tools>
         <ElSpace>
-          <ElButton
-            type="primary"
-            v-access:code="['system:dict:add']"
-            @click="handleAdd"
-          >
-            {{ $t('pages.common.add') }}
-          </ElButton>
-          <ElButton
-            type="danger"
-            v-access:code="['system:dept:export']"
-            @click="handleExport"
-          >
-            {{ $t('pages.common.export') }}
-          </ElButton>
-          <ElButton v-if="!expanded" @click="handleExpand">
-            {{ $t('pages.common.expand') }}
-          </ElButton>
-          <ElButton v-if="expanded" @click="handleExpand">
-            {{ $t('pages.common.collapse') }}
-          </ElButton>
+          <span v-access:code="['system:dept:create']">
+            <ElButton type="primary" @click="handleAdd">
+              {{ $t('pages.common.add') }}
+            </ElButton>
+          </span>
+          <span v-access:code="['system:dept:export']">
+            <ElButton type="danger" @click="handleExport">
+              {{ $t('pages.common.export') }}
+            </ElButton>
+          </span>
+          <span>
+            <ElButton v-if="!expanded" @click="handleExpand">
+              {{ $t('pages.common.expand') }}
+            </ElButton>
+          </span>
+          <span>
+            <ElButton v-if="expanded" @click="handleExpand">
+              {{ $t('pages.common.collapse') }}
+            </ElButton>
+          </span>
         </ElSpace>
       </template>
       <template #status="{ row }">
@@ -152,29 +152,28 @@ const handleExpand = () => {
       </template>
       <template #action="{ row }">
         <ElSpace>
-          <ElButton
-            type="primary"
-            @click="handleEdit(row)"
-            v-access:code="['system:dept:update']"
-          >
-            {{ $t('pages.common.edit') }}
-          </ElButton>
-          <ElPopconfirm
-            :title="$t('ui.actionMessage.deleteConfirm', [row.name])"
-            icon-color="red"
-            @confirm="handleDelete(row)"
-            v-access:code="['system:dept:delete']"
-          >
-            <template #reference>
-              <ElButton type="danger">
-                {{ $t('pages.common.delete') }}
-              </ElButton>
-            </template>
-          </ElPopconfirm>
+          <span v-access:code="['system:dept:update']">
+            <ElButton type="primary" @click="handleEdit(row)" text link>
+              {{ $t('pages.common.edit') }}
+            </ElButton>
+          </span>
+          <span v-access:code="['system:dept:delete']">
+            <ElPopconfirm
+              :title="$t('ui.actionMessage.deleteConfirm', [row.name])"
+              icon-color="red"
+              @confirm="handleDelete(row)"
+            >
+              <template #reference>
+                <ElButton type="danger" text link>
+                  {{ $t('pages.common.delete') }}
+                </ElButton>
+              </template>
+            </ElPopconfirm>
+          </span>
         </ElSpace>
       </template>
     </Grid>
+    <FormDrawer @success="gridApi.query()" />
   </Page>
-  <FormDrawer @success="gridApi.query()" />
 </template>
 <style lang="scss" scoped></style>

@@ -17,10 +17,10 @@
     "updateTime": "update time"
   },
   "dept": {
+    "listTitle": "System Dept Manager",
     "createTime": "Create time",
     "createUserString": "Creator",
     "description": "Description",
-    "id": "",
     "isSystem": "Is system",
     "name": "Name",
     "parentId": "Parent Dept",
