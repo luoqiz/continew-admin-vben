@@ -53,14 +53,19 @@ export function useDictSearchFormFields(): VbenFormSchema[] {
   return [
     {
       component: 'Input',
-      fieldName: 'name',
-
-      label: $t('system.dict.name'),
+      fieldName: 'searchKey',
+      hideLabel: true,
+      componentProps: {
+        placeholder: $t('system.dict.search.key'),
+      },
     },
     {
       component: 'Input',
       fieldName: 'code',
-      label: $t('system.dict.code'),
+      hideLabel: true,
+      componentProps: {
+        placeholder: $t('system.dict.code'),
+      },
     },
   ];
 }
@@ -203,8 +208,11 @@ export function useDictItemSearchFormFields(): VbenFormSchema[] {
     },
     {
       component: 'Input',
-      fieldName: 'value',
-      label: $t('system.dictItem.value'),
+      fieldName: 'description',
+      hideLabel: true,
+      componentProps: {
+        placeholder: $t('system.dictItem.search.description'),
+      },
     },
   ];
 }

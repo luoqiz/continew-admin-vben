@@ -34,12 +34,14 @@
     "createTime": "Create time",
     "createUserString": "Creator",
     "description": "Description",
-    "id": "",
     "isSystem": "Is system",
     "list": "Dict type list",
     "name": "name",
     "updateTime": "Update time",
-    "updateUserString": "Updater"
+    "updateUserString": "Updater",
+    "search": {
+      "key": "Search Name Or Code"
+    }
   },
   "dictItem": {
     "color": "Color",
@@ -47,14 +49,16 @@
     "createUserString": "Creator",
     "description": "Description",
     "dictId": "Dict type id",
-    "id": "",
+    "value": "Value",
     "label": "Label",
     "list": "Dict item list",
     "sort": "Sort",
     "status": "Status",
     "updateTime": "Update time",
     "updateUserString": "Updater",
-    "value": "Value"
+    "search": {
+      "description": "Label Or Description"
+    }
   },
   "menu": {
     "listTitle": "System Menu Manager",

@@ -4,7 +4,7 @@ import type { DictItemResp } from '#/api';
 
 import { ref } from 'vue';
 
-import { useVbenDrawer } from '@vben/common-ui';
+import { Card, CardContent, useVbenDrawer } from '@vben/common-ui';
 
 import {
   ElButton,
@@ -31,6 +31,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
     resetButtonOptions: {
       show: false,
     },
+    wrapperClass: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-2',
   },
   gridOptions: {
     columns: useDictItemColumns(),
@@ -63,9 +64,11 @@ const [Grid, gridApi] = useVbenVxeGrid({
     toolbarConfig: {
       custom: true,
       export: false,
-      refresh: { code: 'query' },
+      refreshOptions: { code: 'query' },
+      refresh: true,
       search: true,
       zoom: true,
+      zoomOptions: {},
     },
   } as VxeTableGridOptions<DictItemResp>,
 });
@@ -104,45 +107,47 @@ const onSuccess = () => {
 };
 </script>
 <template>
-  <Grid :table-title="$t('system.dictItem.list')">
-    <template #toolbar-tools>
-      <ElSpace>
-        <ElButton
-          type="primary"
-          v-access:code="['system:dict:add']"
-          @click="handleAdd"
-        >
-          {{ $t('pages.common.add') }}
-        </ElButton>
-      </ElSpace>
-    </template>
-    <template #value="{ row }">
-      <ElTag :type="row.color">{{ row.value }}</ElTag>
-    </template>
-    <template #status="{ row }">
-      {{ row.status ? $t('common.enabled') : $t('common.disable') }}
-    </template>
-    <template #action="{ row }">
-      <ElSpace>
-        <ElButton
-          @click="handleEdit(row)"
-          v-access:code="['code:generator:config']"
-        >
-          编辑
-        </ElButton>
-        <ElPopconfirm
-          title="确认删除?"
-          icon-color="red"
-          @confirm="handleDelete(row)"
-          v-access:code="['code:generator:preview']"
-        >
-          <template #reference>
-            <ElButton> 删除 </ElButton>
-          </template>
-        </ElPopconfirm>
-      </ElSpace>
-    </template>
-  </Grid>
-  <FormDrawer @success="onSuccess" />
+  <Card class="h-full">
+    <CardContent class="h-full overflow-auto">
+      <Grid :table-title="$t('system.dictItem.list')">
+        <template #toolbar-tools>
+          <ElSpace>
+            <span v-access:code="['system:dict:add']">
+              <ElButton type="primary" @click="handleAdd">
+                {{ $t('pages.common.add') }}
+              </ElButton>
+            </span>
+          </ElSpace>
+        </template>
+        <template #value="{ row }">
+          <ElTag :type="row.color">{{ row.value }}</ElTag>
+        </template>
+        <template #status="{ row }">
+          {{ row.status ? $t('common.enabled') : $t('common.disable') }}
+        </template>
+        <template #action="{ row }">
+          <ElSpace>
+            <span v-access:code="['system:dictItem:create']">
+              <ElButton @click="handleEdit(row)" type="primary" text link>
+                {{ $t('common.edit') }}
+              </ElButton>
+            </span>
+            <span v-access:code="['system:dictItem:delete']">
+              <ElPopconfirm
+                title="确认删除?"
+                icon-color="red"
+                @confirm="handleDelete(row)"
+              >
+                <template #reference>
+                  <ElButton type="danger" text link> 删除 </ElButton>
+                </template>
+              </ElPopconfirm>
+            </span>
+          </ElSpace>
+        </template>
+      </Grid>
+    </CardContent>
+    <FormDrawer @success="onSuccess" />
+  </Card>
 </template>
 <style lang="scss" scoped></style>

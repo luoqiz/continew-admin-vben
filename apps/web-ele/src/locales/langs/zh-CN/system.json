@@ -41,12 +41,14 @@
     "createTime": "创建时间",
     "createUserString": "创建人",
     "description": "描述",
-    "id": "",
     "isSystem": "内置",
     "list": "字典列表",
     "name": "名称",
     "updateTime": "更新时间",
-    "updateUserString": "更新人"
+    "updateUserString": "更新人",
+    "search": {
+      "key": "搜索名称/编码"
+    }
   },
   "dictItem": {
     "color": "颜色",
@@ -54,14 +56,16 @@
     "createUserString": "创建人",
     "description": "描述",
     "dictId": "字典id",
-    "id": "",
+    "value": "值",
     "label": "标签",
     "list": "字典条目列表",
     "sort": "排序",
     "status": "状态",
     "updateTime": "更新时间",
     "updateUserString": "更新人",
-    "value": "值"
+    "search": {
+      "description": "搜索标签/描述"
+    }
   },
   "genField": {
     "columnName": "列名称",

@@ -7,7 +7,7 @@ import type { DictResp } from '#/api';
 
 import { ref } from 'vue';
 
-import { useVbenModal } from '@vben/common-ui';
+import { Card, CardContent, useVbenModal } from '@vben/common-ui';
 
 import { ElDialog, ElMessage } from 'element-plus';
 
@@ -22,6 +22,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
   formOptions: {
     schema: useDictSearchFormFields(),
     submitOnChange: true,
+    wrapperClass: 'grid-cols-1 md:grid-cols-3 lg:grid-cols-3',
   },
   gridEvents: {
     cellClick: ({ row }) => {
@@ -67,9 +68,11 @@ const [Grid, gridApi] = useVbenVxeGrid({
     toolbarConfig: {
       custom: true,
       export: false,
-      refresh: { code: 'query' },
+      refreshOptions: { code: 'query' },
+      refresh: true,
       search: true,
       zoom: true,
+      zoomOptions: {},
     },
   } as VxeTableGridOptions<DictResp>,
 });
@@ -121,63 +124,67 @@ const clearCache = async () => {
 };
 </script>
 <template>
-  <Grid :table-title="$t('system.dict.list')">
-    <template #toolbar-tools>
-      <ElSpace>
-        <ElButton
-          type="primary"
-          v-access:code="['system:dict:add']"
-          @click="handleAdd"
-        >
-          {{ $t('pages.common.add') }}
-        </ElButton>
-        <ElButton
-          type="danger"
-          v-access:code="['system:dict:item:clearCache']"
-          @click="handleClearCache"
-        >
-          清除缓存
-        </ElButton>
-      </ElSpace>
-    </template>
-    <template #isSystem="{ row }">
-      {{ row.isSystem ? $t('common.yes') : $t('common.no') }}
-    </template>
-    <template #action="{ row }">
-      <ElSpace>
-        <ElButton
-          @click="handleEdit(row)"
-          v-access:code="['code:generator:config']"
-        >
-          编辑
-        </ElButton>
-        <ElPopconfirm
-          title="确认删除?"
-          icon-color="red"
-          @confirm="handleDelete(row)"
-          v-access:code="['code:generator:preview']"
-        >
-          <template #reference>
-            <ElButton :disabled="row.isSystem"> 删除 </ElButton>
-          </template>
-        </ElPopconfirm>
-      </ElSpace>
-    </template>
-  </Grid>
-  <DictTypeModal @reload="gridApi.query()" />
-  <ElDialog
-    v-model="centerDialogVisible"
-    title="清空缓存"
-    width="500"
-    align-center
-  >
-    <span>是否确定清除字典「{{ clearDictNames }}」缓存？</span>
-    <template #footer>
-      <div class="dialog-footer">
-        <ElButton @click="centerDialogVisible = false">取消</ElButton>
-        <ElButton type="primary" @click="clearCache"> 确认 </ElButton>
-      </div>
-    </template>
-  </ElDialog>
+  <Card class="h-full">
+    <CardContent class="h-full overflow-auto">
+      <Grid :table-title="$t('system.dict.list')">
+        <template #toolbar-tools>
+          <ElSpace>
+            <span v-access:code="['system:dict:add']">
+              <ElButton type="primary" @click="handleAdd">
+                {{ $t('pages.common.add') }}
+              </ElButton>
+            </span>
+            <span v-access:code="['system:dict:item:clearCache']">
+              <ElButton type="danger" @click="handleClearCache">
+                {{ $t('pages.common.clearCache') }}
+              </ElButton>
+            </span>
+          </ElSpace>
+        </template>
+        <template #isSystem="{ row }">
+          {{ row.isSystem ? $t('common.yes') : $t('common.no') }}
+        </template>
+        <template #action="{ row }">
+          <ElSpace>
+            <span v-access:code="['system:dict:update']">
+              <ElButton @click="handleEdit(row)" type="primary" text link>
+                编辑
+              </ElButton>
+            </span>
+            <span v-access:code="['system:dict:delete']">
+              <ElPopconfirm
+                title="确认删除?"
+                icon-color="red"
+                @confirm="handleDelete(row)"
+              >
+                <template #reference>
+                  <ElButton :disabled="row.isSystem" type="danger" text link>
+                    删除
+                  </ElButton>
+                </template>
+              </ElPopconfirm>
+            </span>
+          </ElSpace>
+        </template>
+      </Grid>
+    </CardContent>
+    <DictTypeModal @reload="gridApi.query()" />
+    <div v-access:code="['system:dict:item:clearCache']">
+      <ElDialog
+        v-model="centerDialogVisible"
+        title="清空缓存"
+        width="500"
+        align-center
+      >
+        <span>是否确定清除字典「{{ clearDictNames }}」缓存？</span>
+        <template #footer>
+          <div class="dialog-footer">
+            <ElButton @click="centerDialogVisible = false">取消</ElButton>
+            <ElButton type="primary" @click="clearCache"> 确认 </ElButton>
+          </div>
+        </template>
+      </ElDialog>
+    </div>
+  </Card>
 </template>
 <style lang="scss" scoped></style>
