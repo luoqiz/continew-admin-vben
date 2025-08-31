@@ -115,13 +115,16 @@ const clearCache = async () => {
   centerDialogVisible.value = false;
 };
 
+// 树列表折叠状态
+const expanded = ref<boolean>(false);
 /**
  * 全部展开/折叠
  * @param expand 是否展开
  */
-function setExpandOrCollapse(expand: boolean) {
-  gridApi.grid?.setAllTreeExpand(expand);
-}
+const handleExpand = () => {
+  expanded.value = !expanded.value;
+  gridApi.grid.setAllTreeExpand(expanded.value);
+};
 </script>
 <template>
   <Page auto-content-height>
@@ -138,12 +141,16 @@ function setExpandOrCollapse(expand: boolean) {
               {{ $t('pages.common.clearCache') }}
             </ElButton>
           </span>
-          <DefaultButton @click="setExpandOrCollapse(false)">
-            {{ $t('pages.common.collapse') }}
-          </DefaultButton>
-          <DefaultButton @click="setExpandOrCollapse(true)">
-            {{ $t('pages.common.expand') }}
-          </DefaultButton>
+          <span>
+            <ElButton v-if="!expanded" @click="handleExpand">
+              {{ $t('pages.common.expand') }}
+            </ElButton>
+          </span>
+          <span>
+            <ElButton v-if="expanded" @click="handleExpand">
+              {{ $t('pages.common.collapse') }}
+            </ElButton>
+          </span>
         </ElSpace>
       </template>
       <template #type="{ row }">
@@ -172,7 +179,7 @@ function setExpandOrCollapse(expand: boolean) {
       <template #action="{ row }">
         <ElSpace>
           <span v-access:code="['system:menu:update']">
-            <ElButton @click="handleEdit(row)">
+            <ElButton @click="handleEdit(row)" type="primary" text link>
               {{ $t('common.edit') }}
             </ElButton>
           </span>
@@ -183,7 +190,9 @@ function setExpandOrCollapse(expand: boolean) {
               @confirm="handleDelete(row)"
             >
               <template #reference>
-                <ElButton> {{ $t('common.delete') }} </ElButton>
+                <ElButton type="danger" text link>
+                  {{ $t('common.delete') }}
+                </ElButton>
               </template>
             </ElPopconfirm>
           </span>
