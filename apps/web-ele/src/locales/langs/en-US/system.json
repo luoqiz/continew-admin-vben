@@ -100,7 +100,7 @@
     "cancelRoleConfirm": "Are you sure you want to cancel the [{1}] role for {0}?"
   },
   "user": {
-    "listTitle": "sys_user manage",
+    "listTitle": "System User Manager",
     "id": "Id",
     "username": "Username",
     "nickname": "Nickname",
@@ -113,6 +113,7 @@
     "status": "Status",
     "isSystem": "Is System",
     "pwdResetTime": "Pwd Reset Time",
+    "pwdReset": "Password Reset",
     "deptId": "Dept Id",
     "createUser": "Create User",
     "createTime": "Create Time",
@@ -120,6 +121,8 @@
     "updateTime": "Update Time",
     "tenantId": "Tenant Id",
     "roleIds": "Role",
-    "searchKey": "Username, Nickname or Description"
+    "searchKey": "Username, Nickname or Description",
+    "deptTree": "Dept Tree",
+    "roleAssign": "Role Assign"
   }
 }

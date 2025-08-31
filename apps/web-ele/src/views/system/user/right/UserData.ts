@@ -179,7 +179,8 @@ export function useUserGridFieldColumns(): VxeTableGridOptions['columns'] {
       field: 'nickname',
       title: $t('system.user.nickname'),
       slots: { default: 'nickname' },
-      align: 'center',
+      align: 'left',
+      width: 120,
     },
     {
       field: 'username',

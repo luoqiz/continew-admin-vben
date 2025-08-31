@@ -67,7 +67,7 @@ const getWindowTitle = computed(() => {
           :key="role.value"
           :value="role.value"
         >
-          {{ role.label }}--{{ role.value }}
+          {{ role.label }}
         </ElCheckbox>
       </ElCheckboxGroup>
     </div>

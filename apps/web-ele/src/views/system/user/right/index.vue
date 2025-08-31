@@ -19,6 +19,7 @@ import { IconifyIcon } from '@vben/icons';
 import { $t } from '@vben/locales';
 
 import {
+  ElAvatar,
   ElButton,
   ElDropdown,
   ElDropdownItem,
@@ -81,9 +82,6 @@ const [TableGrid, tableGridApi] = useVbenVxeGrid({
           });
           return res;
         },
-        querySuccess: ({ $grid }) => {
-          $grid.setAllTreeExpand(true);
-        },
       },
     },
     rowConfig: {
@@ -91,9 +89,6 @@ const [TableGrid, tableGridApi] = useVbenVxeGrid({
       isHover: true,
       isCurrent: true,
     },
-    // checkboxConfig: {
-    //   highlight: true,
-    // },
     toolbarConfig: {
       custom: true,
       export: false,
@@ -171,25 +166,27 @@ const onUpdateRole = (record: UserResp) => {
       <TableGrid :table-title="$t('system.user.listTitle')">
         <template #toolbar-tools>
           <ElSpace>
-            <ElButton
-              type="primary"
-              v-access:code="['system:user:create']"
-              @click="handleAdd"
-            >
-              {{ $t('pages.common.add') }}
-            </ElButton>
-            <ElButton
-              type="danger"
-              v-access:code="['system:user:export']"
-              @click="handleExport"
-            >
-              {{ $t('pages.common.export') }}
-            </ElButton>
+            <span v-access:code="['system:user:create']">
+              <ElButton type="primary" @click="handleAdd">
+                {{ $t('pages.common.add') }}
+              </ElButton>
+            </span>
+            <span>
+              <ElButton
+                type="danger"
+                v-access:code="['system:user:export']"
+                @click="handleExport"
+              >
+                {{ $t('pages.common.export') }}
+              </ElButton>
+            </span>
           </ElSpace>
         </template>
         <template #nickname="{ row }">
-          <VxeAvatar :src="row.avatar" />
-          {{ row.nickname }}
+          <div class="flex flex-row items-center gap-2">
+            <ElAvatar :size="32" :src="row.avatar" />
+            <span class="flex-1">{{ row.nickname }}</span>
+          </div>
         </template>
         <template #status="{ row }">
           <ElTag v-if="row.status === 1" type="success">
@@ -211,64 +208,60 @@ const onUpdateRole = (record: UserResp) => {
         </template>
         <template #action="{ row }">
           <ElSpace class="h-full" alignment="flex-end">
-            <ElButton
-              type="primary"
-              text
-              link
-              @click="handleEdit(row)"
-              v-access:code="['system:user:update']"
-            >
-              {{ $t('pages.common.edit') }}
-            </ElButton>
-            <ElPopconfirm
-              :title="$t('ui.actionMessage.deleteConfirm', [row.username])"
-              icon-color="red"
-              @confirm="handleDelete(row)"
-              v-access:code="['system:user:delete']"
-            >
-              <template #reference>
-                <ElButton type="danger" text link>
-                  {{ $t('pages.common.delete') }}
-                </ElButton>
-              </template>
-            </ElPopconfirm>
-            <ElDropdown>
-              <ElButton
-                v-if="
-                  hasAccessByCodes([
-                    'system:user:resetPwd',
-                    'system:user:updateRole',
-                  ])
-                "
-                text
-                link
-                type="info"
-              >
-                <template #icon>
-                  <IconifyIcon
-                    icon="carbon:text-indent-more"
-                    class="size-full"
-                  />
-                </template>
+            <span v-access:code="['system:user:update']">
+              <ElButton type="primary" text link @click="handleEdit(row)">
+                {{ $t('pages.common.edit') }}
               </ElButton>
-              <template #dropdown>
-                <ElDropdownMenu>
-                  <ElDropdownItem
-                    v-permission="['system:user:resetPwd']"
-                    @click="onResetPwd(row)"
-                  >
-                    重置密码
-                  </ElDropdownItem>
-                  <ElDropdownItem
-                    v-permission="['system:user:updateRole']"
-                    :disabled="row.isSystem"
-                    @click="onUpdateRole(row)"
-                  >
-                    分配角色
-                  </ElDropdownItem>
-                </ElDropdownMenu>
-              </template>
-            </ElDropdown>
+            </span>
+            <span v-access:code="['system:user:delete']">
+              <ElPopconfirm
+                :title="$t('ui.actionMessage.deleteConfirm', [row.username])"
+                icon-color="red"
+                @confirm="handleDelete(row)"
+              >
+                <template #reference>
+                  <ElButton type="danger" text link>
+                    {{ $t('pages.common.delete') }}
+                  </ElButton>
+                </template>
+              </ElPopconfirm>
+            </span>
+            <span
+              v-if="
+                hasAccessByCodes([
+                  'system:user:resetPwd',
+                  'system:user:updateRole',
+                ])
+              "
+            >
+              <ElDropdown>
+                <ElButton text link type="info">
+                  <template #icon>
+                    <IconifyIcon
+                      icon="carbon:text-indent-more"
+                      class="size-full"
+                    />
+                  </template>
+                </ElButton>
+                <template #dropdown>
+                  <ElDropdownMenu>
+                    <span v-access:code="['system:user:resetPwd']">
+                      <ElDropdownItem @click="onResetPwd(row)">
+                        {{ $t('system.user.pwdReset') }}
+                      </ElDropdownItem>
+                    </span>
+                    <span v-access:code="['system:user:updateRole']">
+                      <ElDropdownItem
+                        :disabled="row.isSystem"
+                        @click="onUpdateRole(row)"
+                      >
+                        {{ $t('system.user.roleAssign') }}
+                      </ElDropdownItem>
+                    </span>
+                  </ElDropdownMenu>
+                </template>
+              </ElDropdown>
+            </span>
           </ElSpace>
         </template>
       </TableGrid>

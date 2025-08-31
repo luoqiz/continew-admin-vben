@@ -139,12 +139,15 @@
     "password": "密码",
     "phone": "手机号码",
     "pwdResetTime": "最后修改密码时间",
+    "pwdReset": "重置密码",
     "roleIds": "角色",
     "status": "状态",
     "tenantId": "租户ID",
     "updateTime": "修改时间",
     "updateUser": "修改人",
     "username": "用户名",
-    "searchKey": "用户名、昵称或描述"
+    "searchKey": "用户名、昵称或描述",
+    "deptTree": "部门树",
+    "roleAssign": "分配角色"
   }
 }

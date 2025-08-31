@@ -52,7 +52,7 @@ onMounted(() => {
   <ElCard class="elCard h-full w-full">
     <template #header>
       <div class="card-header">
-        <span>部门树 </span>
+        <span>{{ $t('system.user.deptTree') }} </span>
       </div>
     </template>
     <div class="flex h-full w-full flex-col">
