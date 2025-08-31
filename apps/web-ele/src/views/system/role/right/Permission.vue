@@ -19,7 +19,7 @@ import {
 import { emitter } from '../mitt';
 import RoleUser from './RoleUser.vue';
 // 角色id
-const dataId = ref<string>();
+const dataId = ref<number | string>();
 // 角色详情
 const roleDetail = ref<RoleDetailResp>();
 // 菜单树
@@ -63,7 +63,7 @@ function handleMenuCheckStrictlyChange(value: boolean) {
 const handleSave = async () => {
   // 这个用于提交
   const menuIds = menuSelectRef.value?.getCheckedKeys?.() ?? [];
-  await updateRolePermission(dataId.value!, {
+  await updateRolePermission(dataId.value!.toString(), {
     menuIds,
     menuCheckStrictly: roleDetail.value!.menuCheckStrictly,
   });
@@ -87,7 +87,7 @@ const handleRefresh = () => {
     </CardHeader>
     <CardContent class="flex-1 overflow-auto">
       <ElTabs class="h-full" :stretch="true">
-        <ElTabPane label="功能权限" class="h-full">
+        <ElTabPane :label="$t('system.role.permission')" class="h-full">
           <div class="h-full w-full">
             <!-- association为readonly 不能通过v-model绑定 -->
             <MenuSelectTable
@@ -101,13 +101,13 @@ const handleRefresh = () => {
             >
               <template #toolbar-tools-left>
                 <ElButton type="primary" @click="handleSave">
-                  保存权限
+                  {{ $t('system.role.permissionSave') }}
                 </ElButton>
               </template>
             </MenuSelectTable>
           </div>
         </ElTabPane>
-        <ElTabPane label="角色用户" class="h-full">
+        <ElTabPane :label="$t('system.role.user')" class="h-full">
           <RoleUser :role-id="dataId!" :role-name="roleDetail?.name!" />
         </ElTabPane>
       </ElTabs>

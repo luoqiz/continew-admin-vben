@@ -8,7 +8,7 @@ import { computed, ref, watch } from 'vue';
 import { useVbenModal } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
-import { ElMessage } from 'element-plus';
+import { ElAvatar, ElMessage } from 'element-plus';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { assignToUsers } from '#/api';
@@ -37,12 +37,10 @@ function useUserGridFieldColumns(): VxeTableGridOptions['columns'] {
       field: 'nickname',
       title: $t('system.user.nickname'),
       slots: { default: 'nickname' },
-      align: 'center',
     },
     {
       field: 'username',
       title: $t('system.user.username'),
-      align: 'center',
     },
     {
       field: 'status',
@@ -119,9 +117,6 @@ const [TableGrid, tableGridApi] = useVbenVxeGrid({
             user!.disabled = user!.roleIds?.includes(props.roleId);
           }
           return res;
-        },
-        querySuccess: ({ $grid }) => {
-          $grid.setAllTreeExpand(true);
         },
       },
     },
@@ -219,8 +214,10 @@ watch(
   <EditWindow :title="getWindowTitle" class="h-[80%] w-[70%]">
     <TableGrid :table-title="$t('system.user.listTitle')">
       <template #nickname="{ row }">
-        <VxeAvatar :src="row.avatar" />
-        {{ row.nickname }}
+        <div class="flex flex-row items-center gap-2">
+          <ElAvatar :size="32" :src="row.avatar" />
+          <span class="flex-1">{{ row.nickname }}</span>
+        </div>
       </template>
       <template #status="{ row }">
         <ElTag v-if="row.status === 1" type="success">

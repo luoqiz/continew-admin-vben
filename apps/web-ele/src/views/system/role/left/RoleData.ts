@@ -50,8 +50,11 @@ export function useRoleGridSearchFormSchema(): VbenFormSchema[] {
   return [
     {
       fieldName: 'description',
-      label: $t('system.role.searchKey'),
       component: 'Input',
+      hideLabel: true,
+      componentProps: {
+        placeholder: $t('system.role.searchKey'),
+      },
     },
   ];
 }

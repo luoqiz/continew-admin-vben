@@ -87,7 +87,7 @@
     "description": "Description",
     "id": "Id",
     "isSystem": "Is System",
-    "listTitle": "sys_role manage",
+    "listTitle": "System Role Manager",
     "menuCheckStrictly": "Menu Check Strictly",
     "name": "Name",
     "sort": "Sort",
@@ -97,7 +97,10 @@
     "searchKey": "Search Name Or Code",
     "cancelAssignment": "Cancel Assignment",
     "assignRole": "Assign {0} Role",
-    "cancelRoleConfirm": "Are you sure you want to cancel the [{1}] role for {0}?"
+    "cancelRoleConfirm": "Are you sure you want to cancel the [{1}] role for {0}?",
+    "permission": "Permission",
+    "user": "User",
+    "permissionSave": "Save Permission"
   },
   "user": {
     "listTitle": "System User Manager",

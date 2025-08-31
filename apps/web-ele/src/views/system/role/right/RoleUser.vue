@@ -8,7 +8,7 @@ import { watch } from 'vue';
 import { useVbenModal } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
-import { ElButton, ElMessage, ElSpace } from 'element-plus';
+import { ElAvatar, ElButton, ElMessage, ElSpace } from 'element-plus';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { listRoleUser, unassignFromUsers } from '#/api';
@@ -16,7 +16,7 @@ import { listRoleUser, unassignFromUsers } from '#/api';
 import RoleUserAssign from './RoleUserAssign.vue';
 
 interface Props {
-  roleId: string;
+  roleId: number | string;
   roleName: string;
 }
 const props = withDefaults(defineProps<Props>(), {
@@ -37,7 +37,6 @@ function useUserGridFieldColumns(): VxeTableGridOptions['columns'] {
     {
       field: 'username',
       title: $t('system.user.username'),
-      // slots: { default: 'username' },
       align: 'center',
     },
     {
@@ -61,7 +60,6 @@ function useUserGridFieldColumns(): VxeTableGridOptions['columns'] {
     {
       field: 'description',
       title: $t('system.user.description'),
-      // slots: { default: 'description' },
       align: 'center',
     },
     {
@@ -114,15 +112,12 @@ const [TableGrid, tableGridApi] = useVbenVxeGrid({
               total: 0,
             };
           }
-          const res = await listRoleUser(props.roleId, {
+          const res = await listRoleUser(props.roleId as string, {
             page: page.currentPage,
             size: page.pageSize,
             ...formValues,
           });
           return res;
-        },
-        querySuccess: ({ $grid }) => {
-          $grid.setAllTreeExpand(true);
         },
       },
     },
@@ -177,18 +172,18 @@ watch(
   <TableGrid :table-title="$t('system.user.listTitle')">
     <template #toolbar-tools>
       <ElSpace>
-        <ElButton
-          type="primary"
-          v-access:code="['system:user:create']"
-          @click="handleAssign"
-        >
-          {{ $t('system.role.assignRole') }}
-        </ElButton>
+        <span v-access:code="['system:user:create']">
+          <ElButton type="primary" @click="handleAssign">
+            {{ $t('system.role.assignRole') }}
+          </ElButton>
+        </span>
       </ElSpace>
     </template>
     <template #nickname="{ row }">
-      <VxeAvatar :src="row.avatar" />
-      {{ row.nickname }}
+      <div class="flex flex-row items-center gap-2">
+        <ElAvatar :size="32" :src="row.avatar" />
+        <span class="flex-1">{{ row.nickname }}</span>
+      </div>
     </template>
     <template #status="{ row }">
       <ElTag v-if="row.status === 1" type="success">
@@ -210,21 +205,25 @@ watch(
     </template>
     <template #action="{ row }">
       <ElSpace class="h-full" alignment="flex-end">
-        <ElPopconfirm
-          :title="
-            $t('system.role.cancelRoleConfirm', [row.nickname, props.roleName])
-          "
-          icon-color="red"
-          @confirm="handleCancelAssignment(row)"
-          v-access:code="['system:role:unassign']"
-          :disabled="row.isSystem"
-        >
-          <template #reference>
-            <ElButton type="danger" text link :disabled="row.isSystem">
-              {{ $t('system.role.cancelAssignment') }}
-            </ElButton>
-          </template>
-        </ElPopconfirm>
+        <span v-access:code="['system:role:unassign']">
+          <ElPopconfirm
+            :title="
+              $t('system.role.cancelRoleConfirm', [
+                row.nickname,
+                props.roleName,
+              ])
+            "
+            icon-color="red"
+            @confirm="handleCancelAssignment(row)"
+            :disabled="row.isSystem"
+          >
+            <template #reference>
+              <ElButton type="danger" text link :disabled="row.isSystem">
+                {{ $t('system.role.cancelAssignment') }}
+              </ElButton>
+            </template>
+          </ElPopconfirm>
+        </span>
       </ElSpace>
     </template>
   </TableGrid>

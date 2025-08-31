@@ -122,7 +122,10 @@
     "updateUser": "修改人",
     "cancelAssignment": "取消分配",
     "assignRole": "分配{0}角色",
-    "cancelRoleConfirm": "确定取消{0}的[{1}]角色?"
+    "cancelRoleConfirm": "确定取消{0}的[{1}]角色?",
+    "permission": "功能权限",
+    "user": "角色用户",
+    "permissionSave": "保存权限"
   },
   "user": {
     "avatar": "头像",
