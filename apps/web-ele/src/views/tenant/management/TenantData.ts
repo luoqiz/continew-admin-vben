@@ -217,7 +217,6 @@ export function useTenantGridFieldColumns(): VxeTableGridOptions['columns'] {
     {
       field: 'createTime',
       title: $t('tenant.management.createTime'),
-      slots: { default: 'createTime' },
       align: 'center',
     },
     {

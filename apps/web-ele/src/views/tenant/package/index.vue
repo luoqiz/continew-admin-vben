@@ -42,18 +42,12 @@ const [TableGrid, tableGridApi] = useVbenVxeGrid({
           });
           return res;
         },
-        querySuccess: ({ $grid }) => {
-          $grid.setAllTreeExpand(true);
-        },
       },
     },
     rowConfig: {
       keyField: 'id',
       isHover: true,
     },
-    // checkboxConfig: {
-    //   highlight: true,
-    // },
     toolbarConfig: {
       custom: true,
       export: false,
@@ -93,14 +87,6 @@ const handleDelete = async (row: TenantPackageResp) => {
     return false;
   }
 };
-
-// const handleExport = () => {
-//   useDownload(async () =>
-//     exportPackage(
-//       await tableGridApi.formApi.getValues<TenantPackagePageQuery>(),
-//     ),
-//   );
-// };
 </script>
 
 <template>
@@ -108,20 +94,11 @@ const handleDelete = async (row: TenantPackageResp) => {
     <TableGrid :table-title="$t('tenant.package.listTitle')">
       <template #toolbar-tools>
         <ElSpace>
-          <ElButton
-            type="primary"
-            v-access:code="['tenant:package:create']"
-            @click="handleAdd"
-          >
-            {{ $t('pages.common.add') }}
-          </ElButton>
-          <!-- <ElButton
-            type="success"
-            v-access:code="['tenant:package:export']"
-            @click="handleExport"
-          >
-            {{ $t('pages.common.export') }}
-          </ElButton> -->
+          <span v-access:code="['tenant:package:create']">
+            <ElButton type="primary" @click="handleAdd">
+              {{ $t('pages.common.add') }}
+            </ElButton>
+          </span>
         </ElSpace>
       </template>
       <template #status="{ row }">
@@ -134,25 +111,24 @@ const handleDelete = async (row: TenantPackageResp) => {
       </template>
       <template #action="{ row }">
         <ElSpace>
-          <ElButton
-            type="primary"
-            @click="handleEdit(row)"
-            v-access:code="['tenant:package:update']"
-          >
-            {{ $t('pages.common.edit') }}
-          </ElButton>
-          <ElPopconfirm
-            :title="$t('ui.actionMessage.deleteConfirm', [row.name])"
-            icon-color="red"
-            @confirm="handleDelete(row)"
-            v-access:code="['tenant:package:delete']"
-          >
-            <template #reference>
-              <ElButton type="danger">
-                {{ $t('pages.common.delete') }}
-              </ElButton>
-            </template>
-          </ElPopconfirm>
+          <span v-access:code="['tenant:package:update']">
+            <ElButton type="primary" @click="handleEdit(row)" link text>
+              {{ $t('pages.common.edit') }}
+            </ElButton>
+          </span>
+          <span v-access:code="['tenant:package:delete']">
+            <ElPopconfirm
+              :title="$t('ui.actionMessage.deleteConfirm', [row.name])"
+              icon-color="red"
+              @confirm="handleDelete(row)"
+            >
+              <template #reference>
+                <ElButton type="danger" link text>
+                  {{ $t('pages.common.delete') }}
+                </ElButton>
+              </template>
+            </ElPopconfirm>
+          </span>
         </ElSpace>
       </template>
     </TableGrid>

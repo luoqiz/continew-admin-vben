@@ -44,18 +44,12 @@ const [TableGrid, tableGridApi] = useVbenVxeGrid({
           });
           return res;
         },
-        querySuccess: ({ $grid }) => {
-          $grid.setAllTreeExpand(true);
-        },
       },
     },
     rowConfig: {
       keyField: 'id',
       isHover: true,
     },
-    // checkboxConfig: {
-    //   highlight: true,
-    // },
     toolbarConfig: {
       custom: true,
       export: false,
@@ -119,20 +113,16 @@ const handleUpdateAdminUserPwd = (row: TenantResp) => {
     <TableGrid :table-title="$t('tenant.management.listTitle')">
       <template #toolbar-tools>
         <ElSpace>
-          <ElButton
-            type="primary"
-            v-access:code="['tenant:management:create']"
-            @click="handleAdd"
-          >
-            {{ $t('pages.common.add') }}
-          </ElButton>
-          <ElButton
-            type="danger"
-            v-access:code="['tenant:management:export']"
-            @click="handleExport"
-          >
-            {{ $t('pages.common.export') }}
-          </ElButton>
+          <span v-access:code="['tenant:management:create']">
+            <ElButton type="primary" @click="handleAdd">
+              {{ $t('pages.common.add') }}
+            </ElButton>
+          </span>
+          <span v-access:code="['tenant:management:export']">
+            <ElButton type="danger" @click="handleExport">
+              {{ $t('pages.common.export') }}
+            </ElButton>
+          </span>
         </ElSpace>
       </template>
       <template #status="{ row }">
@@ -145,32 +135,34 @@ const handleUpdateAdminUserPwd = (row: TenantResp) => {
       </template>
       <template #action="{ row }">
         <ElSpace>
-          <ElButton
-            type="primary"
-            @click="handleEdit(row)"
-            v-access:code="['tenant:management:update']"
-          >
-            {{ $t('pages.common.edit') }}
-          </ElButton>
-          <ElButton
-            type="warning"
-            @click="handleUpdateAdminUserPwd(row)"
-            v-access:code="['tenant:management:updateAdminUserPwd']"
-          >
-            {{ $t('pages.common.resetAdminPwd') }}
-          </ElButton>
-          <ElPopconfirm
-            :title="$t('ui.actionMessage.deleteConfirm', [row.name])"
-            icon-color="red"
-            @confirm="handleDelete(row)"
-            v-access:code="['tenant:management:delete']"
-          >
-            <template #reference>
-              <ElButton type="danger">
-                {{ $t('pages.common.delete') }}
-              </ElButton>
-            </template>
-          </ElPopconfirm>
+          <span v-access:code="['tenant:management:update']">
+            <ElButton type="primary" @click="handleEdit(row)" link text>
+              {{ $t('pages.common.edit') }}
+            </ElButton>
+          </span>
+          <span v-access:code="['tenant:management:updateAdminUserPwd']">
+            <ElButton
+              type="warning"
+              @click="handleUpdateAdminUserPwd(row)"
+              link
+              text
+            >
+              {{ $t('pages.common.resetAdminPwd') }}
+            </ElButton>
+          </span>
+          <span v-access:code="['tenant:management:delete']">
+            <ElPopconfirm
+              :title="$t('ui.actionMessage.deleteConfirm', [row.name])"
+              icon-color="red"
+              @confirm="handleDelete(row)"
+            >
+              <template #reference>
+                <ElButton type="danger" link text>
+                  {{ $t('pages.common.delete') }}
+                </ElButton>
+              </template>
+            </ElPopconfirm>
+          </span>
         </ElSpace>
       </template>
     </TableGrid>
