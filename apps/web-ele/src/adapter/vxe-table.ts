@@ -191,6 +191,46 @@ setupVbenVxeTable({
       },
     });
 
+    // 单元格渲染： Tag
+    vxeUI.renderer.add('CellEnDisTag', {
+      renderTableDefault({ options, props }, { column, row }) {
+        const value = get(row, column.field);
+        const tagOptions = options ?? [
+          { type: 'success', label: $t('common.enabled'), value: 1 },
+          { type: 'danger', label: $t('common.disabled'), value: 0 },
+        ];
+        const tagItem = tagOptions.find((item) => item.value === value);
+        return h(
+          ElTag,
+          {
+            ...props,
+            ...objectOmit(tagItem ?? {}, ['label']),
+          },
+          { default: () => tagItem?.label ?? value },
+        );
+      },
+    });
+
+    // 单元格渲染： 成功失败状态
+    vxeUI.renderer.add('CellSuccErrTag', {
+      renderTableDefault({ options, props }, { column, row }) {
+        const value = get(row, column.field);
+        const tagOptions = options ?? [
+          { type: 'success', label: $t('common.success'), value: 1 },
+          { type: 'danger', label: $t('common.failed'), value: 0 },
+        ];
+        const tagItem = tagOptions.find((item) => item.value === value);
+        return h(
+          ElTag,
+          {
+            ...props,
+            ...objectOmit(tagItem ?? {}, ['label']),
+          },
+          { default: () => tagItem?.label ?? value },
+        );
+      },
+    });
+
     vxeUI.renderer.add('CellSwitch', {
       renderTableDefault({ attrs, props }, { column, row }) {
         const loadingKey = `__loading_${column.field}`;

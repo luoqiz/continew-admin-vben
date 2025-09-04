@@ -131,5 +131,16 @@
     "searchKey": "Username, Nickname or Description",
     "deptTree": "Dept Tree",
     "roleAssign": "Role Assign"
+  },
+  "smsLog": {
+    "listTitle": "SMS Log",
+    "configId": "",
+    "phone": "",
+    "params": "",
+    "status": "",
+    "resMsg": "",
+    "createUser": "",
+    "createTime": "",
+    "createUserString": ""
   }
 }
