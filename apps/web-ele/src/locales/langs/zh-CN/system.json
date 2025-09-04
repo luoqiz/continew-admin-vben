@@ -156,5 +156,16 @@
     "searchKey": "用户名、昵称或描述",
     "deptTree": "部门树",
     "roleAssign": "分配角色"
+  },
+  "smsLog": {
+    "listTitle": "短信日志",
+    "configId": "配置ID",
+    "phone": "手机号",
+    "params": "参数配置",
+    "status": "发送状态",
+    "resMsg": "返回数据",
+    "createUser": "操作人",
+    "createTime": "操作时间",
+    "createUserString": "操作人"
   }
 }
