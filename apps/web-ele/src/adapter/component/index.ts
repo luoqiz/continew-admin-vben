@@ -287,7 +287,11 @@ async function initComponentAdapter() {
       );
     },
     Select: (props, { attrs, slots }) => {
-      return h(ElSelectV2, { ...props, attrs }, slots);
+      let { options } = attrs;
+      if (isFunction(options)) {
+        options = options();
+      }
+      return h(ElSelectV2, { ...props, attrs, options }, slots);
     },
     Space: ElSpace,
     Switch: ElSwitch,

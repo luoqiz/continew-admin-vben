@@ -3,7 +3,7 @@ import type { Recordable } from '@vben/types';
 
 import type { ComponentType } from './component/index';
 
-import { h } from 'vue';
+import { h, isRef } from 'vue';
 
 import { IconifyIcon } from '@vben/icons';
 import { $te } from '@vben/locales';
@@ -11,10 +11,11 @@ import {
   setupVbenVxeTable,
   useVbenVxeGrid as useGrid,
 } from '@vben/plugins/vxe-table';
-import { get, isFunction, isString } from '@vben/utils';
+import { get, isFunction, isString, isValidColor } from '@vben/utils';
 
 import { objectOmit } from '@vueuse/core';
 import { ElButton, ElImage, ElPopconfirm, ElSwitch, ElTag } from 'element-plus';
+import { isArray } from 'xe-utils';
 
 import { $t } from '#/locales';
 
@@ -67,14 +68,117 @@ setupVbenVxeTable({
       },
     });
 
+    // 单元格是否渲染： Tag
+    vxeUI.renderer.add('CellYesNoTag', {
+      renderTableDefault({ options, props }, { column, row }) {
+        const value = get(row, column.field);
+        const tagOptions = options ?? [
+          { type: 'success', label: $t('common.yes'), value: true },
+          { type: 'danger', label: $t('common.no'), value: false },
+        ];
+        const tagItem = tagOptions.find((item) => item.value === value);
+        return h(
+          ElTag,
+          {
+            ...props,
+            ...objectOmit(tagItem ?? {}, ['label']),
+          },
+          { default: () => tagItem?.label ?? value },
+        );
+      },
+    });
+
+    // 单元格是否渲染： Tag
+    vxeUI.renderer.add('CellYesNoNumberTag', {
+      renderTableDefault({ options, props }, { column, row }) {
+        const value = get(row, column.field);
+        const tagOptions = options ?? [
+          { type: 'success', label: $t('common.yes'), value: 1 },
+          { type: 'danger', label: $t('common.no'), value: 0 },
+        ];
+        const tagItem = tagOptions.find((item) => item.value === value);
+        return h(
+          ElTag,
+          {
+            ...props,
+            ...objectOmit(tagItem ?? {}, ['label']),
+          },
+          { default: () => tagItem?.label ?? value },
+        );
+      },
+    });
+
+    // 单元格渲染字典： Tag
+    vxeUI.renderer.add('CellDictTag', {
+      renderTableDefault({ attrs, props }, { column, row }) {
+        let value = get(row, column.field);
+        if (isRef(attrs?.options)) {
+          // 如果是 ref 类型，直接取值
+          attrs.options = attrs.options.value;
+        }
+        const tagOptions = (attrs?.options as App.DictItem[]) ?? [
+          { type: 'success', label: $t('common.enabled'), value: 1 },
+          { type: 'danger', label: $t('common.disabled'), value: 0 },
+        ];
+        if (!isArray(value)) {
+          value = [value];
+        }
+
+        let type: 'danger' | 'info' | 'primary' | 'success' | 'warning' =
+          'success';
+
+        const res: any[] = [];
+        value.forEach((item: any) => {
+          let color;
+          const tagItem = tagOptions.find((tag) => tag.value === item);
+          if (tagItem) {
+            color = tagItem.extra;
+          }
+          if (isValidColor(tagItem?.extra)) {
+            color = tagItem?.extra;
+          } else if (
+            tagItem?.extra === 'primary' ||
+            tagItem?.extra === 'success' ||
+            tagItem?.extra === 'warning' ||
+            tagItem?.extra === 'info' ||
+            tagItem?.extra === 'danger'
+          ) {
+            type = tagItem.extra;
+          }
+          res.push(
+            h(
+              ElTag,
+              {
+                ...props,
+                ...tagItem,
+                type,
+                color,
+              },
+              { default: () => tagItem?.label ?? value },
+            ),
+          );
+        });
+        const className =
+          attrs?.class ?? 'flex flex-row gap-2 items-center justify-center';
+        return h(
+          'div',
+          { class: className },
+          {
+            default: () => res,
+          },
+        );
+      },
+    });
+
     // 单元格渲染： Tag
     vxeUI.renderer.add('CellTag', {
       renderTableDefault({ options, props }, { column, row }) {
         const value = get(row, column.field);
-        const tagOptions = options ?? [
-          { type: 'success', label: $t('common.enabled'), value: 1 },
-          { type: 'danger', label: $t('common.disabled'), value: 0 },
-        ];
+        const tagOptions = options ??
+          (props?.options as App.DictItem[]) ?? [
+            { type: 'success', label: $t('common.enabled'), value: 1 },
+            { type: 'danger', label: $t('common.disabled'), value: 0 },
+          ];
         const tagItem = tagOptions.find((item) => item.value === value);
         return h(
           ElTag,
