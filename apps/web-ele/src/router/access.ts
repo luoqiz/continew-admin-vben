@@ -123,6 +123,7 @@ function backMenuToVbenMenu(
       },
       name: menu.name,
       path: menu.path,
+      redirect: menu.redirect,
     };
 
     // 处理meta映射
@@ -219,6 +220,23 @@ function backMenuToVbenMenu(
     }
     // 添加
     resultList.push(vbenRoute);
+
+    // 如果当前路由有commponent 则给提升子路由到当前路由同级
+    if (
+      !!vbenRoute.component &&
+      typeof vbenRoute.component === 'string' &&
+      vbenRoute.component.startsWith('/')
+    ) {
+      const children = vbenRoute.children;
+      if (children) {
+        children?.forEach((item) => {
+          item.parent = vbenRoute.parent;
+          item.parents = vbenRoute.parents;
+          resultList.push(item);
+        });
+        vbenRoute.children = [];
+      }
+    }
   });
   return resultList;
 }

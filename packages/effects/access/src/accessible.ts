@@ -146,7 +146,10 @@ async function generateRoutes(
       return route;
     }
 
-    route.redirect = firstChild.path;
+    // 当前路由没有component,则将redirect指向第一个子路由
+    if (!route.component) {
+      route.redirect = firstChild.path;
+    }
     return route;
   });
 
