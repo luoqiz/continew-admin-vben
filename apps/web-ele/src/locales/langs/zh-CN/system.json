@@ -167,5 +167,24 @@
     "createUser": "操作人",
     "createTime": "操作时间",
     "createUserString": "操作人"
+  },
+  "notice": {
+    "listTitle": "公告管理",
+    "id": "ID",
+    "title": "标题",
+    "content": "内容",
+    "type": "分类",
+    "noticeScope": "通知范围",
+    "noticeUsers": "通知用户",
+    "noticeMethods": "通知方式",
+    "isTiming": "是否定时",
+    "publishTime": "发布时间",
+    "isTop": "是否置顶",
+    "status": "状态",
+    "createUser": "创建人",
+    "createTime": "创建时间",
+    "updateUser": "修改人",
+    "updateTime": "修改时间",
+    "tenantId": "租户ID"
   }
 }
