@@ -42,6 +42,7 @@
     "@vben/types": "workspace:*",
     "@vben/utils": "workspace:*",
     "@vueuse/core": "catalog:",
+    "aieditor": "^1.4.1",
     "dayjs": "catalog:",
     "element-plus": "catalog:",
     "es-toolkit": "^1.39.7",

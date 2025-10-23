@@ -24,5 +24,10 @@
   "operation": "操作",
   "config": "配置",
   "success": "成功",
-  "failed": "失败"
+  "failed": "失败",
+  "detail": "详情",
+  "select": "选择",
+  "upload": "上传",
+  "download": "下载",
+  "clear": "清空"
 }

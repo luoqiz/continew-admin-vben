@@ -3,6 +3,7 @@ import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 
 import { VbenIcon, z } from '@vben/common-ui';
 
+import { enabledDisabledOptions, yesNoOptions } from '#/constants';
 import { $t } from '#/locales';
 
 // 菜单类型（M目录 C菜单 F按钮）
@@ -10,16 +11,6 @@ export const menuTypeOptions = [
   { label: '目录', value: 1 },
   { label: '菜单', value: 2 },
   { label: '按钮', value: 3 },
-];
-
-export const yesNoOptions = [
-  { label: '是', value: true },
-  { label: '否', value: false },
-];
-
-export const enabledDisabledOptions = [
-  { label: '启用', value: 1 },
-  { label: '禁用', value: 2 },
 ];
 
 // 字典类型表单

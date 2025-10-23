@@ -142,5 +142,24 @@
     "createUser": "",
     "createTime": "",
     "createUserString": ""
+  },
+  "notice": {
+    "listTitle": "sys_notice manage",
+    "id": "Id",
+    "title": "Title",
+    "content": "Content",
+    "type": "Type",
+    "noticeScope": "Notice Scope",
+    "noticeUsers": "Notice Users",
+    "noticeMethods": "Notice Methods",
+    "isTiming": "Is Timing",
+    "publishTime": "Publish Time",
+    "isTop": "Is Top",
+    "status": "Status",
+    "createUser": "Create User",
+    "createTime": "Create Time",
+    "updateUser": "Update User",
+    "updateTime": "Update Time",
+    "tenantId": "Tenant Id"
   }
 }

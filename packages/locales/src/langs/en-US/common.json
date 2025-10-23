@@ -24,5 +24,10 @@
   "operation": "Operation",
   "config": "Config",
   "success": "Success",
-  "failed": "Failed"
+  "failed": "Failed",
+  "detail": "Detail",
+  "select": "Select",
+  "upload": "Upload",
+  "download": "Download",
+  "clear": "Clear"
 }
