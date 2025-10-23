@@ -11,7 +11,6 @@ const SvgCardIcon = createIconifyIcon('svg:card');
 const SvgBellIcon = createIconifyIcon('svg:bell');
 const SvgCakeIcon = createIconifyIcon('svg:cake');
 const SvgAntdvLogoIcon = createIconifyIcon('svg:antdv-logo');
-const SvgGithubIcon = createIconifyIcon('svg:github');
 const SvgGoogleIcon = createIconifyIcon('svg:google');
 const SvgQQChatIcon = createIconifyIcon('svg:qqchat');
 const SvgWeChatIcon = createIconifyIcon('svg:wechat');
@@ -382,7 +381,6 @@ export {
   SvgCalendarIcon,
   SvgCameraIcon,
   SvgCardIcon,
-  SvgDingDingIcon,
   SvgCaretDownIcon,
   SvgCaretLeftIcon,
   SvgCaretRightIcon,
@@ -415,6 +413,7 @@ export {
   SvgDeleteIcon,
   SvgDesktopIcon,
   SvgDiceIcon,
+  SvgDingDingIcon,
   SvgDirectoryBlueIcon,
   SvgDirectoryIcon,
   SvgDirectoryOpenBlueIcon,
@@ -426,10 +425,6 @@ export {
   SvgDownCircleIcon,
   SvgDownIcon,
   SvgDownloadIcon,
-  SvgGithubIcon,
-  SvgGoogleIcon,
-  SvgQQChatIcon,
-  SvgWeChatIcon,
   SvgDragArrowIcon,
   SvgDragDotIcon,
   SvgDragDotVerticalIcon,
@@ -501,6 +496,7 @@ export {
   SvgGitcodeIcon,
   SvgGiteeIcon,
   SvgGithubIcon,
+  SvgGoogleIcon,
   SvgH1Icon,
   SvgH2Icon,
   SvgH3Icon,
@@ -590,6 +586,7 @@ export {
   SvgProtectIcon,
   SvgPublicIcon,
   SvgPushpinIcon,
+  SvgQQChatIcon,
   SvgQrcodeIcon,
   SvgQuestionCircleFillIcon,
   SvgQuestionCircleIcon,
@@ -676,6 +673,7 @@ export {
   SvgUserIcon,
   SvgVideoCameraIcon,
   SvgVoiceIcon,
+  SvgWeChatIcon,
   SvgWifiIcon,
   SvgWomanIcon,
   SvgZoomInIcon,

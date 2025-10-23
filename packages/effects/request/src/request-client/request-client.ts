@@ -115,6 +115,13 @@ class RequestClient {
   }
 
   /**
+   * 获取基础URL
+   */
+  public getBaseUrl() {
+    return this.instance.defaults.baseURL;
+  }
+
+  /**
    * PATCH请求方法
    */
   public patch<T = any>(
@@ -123,13 +130,6 @@ class RequestClient {
     config?: RequestClientConfig,
   ): Promise<T> {
     return this.request<T>(url, { ...config, data, method: 'PATCH' });
-  }
-
-  /**
-   * 获取基础URL
-   */
-  public getBaseUrl() {
-    return this.instance.defaults.baseURL;
   }
 
   /**
