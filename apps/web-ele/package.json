@@ -43,6 +43,7 @@
     "@vben/utils": "workspace:*",
     "@vueuse/core": "catalog:",
     "aieditor": "^1.4.1",
+    "cron-parser": "^5.4.0",
     "dayjs": "catalog:",
     "element-plus": "catalog:",
     "es-toolkit": "^1.39.7",

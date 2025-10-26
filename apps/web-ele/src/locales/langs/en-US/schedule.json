@@ -1,0 +1,39 @@
+{
+  "job": {
+    "id": "ID",
+    "groupName": "Task Group",
+    "jobName": "Task Name",
+    "description": "Description",
+    "triggerType": "Trigger Type",
+    "triggerInterval": "Interval Duration",
+    "cronExpression": "Cron Expression",
+    "executorType": "Executor Type",
+    "taskType": "Task Type",
+    "executorInfo": "Executor Name",
+    "argsStr": "Task Parameters",
+    "argsType": "Parameter Type",
+    "routeKey": "Routing Strategy",
+    "blockStrategy": "Blocking Strategy",
+    "executorTimeout": "Timeout",
+    "maxRetryTimes": "Maximum Retry Times",
+    "retryInterval": "Retry Interval",
+    "parallelNum": "Parallel Number",
+    "jobStatus": "Task Status",
+    "nextTriggerAt": "Next Trigger Time",
+    "createDt": "Creation Time",
+    "updateDt": "Modification Time",
+    "viewLog": "View Log"
+  },
+  "jobLog": {
+    "id": "ID",
+    "groupName": "Task Group",
+    "jobName": "Task Name",
+    "jobId": "Task ID",
+    "taskBatchStatus": "Task Status",
+    "operationReason": "Operation Reason",
+    "executorType": "Executor Type",
+    "executorInfo": "Executor Name",
+    "executionAt": "Execution Time",
+    "createDt": "Creation Time"
+  }
+}

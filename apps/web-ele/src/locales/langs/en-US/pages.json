@@ -8,6 +8,7 @@
     "reset": "Reset",
     "import": "Import",
     "export": "Export",
+    "execute": "Execute",
     "expand": "Expand",
     "collapse": "Collapse",
     "info": "Info",
@@ -30,6 +31,7 @@
     "downloadDataTooBig": "If the data is large, it may cause slow downloads. Please be patient!",
     "exportError": "Export failed, please try again later!",
     "resetAdminPwd": "Reset admin password",
-    "clearCache": "Clear Cache"
+    "clearCache": "Clear Cache",
+    "second": "Second"
   }
 }

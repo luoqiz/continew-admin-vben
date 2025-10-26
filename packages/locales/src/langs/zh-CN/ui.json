@@ -20,7 +20,10 @@
     "deleting": "正在删除 {0} ...",
     "deleteSuccess": "{0} 删除成功",
     "operationSuccess": "操作成功",
-    "operationFailed": "操作失败"
+    "operationFailed": "操作失败",
+    "exectuting": "正在执行 {0} ...",
+    "executeSuccess": "{0} 执行成功",
+    "confirmExecute": "是否执行 {0}？"
   },
   "placeholder": {
     "input": "请输入",

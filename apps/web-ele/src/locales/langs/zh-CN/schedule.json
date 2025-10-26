@@ -1,0 +1,39 @@
+{
+  "job": {
+    "id": "ID",
+    "groupName": "任务组",
+    "jobName": "任务名称",
+    "description": "描述",
+    "triggerType": "调度类型",
+    "triggerInterval": "间隔时长",
+    "cronExpression": "Cron 表达式",
+    "executorType": "执行器类型",
+    "taskType": "任务类型",
+    "executorInfo": "执行器名称",
+    "argsStr": "任务参数",
+    "argsType": "参数类型",
+    "routeKey": "路由策略",
+    "blockStrategy": "阻塞策略",
+    "executorTimeout": "超时时间",
+    "maxRetryTimes": "最大重试次数",
+    "retryInterval": "重试间隔",
+    "parallelNum": "并行数",
+    "jobStatus": "任务状态",
+    "nextTriggerAt": "下次触发时间",
+    "createDt": "创建时间",
+    "updateDt": "修改时间",
+    "viewLog": "查看日志"
+  },
+  "jobLog": {
+    "id": "ID",
+    "groupName": "任务组",
+    "jobName": "任务名称",
+    "jobId": "任务 ID",
+    "taskBatchStatus": "任务状态 1待处理 2运行中  3成功 4已失败 5已停止 6已取消",
+    "operationReason": "操作原因",
+    "executorType": "执行器类型",
+    "executorInfo": "执行器名称",
+    "executionAt": "执行时间",
+    "createDt": "创建时间"
+  }
+}

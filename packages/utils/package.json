@@ -22,6 +22,7 @@
   "dependencies": {
     "@vben-core/shared": "workspace:*",
     "@vben-core/typings": "workspace:*",
+    "cron-parser": "^5.4.0",
     "crypto-js": "^4.2.0",
     "jsencrypt": "^3.3.2",
     "vue-router": "catalog:"

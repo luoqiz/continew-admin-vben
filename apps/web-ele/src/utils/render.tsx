@@ -70,7 +70,7 @@ export function renderHttpMethodTag(type: string) {
 }
 
 export function renderDictTag(value: number | string, dicts: DictItemResp[]) {
-  return <DictTag dicts={dicts} value={value}></DictTag>;
+  return <DictTag dictList={dicts} value={value}></DictTag>;
 }
 
 /**

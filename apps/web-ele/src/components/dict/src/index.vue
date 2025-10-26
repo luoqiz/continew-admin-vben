@@ -9,16 +9,16 @@ import { ElTag } from 'element-plus';
 import { tagTypes } from './data';
 
 interface Props {
-  dicts: DictItemResp[]; // dict数组
+  dictList: DictItemResp[]; // dictList数组
   value: number | string; // value
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  dicts: undefined,
+  dictList: () => [] as unknown as DictItemResp[],
 });
 
 const color = computed<string>(() => {
-  const current = props.dicts.find((item) => item.value == props.value);
+  const current = props.dictList.find((item) => item.value == props.value);
   const listClass = current?.listClass ?? '';
   // 是否为默认的颜色
   const isDefault = Reflect.has(tagTypes, listClass);
@@ -31,19 +31,19 @@ const color = computed<string>(() => {
 });
 
 const cssClass = computed<string>(() => {
-  const current = props.dicts.find((item) => item.value == props.value);
+  const current = props.dictList.find((item) => item.value == props.value);
   return current?.cssClass ?? '';
 });
 
 const label = computed<number | string>(() => {
-  const current = props.dicts.find((item) => item.value == props.value);
+  const current = props.dictList.find((item) => item.value == props.value);
   return current?.label ?? 'unknown';
 });
 
 const tagComponent = computed(() => (color.value ? ElTag : 'div'));
 
 const loading = computed(() => {
-  return props.dicts?.length === 0;
+  return props.dictList?.length === 0;
 });
 </script>
 
