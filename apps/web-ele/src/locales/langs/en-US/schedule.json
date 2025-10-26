@@ -25,7 +25,6 @@
     "viewLog": "View Log"
   },
   "jobLog": {
-    "id": "ID",
     "groupName": "Task Group",
     "jobName": "Task Name",
     "jobId": "Task ID",
@@ -34,6 +33,6 @@
     "executorType": "Executor Type",
     "executorInfo": "Executor Name",
     "executionAt": "Execution Time",
-    "createDt": "Creation Time"
+    "createDt": "Invocation Time"
   }
 }

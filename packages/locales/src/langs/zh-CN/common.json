@@ -29,5 +29,7 @@
   "select": "选择",
   "upload": "上传",
   "download": "下载",
-  "clear": "清空"
+  "clear": "清空",
+  "retry": "重试",
+  "stop": "停止"
 }

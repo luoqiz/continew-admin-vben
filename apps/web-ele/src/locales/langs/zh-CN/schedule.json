@@ -25,15 +25,14 @@
     "viewLog": "查看日志"
   },
   "jobLog": {
-    "id": "ID",
     "groupName": "任务组",
     "jobName": "任务名称",
     "jobId": "任务 ID",
-    "taskBatchStatus": "任务状态 1待处理 2运行中  3成功 4已失败 5已停止 6已取消",
+    "taskBatchStatus": "任务状态",
     "operationReason": "操作原因",
     "executorType": "执行器类型",
     "executorInfo": "执行器名称",
     "executionAt": "执行时间",
-    "createDt": "创建时间"
+    "createDt": "调用时间"
   }
 }

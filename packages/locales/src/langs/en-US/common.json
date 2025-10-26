@@ -29,5 +29,7 @@
   "select": "Select",
   "upload": "Upload",
   "download": "Download",
-  "clear": "Clear"
+  "clear": "Clear",
+  "retry": "Retry",
+  "stop": "Stop"
 }

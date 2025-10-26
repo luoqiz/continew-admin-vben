@@ -23,7 +23,9 @@
     "operationFailed": "操作失败",
     "exectuting": "正在执行 {0} ...",
     "executeSuccess": "{0} 执行成功",
-    "confirmExecute": "是否执行 {0}？"
+    "confirmExecute": "是否执行 {0}？",
+    "confirmRetry": "是否确认重试 {0} 本次执行？",
+    "confirmStop": "是否确认停止 {0} 本次执行？"
   },
   "placeholder": {
     "input": "请输入",
