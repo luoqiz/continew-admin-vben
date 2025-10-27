@@ -1,0 +1,21 @@
+{
+  "app": {
+    "listTitle": "Application Management",
+    "name": "Name",
+    "accessKey": "Access Key",
+    "secretKey": "Secret Key",
+    "expireTime": "Expire Time",
+    "description": "Description",
+    "status": "Status",
+    "detail": "Detail",
+    "delete": "Delete",
+    "resetSecret": "Reset Secret Key",
+    "copy": "Copy",
+    "show": "Show",
+    "hide": "Hide",
+    "createUser": "Create User",
+    "createTime": "Create Time",
+    "updateUser": "Update User",
+    "updateTime": "Update Time"
+  }
+}

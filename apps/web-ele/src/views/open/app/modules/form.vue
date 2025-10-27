@@ -4,6 +4,7 @@ import type { OpenAppApi } from '#/api/open/app';
 import { computed, ref } from 'vue';
 
 import { useVbenDrawer } from '@vben/common-ui';
+import { $t } from '@vben/locales';
 
 import { useVbenForm } from '#/adapter/form';
 import { addApp, updateApp } from '#/api/open/app';
@@ -51,7 +52,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
 });
 
 const getDrawerTitle = computed(() => {
-  return formData.value?.id ? '修改应用' : '新增应用';
+  return formData.value?.id ? $t('pages.common.edit') : $t('pages.common.add');
 });
 </script>
 

@@ -4,6 +4,8 @@ import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn } from '#/adapter/vxe-table';
 import type { OpenAppApi } from '#/api/open/app';
 
+import { $t } from '@vben/locales';
+
 import { z } from '#/adapter/form';
 
 /**
@@ -14,7 +16,7 @@ export function useFormSchema(): VbenFormSchema[] {
     {
       component: 'Input',
       fieldName: 'name',
-      label: '应用名称',
+      label: $t('open.app.name'),
       rules: z
         .string()
         .min(2, '应用名称至少2个字符')
@@ -29,7 +31,7 @@ export function useFormSchema(): VbenFormSchema[] {
         valueFormat: 'YYYY-MM-DD HH:mm:ss',
       },
       fieldName: 'expireTime',
-      label: '失效时间',
+      label: $t('open.app.expireTime'),
     },
     {
       component: 'Textarea',
@@ -40,7 +42,7 @@ export function useFormSchema(): VbenFormSchema[] {
         placeholder: '请输入应用描述',
       },
       fieldName: 'description',
-      label: '应用描述',
+      label: $t('open.app.description'),
       rules: z.string().max(200, '应用描述最多200个字符').optional(),
     },
     {
@@ -55,7 +57,7 @@ export function useFormSchema(): VbenFormSchema[] {
       },
       defaultValue: 1,
       fieldName: 'status',
-      label: '状态',
+      label: $t('open.app.status'),
     },
   ];
 }
@@ -67,7 +69,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
     {
       component: 'Input',
       fieldName: 'description',
-      label: '应用名称',
+      label: $t('open.app.name'),
     },
   ];
 }
@@ -79,22 +81,16 @@ export function useColumns<T = OpenAppApi.AppResp>(
   onActionClick: OnActionClickFn<T>,
 ): VxeTableGridOptions['columns'] {
   return [
-    {
-      type: 'seq',
-      title: '序号',
-      width: 66,
-      align: 'center',
-      fixed: 'left',
-    },
+    { type: 'seq', width: 70, fixed: 'left' },
     {
       field: 'name',
-      title: '应用名称',
+      title: $t('open.app.name'),
       fixed: 'left',
       showOverflow: 'tooltip',
     },
     {
       field: 'accessKey',
-      title: 'Access Key',
+      title: $t('open.app.accessKey'),
       showOverflow: 'tooltip',
       cellRender: {
         name: 'CellCopy',
@@ -102,18 +98,18 @@ export function useColumns<T = OpenAppApi.AppResp>(
     },
     {
       field: 'secretKey',
-      title: 'Secret Key',
+      title: $t('open.app.secretKey'),
       width: 450,
       align: 'center',
       slots: { default: 'secretKey' },
     },
     {
       field: 'expireTime',
-      title: '失效时间',
+      title: $t('open.app.expireTime'),
     },
     {
       field: 'status',
-      title: '状态',
+      title: $t('open.app.status'),
       align: 'center',
       cellRender: {
         name: 'CellTag',
@@ -127,31 +123,31 @@ export function useColumns<T = OpenAppApi.AppResp>(
     },
     {
       field: 'description',
-      title: '描述',
+      title: $t('open.app.description'),
       showOverflow: 'tooltip',
     },
     {
       field: 'createUserString',
-      title: '创建人',
+      title: $t('open.app.createUser'),
       width: 120,
       showOverflow: 'tooltip',
       visible: false,
     },
     {
       field: 'createTime',
-      title: '创建时间',
+      title: $t('open.app.createTime'),
       width: 180,
     },
     {
       field: 'updateUserString',
-      title: '修改人',
+      title: $t('open.app.updateUser'),
       width: 120,
       showOverflow: 'tooltip',
       visible: false,
     },
     {
       field: 'updateTime',
-      title: '修改时间',
+      title: $t('open.app.updateTime'),
       width: 180,
       visible: false,
     },
@@ -167,18 +163,18 @@ export function useColumns<T = OpenAppApi.AppResp>(
         options: [
           {
             code: 'detail',
-            text: '详情',
+            text: $t('open.app.detail'),
           },
           'edit',
           {
             code: 'delete',
-            text: '删除',
+            text: $t('open.app.delete'),
             status: 'danger',
             disabled: (row: OpenAppApi.AppResp) => row.disabled,
           },
           {
             code: 'resetSecret',
-            text: '重置密钥',
+            text: $t('open.app.resetSecret'),
           },
         ],
       },
@@ -186,8 +182,8 @@ export function useColumns<T = OpenAppApi.AppResp>(
       fixed: 'right',
       headerAlign: 'center',
       showOverflow: false,
-      title: '操作',
-      width: 200,
+      title: $t('common.operation'),
+      width: 260,
     },
   ];
 }

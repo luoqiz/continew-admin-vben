@@ -6,7 +6,7 @@ import type {
 import type { OpenAppApi } from '#/api';
 
 import { Page, useVbenDrawer } from '@vben/common-ui';
-import { Plus } from '@vben/icons';
+import { $t } from '@vben/locales';
 
 import { ElButton, ElMessage, ElMessageBox } from 'element-plus';
 
@@ -207,19 +207,20 @@ async function onExport() {
   <Page auto-content-height>
     <FormDrawer @success="onRefresh" />
     <DetailDrawer />
-    <Grid table-title="应用管理">
+    <Grid :table-title="$t('open.app.listTitle')">
       <template #toolbar-tools>
         <ElButton type="primary" @click="onCreate">
-          <Plus class="size-5" />
-          新增应用
+          {{ $t('pages.common.add') }}
         </ElButton>
-        <ElButton @click="onExport"> 导出 </ElButton>
+        <ElButton @click="onExport">
+          {{ $t('pages.common.export') }}
+        </ElButton>
       </template>
       <template #secretKey="{ row }">
         <div class="flex items-center justify-center gap-2">
-          <span v-if="row.secretKey" class="font-mono">{{
-            row.secretKey
-          }}</span>
+          <span v-if="row.secretKey" class="font-mono">
+            {{ row.secretKey }}
+          </span>
           <span v-else class="text-gray-400">***********</span>
 
           <div class="flex gap-1">
@@ -231,7 +232,7 @@ async function onExport() {
               size="small"
               @click="onCopySecret(row.secretKey)"
             >
-              复制
+              {{ $t('open.app.copy') }}
             </ElButton>
 
             <!-- 显示/隐藏按钮 -->
@@ -242,7 +243,7 @@ async function onExport() {
               size="small"
               @click="onHideSecret(row)"
             >
-              隐藏
+              {{ $t('open.app.hide') }}
             </ElButton>
             <ElButton
               v-else
@@ -251,7 +252,7 @@ async function onExport() {
               size="small"
               @click="onShowSecret(row)"
             >
-              显示
+              {{ $t('open.app.show') }}
             </ElButton>
           </div>
         </div>
