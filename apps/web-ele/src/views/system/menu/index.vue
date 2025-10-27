@@ -25,6 +25,8 @@ const [Grid, gridApi] = useVbenVxeGrid({
   formOptions: {
     schema: useMenuSearchFormFields(),
     submitOnChange: true,
+    showCollapseButton: false,
+    wrapperClass: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
   },
   gridOptions: {
     columns: useMenuColumns(),

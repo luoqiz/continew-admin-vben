@@ -39,7 +39,7 @@ const [TableGrid, tableGridApi] = useVbenVxeGrid({
     schema: useGridSearchFormSchema(groupList, job_execute_status_enum),
     submitOnChange: true,
     showCollapseButton: false,
-    wrapperClass: 'grid-cols-1 md:grid-cols-4 lg:grid-cols-4',
+    wrapperClass: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
   },
   gridOptions: {
     columns: useGridFieldColumns(),

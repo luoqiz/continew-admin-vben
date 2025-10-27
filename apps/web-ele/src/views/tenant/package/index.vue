@@ -20,6 +20,8 @@ const [TableGrid, tableGridApi] = useVbenVxeGrid({
   formOptions: {
     schema: usePackageGridSearchFormSchema(),
     submitOnChange: true,
+    showCollapseButton: false,
+    wrapperClass: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
   },
   gridOptions: {
     columns: usePackageGridFieldColumns(),

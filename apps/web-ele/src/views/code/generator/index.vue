@@ -24,6 +24,8 @@ const [Grid, gridApi] = useVbenVxeGrid({
     fieldMappingTime: [['createTime', ['startTime', 'endTime']]],
     schema: useGridFormSchema(),
     submitOnChange: true,
+    showCollapseButton: false,
+    wrapperClass: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
   },
   gridOptions: {
     columns: useGenConfigColumns(),
@@ -93,11 +95,17 @@ function refreshGrid() {
       <template #toolbar-tools> </template>
       <template #action="{ row }">
         <ElSpace>
-          <ElButton @click="openConfig(row)" v-access:code="['code:generator:config']">
+          <ElButton
+            @click="openConfig(row)"
+            v-access:code="['code:generator:config']"
+          >
             配置
           </ElButton>
-          <ElButton :disabled="!row.author" @click="onPreview([row.tableName])"
-            v-access:code="['code:generator:preview']">
+          <ElButton
+            :disabled="!row.author"
+            @click="onPreview([row.tableName])"
+            v-access:code="['code:generator:preview']"
+          >
             生成
           </ElButton>
         </ElSpace>

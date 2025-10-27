@@ -24,6 +24,7 @@ const [TableGrid, tableGridApi] = useVbenVxeGrid({
   formOptions: {
     schema: useRoleGridSearchFormSchema(),
     submitOnChange: true,
+    showCollapseButton: false,
     wrapperClass: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-2',
   },
   gridEvents: {
