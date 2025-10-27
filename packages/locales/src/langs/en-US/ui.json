@@ -80,6 +80,8 @@
     }
   },
   "widgets": {
+    "userCenter": "User Center",
+    "msgCenter": "Message Center",
     "document": "Document",
     "qa": "Q&A",
     "setting": "Settings",

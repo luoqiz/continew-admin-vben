@@ -2,6 +2,7 @@
 import type { NotificationItem } from '@vben/layouts';
 
 import { computed, ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
 
 import { AuthenticationLoginExpiredModal } from '@vben/common-ui';
 import { VBEN_DOC_URL, VBEN_GITHUB_URL } from '@vben/constants';
@@ -60,7 +61,22 @@ const showDot = computed(() =>
   notifications.value.some((item) => !item.isRead),
 );
 
+const router = useRouter();
 const menus = computed(() => [
+  {
+    handler: () => {
+      router.push('/user/profile');
+    },
+    icon: BookOpenText,
+    text: $t('ui.widgets.userCenter'),
+  },
+  {
+    handler: () => {
+      router.push('/user/message');
+    },
+    icon: BookOpenText,
+    text: $t('ui.widgets.msgCenter'),
+  },
   {
     handler: () => {
       openWindow(VBEN_DOC_URL, {

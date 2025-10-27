@@ -1,0 +1,162 @@
+<script setup lang="ts">
+import type { VbenFormSchema } from '@vben/common-ui';
+
+import type { VxeTableGridOptions } from '#/adapter/vxe-table';
+import type { NoticeResp } from '#/api/system';
+
+import { useRouter } from 'vue-router';
+
+import { $t } from '@vben/locales';
+
+import { ElLink, ElTag } from 'element-plus';
+
+import { useVbenVxeGrid } from '#/adapter/vxe-table';
+import { listUserNotice } from '#/api/system/user-message';
+import { DictTag } from '#/components/dict';
+import { useDict } from '#/hooks';
+
+defineOptions({ name: 'UserMyNotice' });
+
+const { notice_type } = useDict('notice_type');
+
+function useTenantGridFieldColumns(): VxeTableGridOptions['columns'] {
+  return [
+    { type: 'seq', width: 70, fixed: 'left' },
+    {
+      field: 'title',
+      title: $t('system.msg.title'),
+      align: 'center',
+      fixed: 'left',
+    },
+    {
+      field: 'type',
+      title: $t('system.msg.type'),
+      align: 'center',
+    },
+    {
+      field: 'isRead',
+      title: $t('system.msg.isRead'),
+      align: 'center',
+    },
+    {
+      field: 'createUserString',
+      title: $t('system.msg.createUserString'),
+      align: 'center',
+    },
+    {
+      field: 'publishTime',
+      title: $t('system.msg.publishTime'),
+      align: 'center',
+      width: 180,
+    },
+  ];
+}
+
+function useTenantGridSearchFormSchema(): VbenFormSchema[] {
+  return [
+    {
+      fieldName: 'title',
+      label: $t('system.msg.search.title'),
+      component: 'Input',
+    },
+    {
+      fieldName: 'type',
+      label: $t('system.msg.search.type'),
+      component: 'Input',
+    },
+  ];
+}
+
+const [TableGrid] = useVbenVxeGrid({
+  formOptions: {
+    schema: useTenantGridSearchFormSchema(),
+    submitOnChange: true,
+    showCollapseButton: false,
+    wrapperClass: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
+  },
+  gridOptions: {
+    columns: useTenantGridFieldColumns(),
+    border: true,
+    height: 'auto',
+    keepSource: true,
+    columnConfig: {
+      resizable: true,
+    },
+    proxyConfig: {
+      response: {
+        list: 'list',
+      },
+      ajax: {
+        query: async ({ page }, formValues) => {
+          const res = await listUserNotice({
+            page: page.currentPage,
+            size: page.pageSize,
+            ...formValues,
+          });
+          return res;
+        },
+      },
+    },
+    rowConfig: {
+      keyField: 'id',
+      isHover: true,
+    },
+    toolbarConfig: {
+      custom: true,
+      export: false,
+      refresh: true,
+      refreshOptions: {
+        code: 'query',
+      },
+      search: true,
+      zoom: true,
+      zoomOptions: {},
+    },
+  } as VxeTableGridOptions<NoticeResp>,
+});
+
+const router = useRouter();
+// 查看
+const onView = (record: NoticeResp) => {
+  router.push({ path: '/user/notice', query: { id: record.id } });
+};
+</script>
+
+<template>
+  <Page auto-content-height>
+    <TableGrid>
+      <template #toolbar-tools>
+        <ElSpace>
+          <span v-access:code="['tenant:management:create']">
+            <ElButton type="primary">
+              {{ $t('pages.common.add') }}
+            </ElButton>
+          </span>
+          <span v-access:code="['tenant:management:export']">
+            <ElButton type="danger">
+              {{ $t('pages.common.export') }}
+            </ElButton>
+          </span>
+        </ElSpace>
+      </template>
+
+      <template #title="{ record }">
+        <ElLink @click="onView(record)" text link>
+          {{ record.title }}
+        </ElLink>
+      </template>
+
+      <template #type="{ record }">
+        <DictTag :value="record.type" :dict-list="notice_type as []" />
+      </template>
+
+      <template #isRead="{ record }">
+        <ElTag :color="record.isRead ? '' : 'arcoblue'">
+          {{ record.isRead ? '已读' : '未读' }}
+        </ElTag>
+      </template>
+    </TableGrid>
+  </Page>
+</template>
+
+<style scoped lang="scss"></style>
