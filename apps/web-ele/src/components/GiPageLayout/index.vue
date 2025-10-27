@@ -50,6 +50,7 @@ interface Props {
   defaultCollapsed?: boolean;
   leftColProps?: any;
   rightColProps?: any;
+  // leftColProps?: ColProps;
   // rightColProps?: ColProps;
   leftStyle?: CSSProperties;
   headerStyle?: CSSProperties;
