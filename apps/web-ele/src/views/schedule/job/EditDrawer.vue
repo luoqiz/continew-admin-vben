@@ -188,7 +188,6 @@ const openGeneratorCron = (cron: string) => {
         ref="cronModal"
         @ok="
           (e: string) => {
-            console.log('生成的cron表达式：', e);
             deptFormApi.form.setValues({ triggerInterval: e });
           }
         "

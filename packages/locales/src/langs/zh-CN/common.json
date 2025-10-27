@@ -31,5 +31,7 @@
   "download": "下载",
   "clear": "清空",
   "retry": "重试",
-  "stop": "停止"
+  "stop": "停止",
+  "enabledSuccess": "启用成功",
+  "disabledSuccess": "禁用成功"
 }

@@ -4,6 +4,7 @@ import type { DictItemResp } from '#/api';
 import type { JobResp } from '#/api/schedule';
 
 import { onMounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
 
 import { useAccess } from '@vben/access';
 import { Page, useVbenModal } from '@vben/common-ui';
@@ -148,13 +149,16 @@ const handleDelete = async (row: JobResp) => {
 // 执行
 const onTrigger = (record: JobResp) => {
   triggerJob(record.id).then(() => {
-    ElMessage.success('执行请求已下发');
+    ElMessage.success($t('schedule.job.executeRequestIssued'));
   });
 };
 
 // 修改状态
 const onUpdateStatus = (record: JobResp) => {
-  const msg = record.jobStatus === 1 ? '启用成功' : '禁用成功';
+  const msg =
+    record.jobStatus === 1
+      ? $t('common.enabledSuccess')
+      : $t('common.disabledSuccess');
   updateJobStatus({ jobStatus: record.jobStatus }, record.id)
     .then(() => {
       ElMessage.success(msg);
@@ -164,6 +168,19 @@ const onUpdateStatus = (record: JobResp) => {
     });
 };
 
+const router = useRouter();
+// 日志
+const onLog = (record: JobResp) => {
+  router.push({
+    path: '/schedule/log',
+    query: {
+      jobId: record.id,
+      jobName: record.jobName,
+      groupName: record.groupName,
+    },
+  });
+};
+
 onMounted(() => {
   getGroupList();
 });
@@ -171,7 +188,7 @@ onMounted(() => {
 
 <template>
   <Page auto-content-height>
-    <TableGrid :table-title="$t('tenant.package.listTitle')">
+    <TableGrid>
       <template #toolbar-tools>
         <ElSpace>
           <span v-access:code="['tenant:package:create']">
@@ -190,7 +207,11 @@ onMounted(() => {
           :&nbsp;
           <span v-if="row.triggerType === 2">{{ row.triggerInterval }} 秒</span>
           <span v-else>
-            <ElPopover title="最近5次运行时间" position="bottom" width="225px">
+            <ElPopover
+              :title="$t('schedule.job.lastFiveTimes')"
+              position="bottom"
+              width="225px"
+            >
               <template #reference>
                 <ElLink type="primary">{{ row.triggerInterval }}</ElLink>
               </template>
@@ -252,7 +273,7 @@ onMounted(() => {
             </ElButton>
           </span>
           <span v-access:code="['schedule:log:list']">
-            <ElButton type="primary" @click="handleEdit(row)" link text>
+            <ElButton type="primary" @click="onLog(row)" link text>
               {{ $t('schedule.job.viewLog') }}
             </ElButton>
           </span>

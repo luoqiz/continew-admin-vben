@@ -25,7 +25,9 @@
     "executeSuccess": "{0} 执行成功",
     "confirmExecute": "是否执行 {0}？",
     "confirmRetry": "是否确认重试 {0} 本次执行？",
-    "confirmStop": "是否确认停止 {0} 本次执行？"
+    "confirmStop": "是否确认停止 {0} 本次执行？",
+    "stopSuccess": "{0} 停止成功",
+    "retrySuccess": "{0} 重试成功"
   },
   "placeholder": {
     "input": "请输入",

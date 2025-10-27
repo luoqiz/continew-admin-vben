@@ -23,7 +23,11 @@
     "operationFailed": "Operation failed",
     "exectuting": "Executing {0} ...",
     "executeSuccess": "{0} executed successfully",
-    "confirmExecute": "Are you sure to execute {0}?"
+    "confirmExecute": "Are you sure to execute {0}?",
+    "confirmRetry": "Are you sure to retry {0} this execution?",
+    "confirmStop": " Are you sure to stop {0} this execution?",
+    "stopSuccess": "{0} stopped successfully",
+    "retrySuccess": "{0} retried successfully"
   },
   "placeholder": {
     "input": "Please enter",

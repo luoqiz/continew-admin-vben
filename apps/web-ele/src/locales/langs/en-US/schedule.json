@@ -22,7 +22,9 @@
     "nextTriggerAt": "Next Trigger Time",
     "createDt": "Creation Time",
     "updateDt": "Modification Time",
-    "viewLog": "View Log"
+    "viewLog": "View Log",
+    "lastFiveTimes": "Last Five Times",
+    "executeRequestIssued": "Execution Request Issued"
   },
   "jobLog": {
     "groupName": "Task Group",

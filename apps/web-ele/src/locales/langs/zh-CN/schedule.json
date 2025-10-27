@@ -22,7 +22,9 @@
     "nextTriggerAt": "下次触发时间",
     "createDt": "创建时间",
     "updateDt": "修改时间",
-    "viewLog": "查看日志"
+    "viewLog": "查看日志",
+    "lastFiveTimes": "最近5次运行时间",
+    "executeRequestIssued": "执行请求已下发"
   },
   "jobLog": {
     "groupName": "任务组",

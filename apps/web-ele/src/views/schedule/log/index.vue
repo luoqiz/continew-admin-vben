@@ -50,6 +50,7 @@ const [TableGrid, tableGridApi] = useVbenVxeGrid({
       resizable: true,
     },
     proxyConfig: {
+      autoLoad: false,
       response: {
         list: 'list',
       },
@@ -85,14 +86,14 @@ const [TableGrid, tableGridApi] = useVbenVxeGrid({
 // 停止
 const onStop = (record: JobLogResp) => {
   stopJob(record.id).then(() => {
-    ElMessage.success('停止成功');
+    ElMessage.success($t('ui.actionMessage.stopSuccess', [record.jobName]));
   });
 };
 
 // 重试
 const onRetry = (record: JobLogResp) => {
   retryJob(record.id).then(() => {
-    ElMessage.success('重试成功');
+    ElMessage.success($t('ui.actionMessage.retrySuccess', [record.jobName]));
   });
 };
 
@@ -107,8 +108,8 @@ onMounted(async () => {
       groupName: route.query.groupName ?? undefined,
       jobName: route.query.jobName ?? undefined,
     });
-    tableGridApi.query();
   }
+  tableGridApi.query();
 });
 </script>
 
