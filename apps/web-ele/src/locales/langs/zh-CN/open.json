@@ -1,0 +1,21 @@
+{
+  "app": {
+    "listTitle": "应用管理",
+    "name": "名称",
+    "accessKey": "Access Key",
+    "secretKey": "Secret Key",
+    "expireTime": "失效时间",
+    "description": "描述",
+    "status": "状态",
+    "detail": "详情",
+    "delete": "删除",
+    "resetSecret": "重置密钥",
+    "copy": "复制",
+    "show": "显示",
+    "hide": "隐藏",
+    "createUser": "创建人",
+    "createTime": "创建时间",
+    "updateUser": "修改人",
+    "updateTime": "修改时间"
+  }
+}
