@@ -6,6 +6,7 @@ import type { NoticeResp } from '#/api/system';
 
 import { useRouter } from 'vue-router';
 
+import { Page } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
 import { ElLink, ElTag } from 'element-plus';
