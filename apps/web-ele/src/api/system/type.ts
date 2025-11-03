@@ -22,6 +22,7 @@ export interface UserResp {
   roleNames: Array<string>;
   disabled: boolean;
 }
+// @typescript-eslint/unified-signatures
 export type UserDetailResp = UserResp & {
   pwdResetTime?: string;
 };
@@ -158,6 +159,7 @@ export interface NoticeResp {
   publishTime?: string;
   isTop: boolean;
   status?: number;
+  isRead?: boolean;
 }
 export type NoticeDetailResp = NoticeResp & {
   createTime: string;

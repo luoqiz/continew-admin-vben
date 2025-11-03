@@ -161,5 +161,23 @@
     "updateUser": "Update User",
     "updateTime": "Update Time",
     "tenantId": "Tenant Id"
+  },
+  "msg": {
+    "title": "Title",
+    "type": "Type",
+    "isRead": "Status",
+    "createUserString": "Publisher",
+    "publishTime": "Publish Time",
+    "createTime": "Create Time",
+    "markRead": "Mark Read",
+    "markAllRead": "Mark All Read",
+    "search": {
+      "title": "Title Or Content",
+      "type": "Msg Type",
+      "isRead": "Msg Status"
+    }
+  },
+  "tips": {
+    "markAllReadTips": "Are you sure you want to mark all messages as read?"
   }
 }

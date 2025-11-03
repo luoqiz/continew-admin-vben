@@ -186,5 +186,23 @@
     "updateUser": "修改人",
     "updateTime": "修改时间",
     "tenantId": "租户ID"
+  },
+  "msg": {
+    "title": "公告标题",
+    "type": "分类",
+    "isRead": "状态",
+    "createUserString": "发布人",
+    "publishTime": "发布时间",
+    "createTime": "创建时间",
+    "markRead": "标记已读",
+    "markAllRead": "全部已读",
+    "search": {
+      "title": "标题/内容",
+      "type": "消息类型",
+      "isRead": "消息状态"
+    },
+    "tips": {
+      "markAllReadTips": "确认要标记全部信息为已读吗？"
+    }
   }
 }
