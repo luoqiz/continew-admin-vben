@@ -80,6 +80,8 @@
     }
   },
   "widgets": {
+    "userCenter": "个人中心",
+    "msgCenter": "消息中心",
     "document": "文档",
     "qa": "问题 & 帮助",
     "setting": "设置",

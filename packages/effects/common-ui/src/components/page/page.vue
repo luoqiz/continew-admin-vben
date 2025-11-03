@@ -51,8 +51,12 @@ onMounted(() => {
 
 <template>
   <div class="relative flex min-h-full flex-col">
+    <div v-if="$slots.header" ref="headerRef" :class="headerClass">
+      <slot name="header"> </slot>
+    </div>
+
     <div
-      v-if="
+      v-else-if="
         description ||
         $slots.description ||
         title ||
@@ -85,7 +89,6 @@ onMounted(() => {
         <slot name="extra"></slot>
       </div>
     </div>
-
     <div :class="cn('h-full p-4', contentClass)" :style="contentStyle">
       <slot></slot>
     </div>
