@@ -11,10 +11,12 @@ const SvgCardIcon = createIconifyIcon('svg:card');
 const SvgBellIcon = createIconifyIcon('svg:bell');
 const SvgCakeIcon = createIconifyIcon('svg:cake');
 const SvgAntdvLogoIcon = createIconifyIcon('svg:antdv-logo');
+const SvgGithubIcon = createIconifyIcon('svg:github');
 const SvgGoogleIcon = createIconifyIcon('svg:google');
 const SvgQQChatIcon = createIconifyIcon('svg:qqchat');
 const SvgWeChatIcon = createIconifyIcon('svg:wechat');
 const SvgDingDingIcon = createIconifyIcon('svg:dingding');
+const SvgTDesignIcon = createIconifyIcon('svg:tdesign-logo');
 const SvgAlignCenterIcon = createIconifyIcon('svg:align-center');
 const SvgAlignLeftIcon = createIconifyIcon('svg:align-left');
 const SvgAlignRightIcon = createIconifyIcon('svg:align-right');
@@ -673,6 +675,7 @@ export {
   SvgUserIcon,
   SvgVideoCameraIcon,
   SvgVoiceIcon,
+  SvgTDesignIcon,
   SvgWeChatIcon,
   SvgWifiIcon,
   SvgWomanIcon,

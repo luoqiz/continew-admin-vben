@@ -53,7 +53,7 @@
     "class-variance-authority": "catalog:",
     "codemirror": "^6.0.2",
     "lucide-vue-next": "catalog:",
-    "radix-vue": "catalog:",
+    "reka-ui": "catalog:",
     "vee-validate": "catalog:",
     "vue": "catalog:",
     "vue-codemirror6": "^1.3.22"

@@ -111,6 +111,10 @@
       "errorPasswordTip": "Password error, please re-enter",
       "backToLogin": "Back to login",
       "entry": "Enter the system"
+    },
+    "timezone": {
+      "setTimezone": "Set Timezone",
+      "setSuccess": "Timezone set successfully"
     }
   }
 }

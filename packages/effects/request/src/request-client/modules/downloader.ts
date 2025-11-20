@@ -27,14 +27,33 @@ class FileDownloader {
     config?: DownloadRequestConfig,
   ): Promise<T> {
     const finalConfig: DownloadRequestConfig = {
-      responseReturn: 'raw',
+      responseReturn: 'body',
+      method: 'GET',
       ...config,
       responseType: 'blob',
     };
 
-    const response = await this.client.get<T>(url, finalConfig);
+    // Prefer a generic request if available; otherwise, dispatch to method-specific calls.
+    const method = (finalConfig.method || 'GET').toUpperCase();
+    const clientAny = this.client as any;
 
-    return response;
+    if (typeof clientAny.request === 'function') {
+      return await clientAny.request(url, finalConfig);
+    }
+    const lower = method.toLowerCase();
+
+    if (typeof clientAny[lower] === 'function') {
+      if (['POST', 'PUT'].includes(method)) {
+        const { data, ...rest } = finalConfig as Record<string, any>;
+        return await clientAny[lower](url, data, rest);
+      }
+
+      return await clientAny[lower](url, finalConfig);
+    }
+
+    throw new Error(
+      `RequestClient does not support method "${method}". Please ensure the method is properly implemented in your RequestClient instance.`,
+    );
   }
 }
 
