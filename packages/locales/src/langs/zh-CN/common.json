@@ -34,5 +34,10 @@
   "success": "成功",
   "tips": "提醒",
   "upload": "上传",
-  "yes": "是"
+  "yes": "是",
+  "gender": {
+    "male": "男",
+    "female": "女",
+    "confidential": "保密"
+  }
 }

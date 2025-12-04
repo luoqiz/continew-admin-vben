@@ -1,0 +1,140 @@
+/* 全局样式 */
+@use './var.scss' as *;
+
+// 通用卡片
+.general-card {
+  border: none;
+}
+
+// 渐变卡片
+.gradient-card {
+  border: 1px solid red;
+  border-radius: 8px;
+
+  & > .card-header {
+    background: linear-gradient(
+      180deg,
+      rgb(232 244 255 / 50%),
+      hsl(0deg 0% 100% / 0%)
+    );
+    border: none;
+  }
+
+  .item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+
+    .icon-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      background: hsl(var(--secondary));
+      border-radius: 50%;
+    }
+
+    .info {
+      flex: 1 1;
+      margin: 0 16px;
+
+      &-top {
+        display: flex;
+        align-items: baseline;
+        margin-bottom: 4px;
+
+        .label {
+          margin-right: 12px;
+          font-weight: 500;
+          line-height: 22px;
+        }
+
+        .bind {
+          display: flex;
+          align-items: end;
+          justify-content: end;
+          font-size: 12px;
+          font-weight: 500;
+          line-height: 20px;
+        }
+      }
+
+      &-desc {
+        font-size: 12px;
+        font-weight: 400;
+        line-height: 20px;
+        color: #86909c;
+
+        .value {
+          color: #4e5969;
+        }
+      }
+    }
+
+    .btn-wrapper {
+      align-self: flex-start;
+
+      .btn {
+        width: 56px;
+        height: 28px;
+
+        &:hover {
+          border-color: rgb(var(--primary-5));
+          box-shadow: 0 2px 3px rgb(0 0 0 / 15%);
+        }
+      }
+    }
+  }
+
+  .detail {
+    display: flex;
+    justify-content: flex-start;
+    margin: -5px 0 0 64px;
+    font-size: 12px;
+
+    .sub-text-wrapper {
+      width: 100%;
+      padding-left: 12px;
+      border-left: 2px solid var(--color-fill-4);
+
+      .sub-text {
+        margin-bottom: 8px;
+        font-weight: 400;
+        line-height: 20px;
+        color: #4e5969;
+
+        &-value {
+          padding: 1px 5px;
+          margin: 0 5px;
+          background: var(--color-neutral-2);
+          border-radius: 3px;
+        }
+      }
+
+      .arco-link.link {
+        padding: 0;
+        font-size: 12px;
+      }
+    }
+  }
+}
+
+// 通用描述
+.general-description {
+  position: relative;
+
+  .arco-descriptions-title {
+    padding-left: 10px;
+  }
+
+  .arco-descriptions-title::before {
+    position: absolute;
+    left: 0;
+    width: 4px;
+    height: 22px;
+    content: '';
+    background-color: rgb(var(--primary-5));
+    border-radius: 0 4px 4px 0;
+  }
+}

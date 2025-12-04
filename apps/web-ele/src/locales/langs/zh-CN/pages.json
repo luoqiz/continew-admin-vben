@@ -32,6 +32,7 @@
     "sync": "同步",
     "tip": "提示",
     "unlock": "解锁",
-    "second": "秒"
+    "second": "秒",
+    "notAvailable": "暂无数据"
   }
 }

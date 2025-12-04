@@ -32,6 +32,7 @@
     "exportError": "Export failed, please try again later!",
     "resetAdminPwd": "Reset admin password",
     "clearCache": "Clear Cache",
-    "second": "Second"
+    "second": "Second",
+    "notAvailable": "No data available"
   }
 }

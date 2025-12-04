@@ -32,5 +32,10 @@
   "clear": "Clear",
   "tips": "Tips",
   "retry": "Retry",
-  "stop": "Stop"
+  "stop": "Stop",
+  "gender": {
+    "male": "Male",
+    "female": "Female",
+    "Confidential": "Confidential"
+  }
 }

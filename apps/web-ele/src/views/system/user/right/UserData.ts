@@ -48,9 +48,9 @@ export function useUserEditFormSchema(): VbenFormSchema[] {
         isButton: true,
         size: 'small',
         options: [
-          { value: 1, label: '男' },
-          { value: 2, label: '女' },
-          { value: 0, label: '未知' },
+          { value: 1, label: $t('common.gender.male') },
+          { value: 2, label: $t('common.gender.female') },
+          { value: 0, label: $t('common.gender.confidential') },
         ],
       },
       defaultValue: true,

@@ -54,6 +54,17 @@ const rootStyle = computed(() => {
       }
     : {};
 });
+
+const textFontSize = computed(() => {
+  if (props.size === undefined || props.size === 0) {
+    return {};
+  }
+  let fontSize = 14;
+  fontSize = text.value.length > 1 ? props.size / 3 : props.size / 2;
+  return {
+    'font-size': `${fontSize}px`,
+  };
+});
 </script>
 
 <template>
@@ -64,7 +75,9 @@ const rootStyle = computed(() => {
   >
     <Avatar :class="props.class" class="size-full">
       <AvatarImage :alt="alt" :src="src" :style="imageStyle" />
-      <AvatarFallback>{{ text }}</AvatarFallback>
+      <AvatarFallback>
+        <div :style="textFontSize">{{ text }}</div>
+      </AvatarFallback>
     </Avatar>
     <span
       v-if="dot"

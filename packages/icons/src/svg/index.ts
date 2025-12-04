@@ -164,7 +164,6 @@ const SvgGeneralIcon = createIconifyIcon('svg:general');
 const SvgGiftIcon = createIconifyIcon('svg:gift');
 const SvgGitcodeIcon = createIconifyIcon('svg:gitcode');
 const SvgGiteeIcon = createIconifyIcon('svg:gitee');
-const SvgGithubIcon = createIconifyIcon('svg:github');
 const SvgH1Icon = createIconifyIcon('svg:h1');
 const SvgH2Icon = createIconifyIcon('svg:h2');
 const SvgH3Icon = createIconifyIcon('svg:h3');

@@ -6,7 +6,8 @@ const BASE_URL = '/user/profile';
 
 /** @desc 上传头像 */
 export function uploadAvatar(data: FormData) {
-  return http.patch(`${BASE_URL}/avatar`, data);
+  const headers = { 'Content-Type': 'multipart/form-data' };
+  return http.patch(`${BASE_URL}/avatar`, data, { headers });
 }
 
 /** @desc 修改用户基本信息 */

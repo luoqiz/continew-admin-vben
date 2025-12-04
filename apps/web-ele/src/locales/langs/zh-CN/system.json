@@ -155,7 +155,16 @@
     "username": "用户名",
     "searchKey": "用户名、昵称或描述",
     "deptTree": "部门树",
-    "roleAssign": "分配角色"
+    "roleAssign": "分配角色",
+    "profile": {
+      "currentPwd": "当前密码",
+      "verifyCode": "验证码",
+      "oldPassword": "旧密码",
+      "newPassword": "新密码",
+      "rePassword": "确认新密码",
+      "basicInfo": "基础信息",
+      "registeredAt": "注册于"
+    }
   },
   "smsLog": {
     "listTitle": "短信日志",

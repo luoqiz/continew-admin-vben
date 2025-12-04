@@ -1,6 +1,7 @@
 import CronParser from 'cron-parser';
 
 export * from './encrypt';
+export * from './verify';
 
 export const YMD_HMS = 'yyyy-MM-dd HH:mm:ss';
 

@@ -230,9 +230,13 @@ watch(
         </ElTag>
       </template>
       <template #gender="{ row }">
-        <ElTag v-if="row.gender === 1" type="success"> 男 </ElTag>
-        <ElTag v-else-if="row.gender === 2"> 女 </ElTag>
-        <ElTag v-else> 未知 </ElTag>
+        <ElTag v-if="row.gender === 1" type="success">
+          {{ $t('common.gender.male') }}
+        </ElTag>
+        <ElTag v-else-if="row.gender === 2">
+          {{ $t('common.gender.female') }}
+        </ElTag>
+        <ElTag v-else> {{ $t('common.gender.confidential') }} </ElTag>
       </template>
       <template #roleIds="{ row }">
         <ElTag type="success" v-for="item in row.roleNames" :key="item">

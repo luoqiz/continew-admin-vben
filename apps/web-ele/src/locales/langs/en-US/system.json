@@ -130,7 +130,16 @@
     "roleIds": "Role",
     "searchKey": "Username, Nickname or Description",
     "deptTree": "Dept Tree",
-    "roleAssign": "Role Assign"
+    "roleAssign": "Role Assign",
+    "profile": {
+      "currentPwd": "Current Password",
+      "verifyCode": "Verify Code",
+      "oldPassword": "Old Password",
+      "newPassword": "New Password",
+      "rePassword": "Re-enter Password",
+      "basicInfo": "Basic Info",
+      "registeredAt": "Registered At"
+    }
   },
   "smsLog": {
     "listTitle": "SMS Log",
