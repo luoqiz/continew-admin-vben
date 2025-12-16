@@ -51,7 +51,8 @@
     "vue": "catalog:",
     "vue-cropper": "^1.1.4",
     "vue-router": "catalog:",
-    "xe-utils": "^3.7.8"
+    "xe-utils": "^3.7.8",
+    "xgplayer": "^3.0.23"
   },
   "devDependencies": {
     "unplugin-auto-import": "^19.3.0",

@@ -204,7 +204,7 @@ export interface FileItem {
 }
 /** 文件资源统计信息 */
 export interface FileStatisticsResp {
-  type: string;
+  type: number | string;
   size: any;
   number: number;
   unit: string;
