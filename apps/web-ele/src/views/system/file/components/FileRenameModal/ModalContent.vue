@@ -19,22 +19,22 @@ defineExpose({ formRef });
 </script>
 
 <template>
-  <a-row justify="center" align="center" style="padding: 0 5%">
-    <a-form ref="formRef" :model="form" auto-label-width class="w-full">
-      <a-form-item
+  <el-row justify="center" align="center" style="padding: 0 5%">
+    <el-form ref="formRef" :model="form" auto-label-width class="w-full">
+      <el-form-item
         label="名称"
         field="originalName"
         :rules="[{ required: true, message: '请输入名称' }]"
         style="margin-bottom: 0"
       >
-        <a-input
+        <el-input
           v-model="form.originalName"
           placeholder="请输入名称"
           allow-clear
         />
-      </a-form-item>
-    </a-form>
-  </a-row>
+      </el-form-item>
+    </el-form>
+  </el-row>
 </template>
 
 <style scoped lang="scss"></style>

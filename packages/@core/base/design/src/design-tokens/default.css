@@ -105,6 +105,10 @@
   /* header */
   --header: 0 0% 100%;
 
+  /* spacing */
+  --padding: 16px;
+  --margin: 16px;
+
   accent-color: var(--primary);
   color-scheme: light;
 }

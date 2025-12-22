@@ -2,13 +2,13 @@
 import type { ElCol, ElRow } from 'element-plus';
 
 import FileAside from './main/FileAside.vue';
-import FileMain from './main/FileMain/index.vue';
+// import FileMain from './main/FileMain/index.vue';
 
 defineOptions({ name: 'SystemFile' });
 </script>
 
 <template>
-  <ElRow align="stretch" :gutter="14" class="file-manage">
+  <ElRow :gutter="14" class="file-manage">
     <ElCol
       :xs="0"
       :sm="8"
@@ -31,7 +31,8 @@ defineOptions({ name: 'SystemFile' });
       flex="1"
       class="h-full overflow-hidden"
     >
-      <FileMain />
+      <!-- <FileMain /> -->
+      5555
     </ElCol>
   </ElRow>
 </template>
@@ -39,7 +40,7 @@ defineOptions({ name: 'SystemFile' });
 <style scoped lang="scss">
 .file-manage {
   flex: 1;
-  padding: $margin;
+  padding: var(--padding);
   overflow: hidden;
 }
 </style>

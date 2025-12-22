@@ -1,9 +1,10 @@
-import type { FileItem } from '#/apis/system';
+import type { FileItem } from '#/api/system';
 
 import { h, ref } from 'vue';
 
-import { updateFile } from '@/apis/system';
-import { Message, Modal } from '@arco-design/web-vue';
+import { ElMessage } from 'element-plus';
+
+import { updateFile } from '#/api/system';
 
 import ModalContent from './ModalContent.vue';
 
@@ -26,7 +27,7 @@ export function openFileRenameModal(data: FileItem, callback?: () => void) {
       const modelParams = ModalContentRef.value?.formRef?.model;
       if (isInvalid) return false;
       await updateFile({ originalName: modelParams?.originalName }, data.id);
-      Message.success('重命名成功');
+      ElMessage.success('重命名成功');
       if (callback) {
         callback();
       }

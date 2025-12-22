@@ -16,7 +16,7 @@ import { CanvasRenderer } from 'echarts/renderers';
 import { getFileStatistics } from '#/api/system';
 import { FileTypeList } from '#/constant/file';
 import { useChart } from '#/hooks';
-import { formatFileSize } from '#/utils';
+import { formatFileSize } from '#/utils/file';
 import mittBus from '#/utils/mitt';
 
 use([
@@ -80,16 +80,16 @@ const getStatisticsData = async () => {
   try {
     loading.value = true;
     chartData.value = [];
-    const { data: resData } = await getFileStatistics();
+    const resData = await getFileStatistics();
     const formatSize = formatFileSize(resData.size).split(' ');
     totalData.value = {
       type: '',
-      size: Number.parseFloat(formatSize[0]),
+      size: Number.parseFloat(formatSize[0]!),
       number: resData.number ?? 0,
-      unit: formatSize[1],
+      unit: formatSize[1]!,
       data: [],
     };
-    resData?.forEach((fs: FileStatisticsResp) => {
+    resData?.data.forEach((fs: FileStatisticsResp) => {
       const matchedItem = FileTypeList.find((item) => item.value === fs.type);
       chartData.value.unshift({
         name: matchedItem ? matchedItem.name : '',
@@ -111,35 +111,35 @@ onMounted(() => {
 </script>
 
 <template>
-  <section class="percent">
-    <a-space class="statistic-space" align="center" size="medium" fill>
-      <template #split>
-        <a-divider direction="vertical" />
-      </template>
-      <a-statistic
+  <ElCard>
+    <div class="statistic-space">
+      <el-statistic
         class="statistic-item"
         title="存储量"
         :value="totalData.size"
         :value-style="statisticValueStyle"
       >
         <template #suffix>&nbsp;{{ totalData.unit }}</template>
-      </a-statistic>
-      <a-statistic
+      </el-statistic>
+      <el-divider direction="vertical" border-style="solid" />
+      <el-statistic
         class="statistic-item"
         title="数量"
         :value="totalData.number"
         :value-style="statisticValueStyle"
       />
-    </a-space>
-    <div v-if="chartData.length > 0">
-      <a-divider />
-      <VCharts
-        :option="chartOption"
-        autoresize
-        :style="{ height: '120px', width: '150px' }"
-      />
     </div>
-  </section>
+    <div v-if="chartData.length > 0" class="w-full justify-center align-middle">
+      <el-divider />
+      <div class="border border-red-950">
+        <VCharts
+          :option="chartOption"
+          autoresize
+          :style="{ height: '120px', width: '150px' }"
+        />
+      </div>
+    </div>
+  </ElCard>
 </template>
 
 <style scoped lang="scss">
@@ -150,6 +150,7 @@ onMounted(() => {
 }
 
 .statistic-item {
+  flex: 1;
   text-align: center;
 }
 
@@ -158,9 +159,5 @@ onMounted(() => {
   padding: 20px;
   margin-top: 10px;
   background-color: var(--color-bg-1);
-}
-
-:deep(.arco-divider-horizontal) {
-  margin: 20px 0 0;
 }
 </style>

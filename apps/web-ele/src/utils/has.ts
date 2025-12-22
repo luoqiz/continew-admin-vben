@@ -1,4 +1,4 @@
-import { useUserStore } from '#@vben/stores';
+import { useUserStore } from '@vben/stores';
 
 function authPermission(permission: string) {
   const all_permission = '*:*:*';
