@@ -371,7 +371,7 @@ onMounted(() => {
           v-model:visible="visible"
           title="分片上传"
           :width="width > 1350 ? 1350 : '100%'"
-:footer="false"
+          :footer="false"
         >
           @close="search"
           <MultipartUpload
