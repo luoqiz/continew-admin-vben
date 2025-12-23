@@ -5,12 +5,22 @@ import type { ExcelConfig } from '#/components/FilePreview/type';
 import { computed, defineAsyncComponent, onMounted, reactive, ref } from 'vue';
 import { onBeforeRouteUpdate, useRoute } from 'vue-router';
 
+import {
+  SvgAppsIcon,
+  SvgDeleteIcon,
+  SvgFolderIcon,
+  SvgListIcon,
+  SvgSelectAllIcon,
+  SvgUploadIcon,
+} from '@vben/icons';
+
 import { useWindowSize } from '@vueuse/core';
 import { ElMessage } from 'element-plus';
 import { api as viewerApi } from 'v-viewer';
 
-import { createDir, uploadFile } from '#/api/system/file';
+import { listFile, uploadFile } from '#/api/system/file';
 import { ImageTypes, OfficeTypes } from '#/constant/file';
+import { useTable } from '#/hooks/modules/useTable';
 import { downloadByUrl } from '#/utils/downloadFile';
 import mittBus from '#/utils/mitt';
 
@@ -21,20 +31,20 @@ import {
   previewFileVideoModal,
 } from '../../components/index';
 import FileGrid from './FileGrid.vue';
-import RecycleBinModal from './RecycleBinModal.vue';
+// import RecycleBinModal from './RecycleBinModal.vue';
 import useFileManage from './useFileManage';
 
 import 'viewerjs/dist/viewer.css';
 
-const FilePreview = defineAsyncComponent(
-  () => import('#/components/FilePreview/index.vue'),
-);
+// const FilePreview = defineAsyncComponent(
+//   () => import('#/components/FilePreview/index.vue'),
+// );
 
 const FileList = defineAsyncComponent(() => import('./FileList.vue'));
 const route = useRoute();
 const { mode, selectedFileIds, toggleMode, addSelectedFileItem } =
   useFileManage();
-const { width } = useWindowSize();
+// const { width } = useWindowSize();
 const queryForm = reactive<FileQuery>({
   originalName: undefined,
   parentPath:
@@ -46,21 +56,20 @@ const queryForm = reactive<FileQuery>({
   sort: ['type,asc', 'updateTime,desc'],
 });
 
-// const paginationOption = reactive({
-//   defaultPageSize: 30,
-//   defaultSizeOptions: [30, 40, 50, 100, 120],
-// });
+const paginationOption = reactive({
+  defaultPageSize: 30,
+  defaultSizeOptions: [30, 40, 50, 100, 120],
+});
 const isBatchMode = ref(false);
-// const {
-//   tableData: fileList,
-//   loading,
-//   pagination,
-//   search,
-// } = useTable((page) => listFile({ ...queryForm, ...page }), {
-//   immediate: false,
-//   paginationOption,
-// });
-const fileList = ref<FileItem[]>([]);
+const {
+  tableData: fileList,
+  loading,
+  // pagination,
+  search,
+} = useTable((page) => listFile({ ...queryForm, ...page }), {
+  immediate: false,
+  paginationOption,
+});
 const filePreviewRef = ref();
 
 const pathNameMap = ref<Map<string, string>>(new Map());
@@ -118,7 +127,7 @@ const handleDblclickFile = (item: FileItem) => {
     const path = `${item.parentPath === '/' ? '' : item.parentPath}/${item.name}`;
     pathNameMap.value.set(path, item.originalName);
     queryForm.parentPath = path;
-    // search();
+    search();
   }
 };
 
@@ -130,7 +139,7 @@ const onDownload = async (fileInfo: FileItem) => {
     fileName: fileInfo.originalName,
   });
   res ? ElMessage.success('下载成功') : ElMessage.error('下载失败');
-  // search();
+  search();
 };
 
 // 右键菜单
@@ -230,26 +239,26 @@ onBeforeRouteUpdate((to) => {
     queryForm.parentPath = undefined;
   }
 
-  // search();
+  search();
 });
 
 // 新建文件夹弹窗显示
 const createDirModalVisible = ref<boolean>(false);
 // 新文件名称
-const newDirName = ref();
+// const newDirName = ref();
 // 新建文件夹弹窗窗口取消事件
-const handleCancel = () => {
-  newDirName.value = undefined;
-  createDirModalVisible.value = false;
-};
+// const handleCancel = () => {
+//   newDirName.value = undefined;
+//   createDirModalVisible.value = false;
+// };
 
-// 新建文件夹弹窗窗口确认事件
-const handleCreateDir = async () => {
-  await createDir(queryForm.parentPath ?? '/', newDirName.value);
-  newDirName.value = undefined;
-  createDirModalVisible.value = false;
-  // search();
-};
+// // 新建文件夹弹窗窗口确认事件
+// const handleCreateDir = async () => {
+//   await createDir(queryForm.parentPath ?? '/', newDirName.value);
+//   newDirName.value = undefined;
+//   createDirModalVisible.value = false;
+//   search();
+// };
 
 // 解析路径生成面包屑列表
 const breadcrumbList = computed(() => {
@@ -286,88 +295,90 @@ const breadcrumbList = computed(() => {
 // 处理面包屑点击
 const handleBreadcrumbClick = (item) => {
   queryForm.parentPath = item.path;
-  // search();
+  search();
 };
 
 // 回收站
-const RecycleBinModalRef = ref<InstanceType<typeof RecycleBinModal>>();
+// const RecycleBinModalRef = ref<InstanceType<typeof RecycleBinModal>>();
 const onRecycleBin = () => {
-  RecycleBinModalRef.value?.onOpen();
+  // RecycleBinModalRef.value?.onOpen();
 };
 
 onMounted(() => {
-  // search();
+  search();
 });
 </script>
 
 <template>
   <div class="file-main">
     <!-- 目录导航面包屑 -->
-    <a-breadcrumb class="file-main__breadcrumb">
-      <a-breadcrumb-item
+    <el-breadcrumb class="file-main__breadcrumb">
+      <el-breadcrumb-item
         v-if="queryForm.parentPath"
         @click="handleBreadcrumbClick({ name: '根目录', path: '/' })"
       >
         根目录
-      </a-breadcrumb-item>
-      <a-breadcrumb-item v-else>全部</a-breadcrumb-item>
-      <a-breadcrumb-item
+      </el-breadcrumb-item>
+      <el-breadcrumb-item v-else>全部</el-breadcrumb-item>
+      <el-breadcrumb-item
         v-for="(item, index) in breadcrumbList"
         :key="index"
         @click="handleBreadcrumbClick(item)"
       >
         {{ item.name || '根目录' }}
-      </a-breadcrumb-item>
-    </a-breadcrumb>
+      </el-breadcrumb-item>
+    </el-breadcrumb>
 
-    <a-row justify="space-between" class="file-main__search">
+    <el-row justify="space-between" class="file-main__search">
       <!-- 左侧区域 -->
-      <a-space wrap>
+      <el-space wrap>
         <!-- 上传文件按钮改为下拉菜单，包含普通上传和分片上传 -->
-        <a-dropdown trigger="click">
-          <a-button type="primary" shape="round">
-            <icon-upload />
+        <el-dropdown trigger="click">
+          <el-button type="primary" shape="round">
+            <SvgUploadIcon
+              style="width: 16px; height: 16px; margin-right: 4px"
+            />
             上传文件
-          </a-button>
+          </el-button>
           <template #content>
-            <!-- 普通上传 -->
-            <a-upload
-              v-permission="['system:file:upload']"
+            <!-- 普通上传-->
+            <el-upload
+              v-access:code="['system:file:upload']"
               :show-file-list="false"
               :custom-request="handleUpload"
               style="display: block"
             >
               <template #upload-button>
-                <a-button type="text" style="width: 100%; text-align: left">
+                <el-button type="text" style="width: 100%; text-align: left">
                   普通上传
-                </a-button>
+                </el-button>
               </template>
-            </a-upload>
+            </el-upload>
             <!-- 分片上传 -->
-            <a-button
+            <el-button
               type="text"
               style="width: 100%; text-align: left"
               @click="visible = true"
             >
               分片上传
-            </a-button>
+            </el-button>
             <!-- 新建文件夹 -->
-            <a-divider style="margin: 0" />
-            <a-button
-              v-permission="['system:file:createDir']"
+            <el-divider style="margin: 0" />
+            <el-button
+              v-access:code="['system:file:createDir']"
               type="text"
               style="width: 100%; text-align: left"
               :disabled="!queryForm.parentPath"
               @click="createDirModalVisible = !createDirModalVisible"
             >
               <template #icon>
-                <icon-folder />
+                <SvgFolderIcon />
               </template>
               新建文件夹
-            </a-button>
+            </el-button>
           </template>
-        </a-dropdown>
-        <a-modal
+        </el-dropdown>
+        <!-- <el-modal
           v-model:visible="visible"
           title="分片上传"
           :width="width > 1350 ? 1350 : '100%'"
@@ -380,10 +391,10 @@ onMounted(() => {
             :chunk-size="5 * 1024 * 1024"
             :max-concurrent-files="3"
           />
-        </a-modal>
+        </el-modal> -->
 
-        <a-input-group>
-          <a-input
+        <!-- <el-input-group>
+          <el-input
             v-model="queryForm.originalName"
             :placeholder="
               queryForm.type && queryForm.type !== '0'
@@ -393,19 +404,19 @@ onMounted(() => {
             allow-clear
             style="width: 200px"
           />
-          <a-button type="primary">
+          <el-button type="primary">
             <template #icon>
               @click="search"
               <icon-search />
             </template>
             <template #default>查询</template>
-          </a-button>
-        </a-input-group>
-      </a-space>
+          </el-button>
+        </el-input-group> -->
+      </el-space>
 
       <!-- 右侧区域 -->
-      <a-space wrap>
-        <a-button
+      <el-space wrap>
+        <el-button
           v-if="isBatchMode"
           :disabled="selectedFileIds.length === 0"
           type="primary"
@@ -413,47 +424,48 @@ onMounted(() => {
           @click="handleMulDelete"
         >
           <template #icon>
-            <icon-delete />
+            <SvgDeleteIcon />
           </template>
-        </a-button>
+        </el-button>
 
-        <a-button
-          v-permission="['system:file:delete']"
+        <el-button
+          v-access:code="['system:file:delete']"
           type="primary"
           @click="isBatchMode = !isBatchMode"
         >
           <template #icon>
-            <icon-select-all />
+            <SvgSelectAllIcon />
           </template>
           <template #default>
             {{ isBatchMode ? '取消批量' : '批量操作' }}
           </template>
-        </a-button>
-        <a-button
-          v-permission="['system:fileRecycle:list']"
+        </el-button>
+        <el-button
+          v-access:code="['system:fileRecycle:list']"
           type="primary"
           @click="onRecycleBin"
         >
           <template #icon>
-            <icon-delete />
+            <SvgDeleteIcon />
           </template>
           <template #default>回收站</template>
-        </a-button>
-        <a-button-group>
-          <a-tooltip content="视图">
-            <a-button @click="toggleMode">
+        </el-button>
+        <el-button-group>
+          <el-tooltip content="视图">
+            <el-button @click="toggleMode">
               <template #icon>
-                <icon-list v-if="mode === 'grid'" />
-                <icon-apps v-else />
+                <SvgListIcon v-if="mode === 'grid'" />
+                <SvgAppsIcon v-else />
               </template>
-            </a-button>
-          </a-tooltip>
-        </a-button-group>
-      </a-space>
-    </a-row>
+            </el-button>
+          </el-tooltip>
+        </el-button-group>
+      </el-space>
+    </el-row>
 
     <!-- 文件列表-宫格模式 -->
-    <a-spin id="fileMain" class="file-main__list" :loading="loading">
+    <!-- <el-spin id="fileMain" class="file-main__list" :loading="loading"> -->
+    <div id="fileMain" class="file-main__list" :loading="loading">
       <FileGrid
         v-show="fileList.length > 0 && mode === 'grid'"
         :data="fileList"
@@ -476,28 +488,28 @@ onMounted(() => {
         @right-menu-click="handleRightMenuClick"
         @dblclick="handleDblclickFile"
       />
-
-      <a-empty v-if="fileList.length === 0" />
-    </a-spin>
-    <FilePreview ref="filePreviewRef" />
+      <el-empty v-if="fileList.length === 0" />
+      <!-- </el-spin> -->
+    </div>
+    <!-- <FilePreview ref="filePreviewRef" /> -->
     <div class="pagination">
-      <!-- <a-pagination v-bind="pagination" /> -->
+      <!-- <el-pagination v-bind="pagination" /> -->
     </div>
 
     <!-- 弹出新建窗口 -->
-    <a-modal
+    <!-- <el-modal
       v-model:visible="createDirModalVisible"
       title="新建文件夹"
       @ok="handleCreateDir"
       @cancel="handleCancel"
     >
-      <a-input
+      <el-input
         v-model="newDirName"
         placeholder="请输入文件夹名称"
         size="large"
         allow-clear
       />
-    </a-modal>
+    </el-modal> -->
 
     <!-- 回收站 -->
     <!-- <RecycleBinModal ref="RecycleBinModalRef" @close="" /> -->
@@ -510,8 +522,10 @@ onMounted(() => {
   flex-direction: column;
   height: 100%;
   overflow: hidden;
-  background: var(--color-bg-1);
-  border-radius: $radius-box;
+  background: #fff;
+  // background: var(--color-bg-1);
+  // border-radius: $radius-box;
+  border-radius: 8px;
 
   &__search {
     margin: 16px 16px 0;

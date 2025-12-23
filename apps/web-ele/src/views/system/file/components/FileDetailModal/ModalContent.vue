@@ -3,12 +3,9 @@ import type { FileItem } from '#/api/system';
 
 import { ref } from 'vue';
 
-import { Message } from '@arco-design/web-vue';
+import { ElMessage } from 'element-plus';
 
 import { calcDirSize } from '#/api/system';
-import { formatFileSize } from '#/utils';
-
-import FileImage from '../../main/FileMain/FileImage.vue';
 
 interface Props {
   data: FileItem;
@@ -25,7 +22,7 @@ const calculateDirSize = async () => {
     const data = await calcDirSize(props.data.id);
     calculatedSize.value = data.size;
   } catch {
-    Message.error('计算失败，请重试');
+    ElMessage.error('计算失败，请重试');
   } finally {
     isCalculating.value = false;
   }

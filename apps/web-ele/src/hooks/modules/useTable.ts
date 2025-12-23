@@ -24,7 +24,7 @@ interface PaginationParams {
 }
 type Api<T> = (
   params: PaginationParams,
-) => Promise<ApiRes<PageRes<T[]>>> | Promise<ApiRes<T[]>>;
+) => Promise<PageRes<T[]>> | Promise<T[]>;
 
 export function useTable<T extends U, U = T>(
   api: Api<T>,
@@ -45,9 +45,9 @@ export function useTable<T extends U, U = T>(
         page: pagination.current,
         size: pagination.pageSize,
       });
-      const data = Array.isArray(res.data) ? res.data : res.data.list;
+      const data = Array.isArray(res) ? res : res.list;
       tableData.value = formatResult ? formatResult(data) : data;
-      const total = Array.isArray(res.data) ? data.length : res.data.total;
+      const total = Array.isArray(res) ? data.length : res.total;
       setTotal(total);
       onSuccess && onSuccess();
     } finally {
@@ -136,7 +136,7 @@ export function useTable<T extends U, U = T>(
   const { breakpoint } = useBreakpoint();
   // 表格操作列在小屏下不固定在右侧
   const fixed = computed(() =>
-    ['sm', 'xs'].includes(breakpoint.value??'xs') ? undefined : 'right',
+    ['sm', 'xs'].includes(breakpoint.value ?? 'xs') ? undefined : 'right',
   );
 
   return {

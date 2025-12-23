@@ -3,6 +3,8 @@ import type { FileItem } from '#/api/system';
 
 import { computed } from 'vue';
 
+import { VbenIcon } from '@vben-core/shadcn-ui';
+
 import { FileIcon, ImageTypes } from '#/constant/file';
 
 interface Props {
@@ -41,7 +43,7 @@ const getFileImg = computed<string>(() => {
     :src="props.data.thumbnailUrl"
     alt=""
   />
-  <GiSvgIcon v-else size="100%" :name="getFileImg" />
+  <VbenIcon :icon="`svg:${getFileImg}`" class="size-16" />
 </template>
 
 <style scoped lang="scss">

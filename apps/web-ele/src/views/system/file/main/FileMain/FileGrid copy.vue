@@ -3,7 +3,9 @@ import type { FileItem } from '#/api/system';
 
 import { defineAsyncComponent } from 'vue';
 
-// import FileRightMenu from './FileRightMenu.vue';
+import has from '#/utils/has';
+
+import FileRightMenu from './FileRightMenu.vue';
 
 const props = withDefaults(defineProps<Props>(), {
   data: () => [], // 文件数据
@@ -42,53 +44,56 @@ const handleCheckFile = (item: FileItem) => {
 };
 
 // 右键菜单点击事件
-// const handleRightMenuClick = (mode: string, item: FileItem) => {
-//   // eslint-disable-next-line vue/custom-event-name-casing
-//   emit('right-menu-click', mode, item);
-// };
+const handleRightMenuClick = (mode: string, item: FileItem) => {
+  // eslint-disable-next-line vue/custom-event-name-casing
+  emit('right-menu-click', mode, item);
+};
 </script>
 
 <template>
   <div class="file-grid">
-    <el-row :gutter="12">
-      <el-col
+    <a-grid
+      :cols="{ xs: 4, sm: 4, md: 5, lg: 7, xl: 8, xxl: 9 }"
+      :col-gap="12"
+      :row-gap="12"
+    >
+      <a-trigger
         v-for="item in data"
         :key="item.id"
-        :xs="4"
-        :sm="4"
-        :md="3"
-        :lg="3"
-        :xl="2"
-        :xxl="2"
+        trigger="contextMenu"
+        align-point
+        animation-name="slide-dynamic-origin"
+        auto-fit-transform-origin
+        position="bl"
+        update-at-scroll
+        scroll-to-close
       >
-        <div
-          class="file-grid-item"
-          @click.stop="handleClickFile(item)"
-          @dblclick="handleDblclickFile(item)"
-        >
-          <section class="file-grid-item__wrapper">
-            <div class="file-icon">
-              <FileImage :data="item" :title="item.originalName" />
-            </div>
-            <p class="gi_line_1 file-name">{{ item.originalName }}</p>
-          </section>
-          <!-- 勾选模式 -->
-          <section
-            v-show="props.isBatchMode"
-            class="check-mode"
-            :class="{ checked: props.selectedFileIds.includes(item.id) }"
-            @click.stop="handleCheckFile(item)"
+        <a-grid-item>
+          <div
+            class="file-grid-item"
+            @click.stop="handleClickFile(item)"
+            @dblclick="handleDblclickFile(item)"
           >
-            <el-checkbox
-              class="checkbox"
-              :model-value="props.selectedFileIds.includes(item.id)"
-            />
-          </section>
-        </div>
-      </el-col>
-
-      <!-- <a-trigger v-for="item in data" :key="item.id" trigger="contextMenu" align-point
-        animation-name="slide-dynamic-origin" auto-fit-transform-origin position="bl" update-at-scroll scroll-to-close>
+            <section class="file-grid-item__wrapper">
+              <div class="file-icon">
+                <FileImage :data="item" :title="item.originalName" />
+              </div>
+              <p class="gi_line_1 file-name">{{ item.originalName }}</p>
+            </section>
+            <!-- 勾选模式 -->
+            <section
+              v-show="props.isBatchMode"
+              class="check-mode"
+              :class="{ checked: props.selectedFileIds.includes(item.id) }"
+              @click.stop="handleCheckFile(item)"
+            >
+              <a-checkbox
+                class="checkbox"
+                :model-value="props.selectedFileIds.includes(item.id)"
+              />
+            </section>
+          </div>
+        </a-grid-item>
         <template
           v-if="
             has.hasPermOr([
@@ -105,8 +110,8 @@ const handleCheckFile = (item: FileItem) => {
             @click="handleRightMenuClick($event, item)"
           />
         </template>
-      </a-trigger> -->
-    </el-row>
+      </a-trigger>
+    </a-grid>
   </div>
 </template>
 

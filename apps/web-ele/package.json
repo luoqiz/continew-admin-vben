@@ -53,6 +53,7 @@
     "es-toolkit": "^1.39.7",
     "pinia": "catalog:",
     "v-viewer": "^3.0.22",
+    "viewerjs": "^1.11.7",
     "vue": "catalog:",
     "vue-cropper": "^1.1.4",
     "vue-echarts": "^8.0.1",

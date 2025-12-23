@@ -109,7 +109,7 @@ class RequestClient {
   public get<T = any>(url: string, config?: RequestClientConfig): Promise<T> {
     return this.request<T>(url, {
       ...config,
-      paramsSerializer: (obj) => qs.stringify(obj),
+      paramsSerializer: (obj) => qs.stringify(obj, { arrayFormat: 'repeat' }),
       method: 'GET',
     });
   }

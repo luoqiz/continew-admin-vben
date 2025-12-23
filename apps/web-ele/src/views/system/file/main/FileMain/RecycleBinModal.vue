@@ -3,9 +3,6 @@ import type { FileItem, FileQuery } from '#/api/system/file';
 
 import { h, reactive, ref } from 'vue';
 
-import { FileTypeList } from '@/constant/file';
-import { useTable } from '@/hooks';
-import { Message, Modal } from '@arco-design/web-vue';
 import { useWindowSize } from '@vueuse/core/index';
 
 import {
@@ -15,6 +12,8 @@ import {
   listRecycleFiles,
   restoreRecycleFile,
 } from '#/api/system/file';
+import { FileTypeList } from '#/constant/file';
+import { useTable } from '#/hooks/index';
 import { formatFileSize } from '#/utils/file';
 import has from '#/utils/has';
 

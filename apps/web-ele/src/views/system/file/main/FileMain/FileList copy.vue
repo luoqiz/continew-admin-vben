@@ -1,10 +1,15 @@
 <script setup lang="ts">
-import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 import type { FileItem } from '#/api/system';
 
-import { watch } from 'node:fs';
+import { defineAsyncComponent, reactive } from 'vue';
 
-import { useVbenVxeGrid } from '#/adapter/vxe-table';
+import { ElMessage } from 'element-plus';
+
+import { calcDirSize } from '#/api/system';
+import { formatFileSize } from '#/utils/file';
+import has from '#/utils/has';
+
+import FileRightMenu from './FileRightMenu.vue';
 
 const props = withDefaults(defineProps<Props>(), {
   data: () => [], // 文件数据
@@ -12,14 +17,14 @@ const props = withDefaults(defineProps<Props>(), {
   isBatchMode: false, // 是否是批量模式
 });
 
-// const emit = defineEmits<{
-//   (e: 'click', record: FileItem): void;
-//   (e: 'dblclick', record: FileItem): void;
-//   (e: 'select', record: FileItem): void;
-//   (e: 'rightMenuClick', mode: string, item: FileItem): void;
-// }>();
+const emit = defineEmits<{
+  (e: 'click', record: FileItem): void;
+  (e: 'dblclick', record: FileItem): void;
+  (e: 'select', record: FileItem): void;
+  (e: 'rightMenuClick', mode: string, item: FileItem): void;
+}>();
 
-// const FileImage = defineAsyncComponent(() => import('./FileImage.vue'));
+const FileImage = defineAsyncComponent(() => import('./FileImage.vue'));
 
 interface Props {
   data?: FileItem[];
@@ -28,126 +33,47 @@ interface Props {
 }
 
 // const rowSelection: TableRowSelection = reactive({
-// const rowSelection: any = reactive({
-//   type: 'checkbox',
-//   showCheckedAll: true,
-// });
-
-// // 计算文件夹大小
-// const calculateDirSize = async (record: FileItem) => {
-//   if (record.type !== 0) return;
-//   try {
-//     const data = await calcDirSize(record.id);
-//     record.size = data.size;
-//   } catch {
-//     ElMessage.error('计算失败，请重试');
-//   }
-// };
-
-// // 多选
-// const select: any = (rowKeys: any, rowKey: any, record: any) => {
-//   console.warn(rowKeys, rowKey);
-//   emit('select', record as unknown as FileItem);
-// };
-
-// // 单击事件
-// const handleClick = (record: any) => {
-//   emit('click', record as unknown as FileItem);
-// };
-
-// // 双击事件
-// const handleDblclickFile = (item: FileItem) => {
-//   emit('dblclick', item);
-// };
-
-// // 右键菜单点击事件
-// const handleRightMenuClick = (mode: string, item: FileItem) => {
-//   emit('rightMenuClick', mode, item);
-// };
-
-const useFileColumns = () => {
-  return [
-    {
-      field: 'originalName',
-      title: '名称',
-      minWidth: 300,
-    },
-    {
-      field: 'size',
-      title: '大小',
-      width: 160,
-    },
-    {
-      field: 'storageName',
-      title: '存储名称',
-      width: 200,
-    },
-    {
-      field: 'updateTime',
-      title: '修改时间',
-      width: 200,
-    },
-  ];
-};
-
-const [Grid, gridApi] = useVbenVxeGrid({
-  // formOptions: {
-  //   schema: useDeptSearchFormFields(),
-  //   submitOnChange: true,
-  //   showCollapseButton: false,
-  //   wrapperClass: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
-  // },
-  gridOptions: {
-    columns: useFileColumns(),
-    data: props.data,
-    border: true,
-    height: 'auto',
-    keepSource: true,
-    pagerConfig: {
-      enabled: false,
-    },
-    columnConfig: {
-      resizable: true,
-    },
-    treeConfig: {
-      rowField: 'id',
-      parentField: 'parentId',
-      childrenField: 'children',
-      transform: false,
-    },
-    rowConfig: {
-      keyField: 'id',
-      isHover: true,
-    },
-    checkboxConfig: {
-      highlight: true,
-    },
-    toolbarConfig: {
-      custom: true,
-      export: false,
-      refresh: true,
-      refreshOptions: {
-        code: 'query',
-      },
-      search: true,
-      zoom: true,
-      zoomOptions: {},
-    },
-  } as VxeTableGridOptions<FileItem>,
+const rowSelection: any = reactive({
+  type: 'checkbox',
+  showCheckedAll: true,
 });
 
-watch(
-  () => props.data,
-  (data) => {
-    gridApi.setData(data || []);
-  },
-);
+// 计算文件夹大小
+const calculateDirSize = async (record: FileItem) => {
+  if (record.type !== 0) return;
+  try {
+    const data = await calcDirSize(record.id);
+    record.size = data.size;
+  } catch {
+    ElMessage.error('计算失败，请重试');
+  }
+};
+
+// 多选
+const select: any = (rowKeys: any, rowKey: any, record: any) => {
+  console.warn(rowKeys, rowKey);
+  emit('select', record as unknown as FileItem);
+};
+
+// 单击事件
+const handleClick = (record: any) => {
+  emit('click', record as unknown as FileItem);
+};
+
+// 双击事件
+const handleDblclickFile = (item: FileItem) => {
+  emit('dblclick', item);
+};
+
+// 右键菜单点击事件
+const handleRightMenuClick = (mode: string, item: FileItem) => {
+  emit('rightMenuClick', mode, item);
+};
 </script>
 
 <template>
   <div class="file-list">
-    <Grid />
-    <!-- <a-table
+    <a-table
       row-key="id"
       :scroll="{ x: '100%', y: '100%', minWidth: 800 }"
       :data="props.data"
@@ -264,7 +190,7 @@ watch(
           </template>
         </a-table-column>
       </template>
-    </a-table> -->
+    </a-table>
   </div>
 </template>
 
