@@ -1,30 +1,102 @@
 <script setup lang="ts">
-import type { FileItem } from '#/api/system';
+// import type { FileItem } from '#/api/system';
 
 // import GiOption from '/components/GiOption/index.vue';
 // import GiOptionItem from '@/components/GiOptionItem/index.vue';
+import { useAccess } from '@vben/access';
 
-interface Props {
-  data?: FileItem;
-  shadow?: boolean;
-}
+import { VbenContextMenu } from '@vben-core/shadcn-ui';
 
-const props = withDefaults(defineProps<Props>(), {
-  data: undefined,
-  shadow: true,
-});
+// const props = withDefaults(defineProps<Props>(), {
+//   data: undefined,
+//   shadow: true,
+// });
 
 const emit = defineEmits<{
   (e: 'click', mode: string): void;
 }>();
 
+const { hasAccessByCodes } = useAccess();
+
+// interface Props {
+//   data?: FileItem;
+//   shadow?: boolean;
+// }
+
 const onClickItem = (mode: string) => {
   emit('click', mode);
 };
+
+const menus = (data: any) => {
+  return [
+    {
+      key: 'rename',
+      text: '重命名',
+      disabled: hasAccessByCodes(['system:file:update']),
+      handler: () => onClickItem('rename'),
+    },
+    {
+      key: 'details',
+      text: '详情',
+      disabled: hasAccessByCodes(['system:file:get']),
+      handler: () => onClickItem('detail'),
+    },
+    {
+      key: 'download',
+      text: '下载',
+
+      disabled: hasAccessByCodes(['system:file:download']),
+      handler: () => onClickItem('download'),
+      hidden: data?.type === 0,
+    },
+    {
+      key: 'delete',
+      text: '删除',
+      disabled: hasAccessByCodes(['system:file:delete']),
+      handler: () => onClickItem('delete'),
+    },
+  ];
+};
+
+// import {
+//   ContextMenu,
+//   ContextMenuCheckboxItem,
+//   ContextMenuContent,
+//   ContextMenuItem,
+//   ContextMenuLabel,
+//   ContextMenuRadioGroup,
+//   ContextMenuRadioItem,
+//   ContextMenuSeparator,
+//   ContextMenuShortcut,
+//   ContextMenuSub,
+//   ContextMenuSubContent,
+//   ContextMenuSubTrigger,
+//   ContextMenuTrigger,
+// } from '@vben/common-ui';
+// } from '@vben-core/shadcn-ui/ui/context-menu';
 </script>
 
 <template>
-  <GiOption :class="{ shadow: props.shadow }">
+  <VbenContextMenu :menus="menus" />
+  <ContextMenu>
+    <ContextMenuTrigger
+      class="flex h-[150px] w-[300px] items-center justify-center rounded-md border border-dashed text-sm"
+    >
+      Right click here
+    </ContextMenuTrigger>
+    <ContextMenuContent class="w-52">
+      <ContextMenuTrigger>Right click</ContextMenuTrigger>
+      <ContextMenuContent>
+        <ContextMenuItem>Profile</ContextMenuItem>
+        <ContextMenuItem>Billing</ContextMenuItem>
+        <ContextMenuItem>Team</ContextMenuItem>
+        <ContextMenuSeparator />
+        <ContextMenuItem>Subscription</ContextMenuItem>
+      </ContextMenuContent>
+    </ContextMenuContent>
+  </ContextMenu>
+
+  <!-- <GiOption :class="{ shadow: props.shadow }">
     <GiOptionItem
       v-permission="['system:file:update']"
       label="重命名"
@@ -46,7 +118,7 @@ const onClickItem = (mode: string) => {
       label="删除"
       @click="onClickItem('delete')"
     />
-  </GiOption>
+  </GiOption> -->
 </template>
 
 <style scoped lang="scss">

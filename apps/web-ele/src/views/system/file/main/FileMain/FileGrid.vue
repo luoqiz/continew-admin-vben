@@ -3,7 +3,7 @@ import type { FileItem } from '#/api/system';
 
 import { defineAsyncComponent } from 'vue';
 
-// import FileRightMenu from './FileRightMenu.vue';
+import FileRightMenu from './FileRightMenu.vue';
 
 const props = withDefaults(defineProps<Props>(), {
   data: () => [], // 文件数据
@@ -42,10 +42,10 @@ const handleCheckFile = (item: FileItem) => {
 };
 
 // 右键菜单点击事件
-// const handleRightMenuClick = (mode: string, item: FileItem) => {
-//   // eslint-disable-next-line vue/custom-event-name-casing
-//   emit('right-menu-click', mode, item);
-// };
+const handleRightMenuClick = (mode: string, item: FileItem) => {
+  // eslint-disable-next-line vue/custom-event-name-casing
+  emit('right-menu-click', mode, item);
+};
 </script>
 
 <template>
@@ -85,6 +85,7 @@ const handleCheckFile = (item: FileItem) => {
             />
           </section>
         </div>
+        <!-- <FileRightMenu :data="item" @click="handleRightMenuClick($event, item)" /> -->
       </el-col>
 
       <!-- <a-trigger v-for="item in data" :key="item.id" trigger="contextMenu" align-point
@@ -107,6 +108,8 @@ const handleCheckFile = (item: FileItem) => {
         </template>
       </a-trigger> -->
     </el-row>
+
+    <FileRightMenu @click="handleRightMenuClick($event, {})" />
   </div>
 </template>
 

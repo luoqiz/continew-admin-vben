@@ -14,7 +14,6 @@ import {
   SvgUploadIcon,
 } from '@vben/icons';
 
-import { useWindowSize } from '@vueuse/core';
 import { ElMessage } from 'element-plus';
 import { api as viewerApi } from 'v-viewer';
 
