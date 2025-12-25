@@ -1,17 +1,24 @@
 <script setup lang="ts">
 import type { FileItem } from '#/api/system';
 
-import { ref } from 'vue';
+import { defineAsyncComponent, ref } from 'vue';
 
+import { SvgCopyIcon } from '@vben/icons';
+
+import { useClipboard } from '@vueuse/core';
 import { ElMessage } from 'element-plus';
 
 import { calcDirSize } from '#/api/system';
+import { formatFileSize } from '#/utils/file';
+
+const props = withDefaults(defineProps<Props>(), {});
+
+const FileImage = defineAsyncComponent(() => import('../FileImage.vue'));
 
 interface Props {
   data: FileItem;
 }
 
-const props = withDefaults(defineProps<Props>(), {});
 const isCalculating = ref(false);
 const calculatedSize = ref<null | number>(null);
 // 计算文件夹大小
@@ -27,80 +34,84 @@ const calculateDirSize = async () => {
     isCalculating.value = false;
   }
 };
+
+const { copy } = useClipboard();
+// 复制
+const onCopy = (data: string) => {
+  if (data) {
+    copy(data);
+  }
+};
 </script>
 
 <template>
-  <a-row justify="center" align="center">
+  <el-row justify="center">
     <div style="height: 100px">
       <FileImage :data="data" style="border-radius: 5px" />
     </div>
-  </a-row>
-  <a-row style="margin-top: 15px">
-    <a-descriptions :column="1" layout="inline-vertical">
-      <a-descriptions-item label="名称">
-        <a-typography-paragraph
-          :copyable="data.type !== 0"
-          :copy-text="data.url"
+  </el-row>
+  <div style="width: 90%; margin-top: 16px">
+    <el-descriptions :column="1" :border="true" label-width="80">
+      <el-descriptions-item label="名称" label-align="right">
+        {{ data.originalName }}
+        <ElLink
+          v-if="data.type !== 0"
+          title="复制链接"
+          @click="onCopy(data.url)"
         >
-          <template #copy-tooltip>复制链接</template>
-          {{ data.originalName }}
-        </a-typography-paragraph>
-      </a-descriptions-item>
-      <a-descriptions-item label="大小">
-        <span v-if="data.type === 0" v-permission="['system:file:calcDirSize']">
-          <a-link
+          <SvgCopyIcon />
+        </ElLink>
+      </el-descriptions-item>
+      <el-descriptions-item label-align="right" label="大小">
+        <span
+          v-if="data.type === 0"
+          v-access:code="['system:file:calcDirSize']"
+        >
+          <el-link
             v-if="isCalculating || calculatedSize === null"
             :disabled="isCalculating"
             @click="calculateDirSize"
           >
             {{ isCalculating ? '计算中...' : '计算' }}
-          </a-link>
+          </el-link>
           <span v-else>
             {{ formatFileSize(calculatedSize) }}
           </span>
         </span>
         <span v-else>{{ formatFileSize(data.size) }}</span>
-      </a-descriptions-item>
-      <a-descriptions-item label="路径">
+      </el-descriptions-item>
+      <el-descriptions-item label-align="right" label="路径">
         {{ `${data.parentPath === '/' ? '' : data.parentPath}/${data.name}` }}
-      </a-descriptions-item>
-      <a-descriptions-item v-if="data.sha256" label="SHA256">
-        <a-typography-paragraph copyable :copy-text="data.sha256">
-          <template #copy-tooltip>复制</template>
-          {{ data.sha256 }}
-        </a-typography-paragraph>
-      </a-descriptions-item>
-      <a-descriptions-item label="上传时间">
+      </el-descriptions-item>
+      <el-descriptions-item
+        v-if="data.sha256"
+        label-align="right"
+        label="SHA256"
+      >
+        <span style="word-break: break-all">{{ data.sha256 }}</span>
+        <ElLink
+          v-if="data.type !== 0"
+          title="复制"
+          @click="onCopy(data.sha256)"
+        >
+          <SvgCopyIcon />
+        </ElLink>
+      </el-descriptions-item>
+      <el-descriptions-item label-align="right" label="上传时间">
         {{ data.createTime }}
-      </a-descriptions-item>
-      <a-descriptions-item v-if="data?.updateTime" label="修改时间">
+      </el-descriptions-item>
+      <el-descriptions-item
+        v-if="data?.updateTime"
+        label-align="right"
+        label="修改时间"
+      >
         {{ data?.updateTime }}
-      </a-descriptions-item>
-      <a-descriptions-item label="存储名称">
+      </el-descriptions-item>
+      <el-descriptions-item label-align="right" label="存储名称">
         {{ data.storageName }}
-      </a-descriptions-item>
-    </a-descriptions>
-  </a-row>
+      </el-descriptions-item>
+    </el-descriptions>
+  </div>
 </template>
 
-<style lang="less" scoped>
-.label {
-  color: var(--color-text-2);
-}
-:deep(.arco-form-item) {
-  margin-bottom: 0;
-}
-:deep(.arco-form-item-label-col > label) {
-  white-space: nowrap;
-}
-:deep(.arco-descriptions-title) {
-  font-size: 14px;
-}
-:deep(.arco-descriptions-item-label-inline) {
-  font-size: 12px;
-}
-:deep(.arco-descriptions-item-value-inline) {
-  font-size: 12px;
-  margin-bottom: 10px;
-}
-</style>
+<style lang="less" scoped></style>

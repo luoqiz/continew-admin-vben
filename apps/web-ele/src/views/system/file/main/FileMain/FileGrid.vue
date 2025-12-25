@@ -18,7 +18,9 @@ const emit = defineEmits<{
   (e: 'right-menu-click', mode: string, item: FileItem): void;
 }>();
 
-const FileImage = defineAsyncComponent(() => import('./FileImage.vue'));
+const FileImage = defineAsyncComponent(
+  () => import('../../components/FileImage.vue'),
+);
 
 interface Props {
   data?: FileItem[];
@@ -61,55 +63,34 @@ const handleRightMenuClick = (mode: string, item: FileItem) => {
         :xl="2"
         :xxl="2"
       >
-        <div
-          class="file-grid-item"
-          @click.stop="handleClickFile(item)"
-          @dblclick="handleDblclickFile(item)"
-        >
-          <section class="file-grid-item__wrapper">
-            <div class="file-icon">
-              <FileImage :data="item" :title="item.originalName" />
-            </div>
-            <p class="gi_line_1 file-name">{{ item.originalName }}</p>
-          </section>
-          <!-- 勾选模式 -->
-          <section
-            v-show="props.isBatchMode"
-            class="check-mode"
-            :class="{ checked: props.selectedFileIds.includes(item.id) }"
-            @click.stop="handleCheckFile(item)"
+        <FileRightMenu :data="item" @click="handleRightMenuClick($event, item)">
+          <div
+            class="file-grid-item"
+            @click.stop="handleClickFile(item)"
+            @dblclick="handleDblclickFile(item)"
           >
-            <el-checkbox
-              class="checkbox"
-              :model-value="props.selectedFileIds.includes(item.id)"
-            />
-          </section>
-        </div>
-        <!-- <FileRightMenu :data="item" @click="handleRightMenuClick($event, item)" /> -->
+            <section class="file-grid-item__wrapper">
+              <div class="file-icon">
+                <FileImage :data="item" :title="item.originalName" />
+              </div>
+              <p class="gi_line_1 file-name">{{ item.originalName }}</p>
+            </section>
+            <!-- 勾选模式 -->
+            <section
+              v-show="props.isBatchMode"
+              class="check-mode"
+              :class="{ checked: props.selectedFileIds.includes(item.id) }"
+              @click.stop="handleCheckFile(item)"
+            >
+              <el-checkbox
+                class="checkbox"
+                :model-value="props.selectedFileIds.includes(item.id)"
+              />
+            </section>
+          </div>
+        </FileRightMenu>
       </el-col>
-
-      <!-- <a-trigger v-for="item in data" :key="item.id" trigger="contextMenu" align-point
-        animation-name="slide-dynamic-origin" auto-fit-transform-origin position="bl" update-at-scroll scroll-to-close>
-        <template
-          v-if="
-            has.hasPermOr([
-              'system:file:update',
-              'system:file:get',
-              'system:file:download',
-              'system:file:delete',
-            ])
-          "
-          #content
-        >
-          <FileRightMenu
-            :data="item"
-            @click="handleRightMenuClick($event, item)"
-          />
-        </template>
-      </a-trigger> -->
     </el-row>
-
-    <FileRightMenu @click="handleRightMenuClick($event, {})" />
   </div>
 </template>
 

@@ -24,7 +24,9 @@ const emit = defineEmits<{
   (e: 'rightMenuClick', mode: string, item: FileItem): void;
 }>();
 
-const FileImage = defineAsyncComponent(() => import('./FileImage.vue'));
+const FileImage = defineAsyncComponent(
+  () => import('../../components/FileImage.vue'),
+);
 
 interface Props {
   data?: FileItem[];

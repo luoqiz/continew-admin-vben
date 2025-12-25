@@ -17,7 +17,7 @@ import {
 import { ElMessage } from 'element-plus';
 import { api as viewerApi } from 'v-viewer';
 
-import { listFile, uploadFile } from '#/api/system/file';
+import { deleteFile, listFile, uploadFile } from '#/api/system/file';
 import { ImageTypes, OfficeTypes } from '#/constant/file';
 import { useTable } from '#/hooks/modules/useTable';
 import { downloadByUrl } from '#/utils/downloadFile';
@@ -143,8 +143,30 @@ const onDownload = async (fileInfo: FileItem) => {
 
 // 右键菜单
 const handleRightMenuClick = async (mode: string, fileInfo: FileItem) => {
+  console.warn('右键菜单', mode, fileInfo);
   switch (mode) {
     case 'delete': {
+      ElMessageBox.confirm(
+        `是否确定删除${fileInfo.type === 0 ? '文件夹' : '文件'}「${fileInfo.originalName}」？`,
+        '提示',
+        {
+          confirmButtonText: 'OK',
+          cancelButtonText: 'Cancel',
+          type: 'warning',
+        },
+      )
+        .then(async () => {
+          await deleteFile([fileInfo.id]);
+          ElMessage.success('删除成功');
+          search();
+          mittBus.emit('file-total-refresh');
+        })
+        .catch(() => {
+          ElMessage({
+            type: 'info',
+            message: 'Delete canceled',
+          });
+        });
       // Modal.warning({
       //   title: '提示',
       //   content: `是否确定删除${fileInfo.type === 0 ? '文件夹' : '文件'}「${fileInfo.originalName}」？`,
@@ -152,12 +174,11 @@ const handleRightMenuClick = async (mode: string, fileInfo: FileItem) => {
       //   okButtonProps: { status: 'danger' },
       //   onOk: async () => {
       //     await deleteFile([fileInfo.id]);
-      //     Message.success('删除成功');
+      //     ElMessage.success('删除成功');
       //     search();
       //     mittBus.emit('file-total-refresh');
       //   },
       // });
-
       break;
     }
     case 'detail': {
