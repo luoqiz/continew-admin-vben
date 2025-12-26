@@ -43,7 +43,7 @@ const getFileImg = computed<string>(() => {
     :src="props.data.thumbnailUrl"
     alt=""
   />
-  <VbenIcon :icon="`svg:${getFileImg}`" class="size-16" />
+  <VbenIcon :icon="`svg:${getFileImg}`" class="h-full w-full" />
 </template>
 
 <style scoped lang="scss">

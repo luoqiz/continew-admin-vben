@@ -14,7 +14,7 @@ import {
   SvgUploadIcon,
 } from '@vben/icons';
 
-import { ElMessage } from 'element-plus';
+import { ElMessage, ElMessageBox } from 'element-plus';
 import { api as viewerApi } from 'v-viewer';
 
 import { deleteFile, listFile, uploadFile } from '#/api/system/file';
@@ -63,7 +63,7 @@ const isBatchMode = ref(false);
 const {
   tableData: fileList,
   loading,
-  // pagination,
+  pagination,
   search,
 } = useTable((page) => listFile({ ...queryForm, ...page }), {
   immediate: false,
@@ -150,6 +150,7 @@ const handleRightMenuClick = async (mode: string, fileInfo: FileItem) => {
         `是否确定删除${fileInfo.type === 0 ? '文件夹' : '文件'}「${fileInfo.originalName}」？`,
         '提示',
         {
+          confirmButtonClass: 'el-button--danger',
           confirmButtonText: 'OK',
           cancelButtonText: 'Cancel',
           type: 'warning',
@@ -167,33 +168,18 @@ const handleRightMenuClick = async (mode: string, fileInfo: FileItem) => {
             message: 'Delete canceled',
           });
         });
-      // Modal.warning({
-      //   title: '提示',
-      //   content: `是否确定删除${fileInfo.type === 0 ? '文件夹' : '文件'}「${fileInfo.originalName}」？`,
-      //   hideCancel: false,
-      //   okButtonProps: { status: 'danger' },
-      //   onOk: async () => {
-      //     await deleteFile([fileInfo.id]);
-      //     ElMessage.success('删除成功');
-      //     search();
-      //     mittBus.emit('file-total-refresh');
-      //   },
-      // });
       break;
     }
     case 'detail': {
       openFileDetailModal(fileInfo);
-
       break;
     }
     case 'download': {
       await onDownload(fileInfo);
-
       break;
     }
     case 'rename': {
       openFileRenameModal(fileInfo, search);
-
       break;
     }
     // No default
@@ -207,18 +193,24 @@ const handleSelectFile = (item: FileItem) => {
 
 // 批量删除
 const handleMulDelete = () => {
-  // Modal.warning({
-  //   title: '提示',
-  //   content: `是否确定删除所选的${selectedFileIds.value.length}个文件？`,
-  //   hideCancel: false,
-  //   onOk: async () => {
-  //     await deleteFile(selectedFileIds.value);
-  //     Message.success('删除成功');
-  //     search();
-  //     mittBus.emit('file-total-refresh');
-  //     isBatchMode.value = false;
-  //   },
-  // });
+  ElMessageBox.confirm(
+    `是否确定删除所选的${selectedFileIds.value.length}个文件？`,
+    '提示',
+    {
+      confirmButtonClass: 'el-button--danger',
+      confirmButtonText: '确认',
+      cancelButtonText: '取消',
+      type: 'warning',
+    },
+  )
+    .then(async () => {
+      await deleteFile(selectedFileIds.value);
+      ElMessage.success('删除成功');
+      search();
+      mittBus.emit('file-total-refresh');
+      isBatchMode.value = false;
+    })
+    .catch(() => {});
 };
 // 上传
 const handleUpload = (options: RequestOption) => {
@@ -483,9 +475,8 @@ onMounted(() => {
       </el-space>
     </el-row>
 
-    <!-- 文件列表-宫格模式 -->
-    <!-- <el-spin id="fileMain" class="file-main__list" :loading="loading"> -->
-    <div id="fileMain" class="file-main__list" :loading="loading">
+    <div class="file-main__list" v-loading="loading">
+      <!-- 文件列表-宫格模式 -->
       <FileGrid
         v-show="fileList.length > 0 && mode === 'grid'"
         :data="fileList"
@@ -508,12 +499,21 @@ onMounted(() => {
         @right-menu-click="handleRightMenuClick"
         @dblclick="handleDblclickFile"
       />
+      <!-- 文件列表为空时显示 -->
       <el-empty v-if="fileList.length === 0" />
-      <!-- </el-spin> -->
     </div>
     <!-- <FilePreview ref="filePreviewRef" /> -->
     <div class="pagination">
-      <!-- <el-pagination v-bind="pagination" /> -->
+      <div>
+        <el-pagination
+          v-model:current-page="pagination.current"
+          v-model:page-size="pagination.pageSize"
+          :page-sizes="pagination.pageSizeOptions"
+          :size="1"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="pagination.total"
+        />
+      </div>
     </div>
 
     <!-- 弹出新建窗口 -->
@@ -546,48 +546,33 @@ onMounted(() => {
   // background: var(--color-bg-1);
   // border-radius: $radius-box;
   border-radius: 8px;
+}
 
-  &__search {
-    margin: 16px 16px 0;
-  }
+.file-main__search {
+  margin: 16px 16px 0;
+}
 
-  &__breadcrumb {
-    padding: 8px 16px;
-    font-size: 14px;
-    color: var(--color-text-2);
-    background: var(--color-bg-2);
-    border-bottom: 1px solid var(--color-border-3);
-    border-radius: 4px;
+.file-main__breadcrumb {
+  padding: 16px;
+  font-size: 14px;
+  color: var(--color-text-2);
+  background: var(--color-bg-2);
+  border-bottom: 1px solid var(--color-border-3);
+  border-radius: 4px;
+}
 
-    :deep(.arco-breadcrumb-item) {
-      cursor: pointer;
-    }
+.file-main__list {
+  box-sizing: border-box;
+  flex: 1;
+  padding: 0 16px 16px;
+  overflow: hidden;
+  overflow-y: auto;
+}
 
-    :deep(.arco-breadcrumb-item-link) {
-      transition: color 0.2s;
-
-      &:hover {
-        color: var(--color-primary);
-      }
-    }
-  }
-
-  &__list {
-    box-sizing: border-box;
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    padding: 0 16px 16px;
-    // overflow: hidden;
-    overflow-y: auto;
-  }
-
-  .pagination {
-    padding: 0 var(--padding) var(--padding);
-
-    :deep(.arco-pagination) {
-      justify-content: end;
-    }
-  }
+.pagination {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  padding: 0 var(--padding) var(--padding);
 }
 </style>

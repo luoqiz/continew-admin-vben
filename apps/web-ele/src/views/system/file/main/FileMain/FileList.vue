@@ -1,10 +1,24 @@
 <script setup lang="ts">
-import type { VxeTableGridOptions } from '#/adapter/vxe-table';
+import type {
+  VxeGridDefines,
+  VxeGridProps,
+  VxeTableGridOptions,
+} from '#/adapter/vxe-table';
 import type { FileItem } from '#/api/system';
 
-import { watch } from 'node:fs';
+import { defineAsyncComponent, watch } from 'vue';
+
+import { SvgCopyIcon } from '@vben/icons';
+
+import { useClipboard } from '@vueuse/core';
+import { ElMessage } from 'element-plus';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
+import { calcDirSize } from '#/api/system';
+import { formatFileSize } from '#/utils/file';
+
+// import { $t } from '#/locales';
+import FileRightMenu from './FileRightMenu.vue';
 
 const props = withDefaults(defineProps<Props>(), {
   data: () => [], // 文件数据
@@ -12,14 +26,16 @@ const props = withDefaults(defineProps<Props>(), {
   isBatchMode: false, // 是否是批量模式
 });
 
-// const emit = defineEmits<{
-//   (e: 'click', record: FileItem): void;
-//   (e: 'dblclick', record: FileItem): void;
-//   (e: 'select', record: FileItem): void;
-//   (e: 'rightMenuClick', mode: string, item: FileItem): void;
-// }>();
+const emit = defineEmits<{
+  (e: 'click', record: FileItem): void;
+  (e: 'dblclick', record: FileItem): void;
+  (e: 'select', record: FileItem): void;
+  (e: 'rightMenuClick', mode: string, item: FileItem): void;
+}>();
 
-// const FileImage = defineAsyncComponent(() => import('./FileImage.vue'));
+const FileImage = defineAsyncComponent(
+  () => import('../../components/FileImage.vue'),
+);
 
 interface Props {
   data?: FileItem[];
@@ -27,55 +43,53 @@ interface Props {
   isBatchMode?: boolean;
 }
 
-// const rowSelection: TableRowSelection = reactive({
-// const rowSelection: any = reactive({
-//   type: 'checkbox',
-//   showCheckedAll: true,
-// });
+// 计算文件夹大小
+const calculateDirSize = async (record: FileItem) => {
+  if (record.type !== 0) return;
+  try {
+    const data = await calcDirSize(record.id);
+    record.size = data.size;
+  } catch {
+    ElMessage.error('计算失败，请重试');
+  }
+};
 
-// // 计算文件夹大小
-// const calculateDirSize = async (record: FileItem) => {
-//   if (record.type !== 0) return;
-//   try {
-//     const data = await calcDirSize(record.id);
-//     record.size = data.size;
-//   } catch {
-//     ElMessage.error('计算失败，请重试');
-//   }
-// };
+// 多选
+const select: any = (record: FileItem) => {
+  emit('select', record);
+};
 
-// // 多选
-// const select: any = (rowKeys: any, rowKey: any, record: any) => {
-//   console.warn(rowKeys, rowKey);
-//   emit('select', record as unknown as FileItem);
-// };
+// 单击事件
+const handleClick = (record: FileItem) => {
+  emit('click', record);
+};
 
-// // 单击事件
-// const handleClick = (record: any) => {
-//   emit('click', record as unknown as FileItem);
-// };
+// 双击事件
+const handleDblclickFile = (item: FileItem) => {
+  emit('dblclick', item);
+};
 
-// // 双击事件
-// const handleDblclickFile = (item: FileItem) => {
-//   emit('dblclick', item);
-// };
+// 右键菜单点击事件
+const handleRightMenuClick = (mode: string, item: FileItem) => {
+  emit('rightMenuClick', mode, item);
+};
 
-// // 右键菜单点击事件
-// const handleRightMenuClick = (mode: string, item: FileItem) => {
-//   emit('rightMenuClick', mode, item);
-// };
-
-const useFileColumns = () => {
+const useFileColumns: VxeGridProps['columns'] = () => {
   return [
+    { type: 'checkbox', width: 40, fixed: 'left', visible: props.isBatchMode },
+    { type: 'seq', width: 50, fixed: 'left' },
     {
       field: 'originalName',
       title: '名称',
-      minWidth: 300,
+      minwidth: 280,
+      slots: { default: 'originalName' },
+      fixed: 'left',
     },
     {
       field: 'size',
       title: '大小',
       width: 160,
+      slots: { default: 'size' },
     },
     {
       field: 'storageName',
@@ -91,12 +105,6 @@ const useFileColumns = () => {
 };
 
 const [Grid, gridApi] = useVbenVxeGrid({
-  // formOptions: {
-  //   schema: useDeptSearchFormFields(),
-  //   submitOnChange: true,
-  //   showCollapseButton: false,
-  //   wrapperClass: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
-  // },
   gridOptions: {
     columns: useFileColumns(),
     data: props.data,
@@ -109,12 +117,6 @@ const [Grid, gridApi] = useVbenVxeGrid({
     columnConfig: {
       resizable: true,
     },
-    treeConfig: {
-      rowField: 'id',
-      parentField: 'parentId',
-      childrenField: 'children',
-      transform: false,
-    },
     rowConfig: {
       keyField: 'id',
       isHover: true,
@@ -122,160 +124,86 @@ const [Grid, gridApi] = useVbenVxeGrid({
     checkboxConfig: {
       highlight: true,
     },
-    toolbarConfig: {
-      custom: true,
-      export: false,
-      refresh: true,
-      refreshOptions: {
-        code: 'query',
-      },
-      search: true,
-      zoom: true,
-      zoomOptions: {},
-    },
   } as VxeTableGridOptions<FileItem>,
+  gridEvents: {
+    // 勾选事件
+    checkboxChange: (params: VxeGridDefines.CheckboxChangeEventParams) => {
+      select(params.row);
+    },
+    // 全选事件
+    // checkboxAll: (params: VxeGridDefines.CheckboxAllEventParams) => {
+    //   const records = params.$grid.getCheckboxRecords();
+    //   console.log('checkboxAll------', records);
+    // },
+  },
 });
 
 watch(
   () => props.data,
   (data) => {
-    gridApi.setData(data || []);
+    gridApi.grid.loadData(data || []);
   },
 );
+
+watch(
+  () => props.isBatchMode,
+  () => {
+    gridApi.grid.reloadColumn(useFileColumns());
+  },
+);
+
+const { copy } = useClipboard();
+// 复制
+const onCopy = (data: string) => {
+  if (data) {
+    copy(data);
+  }
+};
 </script>
 
 <template>
   <div class="file-list">
-    <Grid />
-    <!-- <a-table
-      row-key="id"
-      :scroll="{ x: '100%', y: '100%', minWidth: 800 }"
-      :data="props.data"
-      :bordered="false"
-      :pagination="false"
-      :row-selection="isBatchMode ? rowSelection : undefined"
-      :selected-keys="selectedFileIds"
-      column-resizable
-      @select="select"
-    >
-      <template #columns>
-        <a-table-column title="名称">
-          <template #cell="{ record }">
-            <a-trigger
-              trigger="contextMenu"
-              align-point
-              animation-name="slide-dynamic-origin"
-              auto-fit-transform-origin
-              position="bl"
-              update-at-scroll
-              scroll-to-close
+    <Grid>
+      <template #originalName="{ row }">
+        <FileRightMenu :data="row" @click="handleRightMenuClick($event, row)">
+          <section
+            class="file-name"
+            @click="handleClick(row)"
+            @dblclick="handleDblclickFile(row)"
+          >
+            <div class="file-image">
+              <FileImage :data="row" />
+            </div>
+            {{ row.originalName }}
+            <ElLink
+              v-if="row.type !== 0"
+              title="复制链接"
+              @click="onCopy(row.url)"
             >
-              <section
-                class="file-name"
-                @click="handleClick(record)"
-                @dblclick="handleDblclickFile(record)"
-              >
-                <div class="file-image">
-                  <FileImage :data="record" />
-                </div>
-                <a-typography-paragraph
-                  :copyable="record.type !== 0"
-                  :copy-text="record.url"
-                >
-                  <template #copy-tooltip>复制链接</template>
-                  {{ record.originalName }}
-                </a-typography-paragraph>
-              </section>
-              <template
-                v-if="
-                  has.hasPermOr([
-                    'system:file:update',
-                    'system:file:get',
-                    'system:file:download',
-                    'system:file:delete',
-                  ])
-                "
-                #content
-              >
-                <FileRightMenu
-                  :data="record"
-                  @click="handleRightMenuClick($event, record)"
-                />
-              </template>
-            </a-trigger>
-          </template>
-        </a-table-column>
-        <a-table-column title="大小" data-index="size" :width="160">
-          <template #cell="{ record }">
-            <span
-              v-if="record.type === 0"
-              v-permission="['system:file:calcDirSize']"
-            >
-              <a-link
-                v-if="record.size === null"
-                @click="calculateDirSize(record)"
-              >
-                计算
-              </a-link>
-              <span v-else>
-                {{ formatFileSize(record.size) }}
-              </span>
-            </span>
-            <span v-else>{{ formatFileSize(record.size) }}</span>
-          </template>
-        </a-table-column>
-        <a-table-column
-          title="存储名称"
-          data-index="storageName"
-          :width="200"
-        />
-        <a-table-column title="修改时间" data-index="updateTime" :width="200" />
-        <a-table-column
-          v-if="
-            has.hasPermOr([
-              'system:file:update',
-              'system:file:get',
-              'system:file:download',
-              'system:file:delete',
-            ])
-          "
-          title="操作"
-          :width="120"
-          align="center"
-        >
-          <template #cell="{ record }">
-            <a-popover
-              trigger="click"
-              position="bottom"
-              :content-style="{ padding: 0, 'margin-top': 0 }"
-            >
-              <a-button type="text" @click.stop>
-                <icon-more :size="16" />
-              </a-button>
-              <template #content>
-                <FileRightMenu
-                  :data="record"
-                  :file-info="record"
-                  :shadow="false"
-                  @click="handleRightMenuClick($event, record)"
-                />
-              </template>
-            </a-popover>
-          </template>
-        </a-table-column>
+              <SvgCopyIcon class="ml-2" />
+            </ElLink>
+          </section>
+        </FileRightMenu>
       </template>
-    </a-table> -->
+      <template #size="{ row }">
+        <span v-if="row.type === 0" v-access:code="['system:file:calcDirSize']">
+          <el-link v-if="row.size === null" @click="calculateDirSize(row)">
+            计算
+          </el-link>
+          <span v-else>
+            {{ formatFileSize(row.size) }}
+          </span>
+        </span>
+        <span v-else>{{ formatFileSize(row.size) }}</span>
+      </template>
+    </Grid>
   </div>
 </template>
 
 <style scoped lang="scss">
-:deep(.arco-table-td .arco-table-cell) {
-  padding-top: 0;
-  padding-bottom: 0;
-}
-
 .file-list {
   width: 100%;
+  height: 100%;
   padding-top: 12px;
   overflow: hidden;
 

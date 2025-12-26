@@ -39,6 +39,7 @@ defineOptions({ name: 'SystemFile' });
 <style scoped lang="scss">
 .file-manage {
   flex: 1;
+  height: 100%;
   padding: var(--padding);
   overflow: hidden;
 }
