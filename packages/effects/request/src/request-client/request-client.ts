@@ -109,7 +109,7 @@ class RequestClient {
   public get<T = any>(url: string, config?: RequestClientConfig): Promise<T> {
     return this.request<T>(url, {
       ...config,
-      paramsSerializer: (obj) => qs.stringify(obj),
+      paramsSerializer: (obj) => qs.stringify(obj, { arrayFormat: 'repeat' }),
       method: 'GET',
     });
   }
@@ -161,6 +161,7 @@ class RequestClient {
     config: RequestClientConfig,
   ): Promise<T> {
     try {
+      console.error('RequestClient request url:', url, 'config:', config);
       const response: AxiosResponse<T> = await this.instance({
         url,
         ...config,

@@ -1,5 +1,3 @@
-import type { PageQuery } from '#/types/api';
-
 /** 用户类型 */
 export interface UserResp {
   id: string;
@@ -18,11 +16,10 @@ export interface UserResp {
   updateTime: string;
   deptId: string;
   deptName: string;
-  roleIds: Array<number | string>;
+  roleIds: Array<number>;
   roleNames: Array<string>;
   disabled: boolean;
 }
-// @typescript-eslint/unified-signatures
 export type UserDetailResp = UserResp & {
   pwdResetTime?: string;
 };
@@ -45,6 +42,36 @@ export interface UserQuery {
 }
 export interface UserPageQuery extends PageQuery, UserQuery {}
 
+/** 角色类型 */
+export interface RoleResp {
+  id: string;
+  name: string;
+  code: string;
+  sort: number;
+  description: string;
+  dataScope: number;
+  isSystem: boolean;
+  createUserString: string;
+  createTime: string;
+  updateUserString: string;
+  updateTime: string;
+  disabled: boolean;
+}
+export type RoleDetailResp = RoleResp & {
+  deptCheckStrictly: boolean;
+  deptIds: Array<number>;
+  menuCheckStrictly: boolean;
+  menuIds: Array<number>;
+};
+export interface RolePermissionResp {
+  id: string;
+  title: string;
+  parentId: string;
+  permission?: string;
+  children?: RolePermissionResp[];
+  permissions?: RolePermissionResp[];
+  isChecked?: boolean;
+}
 export interface RoleUserResp {
   id: string;
   username: string;
@@ -59,6 +86,15 @@ export interface RoleUserResp {
   roleNames: Array<string>;
   disabled: boolean;
 }
+export interface RoleQuery {
+  description?: string;
+  sort: Array<string>;
+}
+export interface RoleUserQuery {
+  description?: string;
+  sort: Array<string>;
+}
+export interface RoleUserPageQuery extends PageQuery, RoleUserQuery {}
 
 /** 菜单类型 */
 export interface MenuResp {
@@ -132,13 +168,11 @@ export interface DictItemResp {
   sort: number;
   description: string;
   status: 1 | 2;
-  dictId: string;
+  dictId: number;
   createUserString: string;
   createTime: string;
   updateUserString: string;
   updateTime: string;
-  cssClass: string;
-  listClass: string;
 }
 export interface DictItemQuery {
   description?: string;
@@ -159,7 +193,6 @@ export interface NoticeResp {
   publishTime?: string;
   isTop: boolean;
   status?: number;
-  isRead?: boolean;
 }
 export type NoticeDetailResp = NoticeResp & {
   createTime: string;
@@ -233,6 +266,8 @@ export interface StorageResp {
   endpoint: string;
   bucketName: string;
   domain: string;
+  recycleBinEnabled: boolean;
+  recycleBinPath: string;
   description: string;
   isDefault: boolean;
   sort: number;
@@ -430,3 +465,56 @@ export interface MessageQuery {
 }
 
 export interface MessagePageQuery extends MessageQuery, PageQuery {}
+
+/** 分片上传 - 初始化参数 */
+export interface MultiPartUploadInitReq {
+  fileName: string;
+  fileSize: number;
+  fileMd5: string;
+  parentPath: string;
+  metaData: Record<string, string>;
+}
+
+/** 分片上传 - 初始化响应 */
+export interface MultiPartUploadInitResp {
+  uploadId: string;
+  partSize: number;
+  path: string;
+  uploadedPartNumbers: number[];
+}
+
+/** 分片上传 - 上传分片参数 */
+export interface UploadPartReq {
+  uploadId: string;
+  partNumber: number;
+  file: Blob;
+  path: string;
+}
+
+/** 分片上传 - 上传分片响应 */
+export interface UploadPartResp {
+  /** 分片编号 */
+  partNumber: number;
+  /** 分片ETag */
+  partETag: string;
+  /** 分片大小 */
+  partSize: number;
+  /** 是否成功 */
+  success: boolean;
+  /** 错误信息 */
+  errorMessage?: string;
+}
+
+/** 分片上传 - 完成上传参数 */
+export interface CompleteMultipartUploadReq {
+  uploadId: string;
+  partETags: Array<{
+    eTag: string;
+    partNumber: number;
+  }>;
+}
+
+/** 分片上传 - 取消上传参数 */
+export interface CancelUploadParams {
+  uploadId: string;
+}
