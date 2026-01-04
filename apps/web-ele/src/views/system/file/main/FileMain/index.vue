@@ -71,7 +71,7 @@ const {
   loading,
   pagination,
   search,
-  getTableData
+  getTableData,
 } = useTable((page) => listFile({ ...queryForm, ...page }), {
   immediate: false,
   paginationOption,
@@ -506,7 +506,8 @@ onMounted(() => {
           :page-sizes="pagination.pageSizeOptions"
           layout="total, sizes, prev, pager, next, jumper"
           :total="pagination.total"
-@current-change="getTableData" @size-change="search"
+          @current-change="getTableData"
+          @size-change="search"
         />
       </div>
     </div>
