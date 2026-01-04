@@ -7,7 +7,10 @@ import { h, isRef } from 'vue';
 
 import { IconifyIcon } from '@vben/icons';
 import { $te } from '@vben/locales';
-import { setupVbenVxeTable, useVbenVxeGrid } from '@vben/plugins/vxe-table';
+import {
+  setupVbenVxeTable,
+  useVbenVxeGrid as useGrid,
+} from '@vben/plugins/vxe-table';
 
 import { get, isFunction, isString, isValidColor } from '@vben/utils';
 

@@ -71,6 +71,7 @@ const {
   loading,
   pagination,
   search,
+  getTableData
 } = useTable((page) => listFile({ ...queryForm, ...page }), {
   immediate: false,
   paginationOption,
@@ -310,6 +311,14 @@ const onRecycleBin = () => {
 onMounted(() => {
   search();
 });
+
+// watch(
+//   () => pagination,
+//   () => {
+//     search();
+//   },
+//   { deep: true }
+// );
 </script>
 
 <template>
@@ -489,6 +498,7 @@ onMounted(() => {
     </div>
     <!-- <FilePreview ref="filePreviewRef" /> -->
     <div class="pagination">
+      {{ pagination }}
       <div>
         <el-pagination
           v-model:current-page="pagination.current"
@@ -496,6 +506,7 @@ onMounted(() => {
           :page-sizes="pagination.pageSizeOptions"
           layout="total, sizes, prev, pager, next, jumper"
           :total="pagination.total"
+@current-change="getTableData" @size-change="search"
         />
       </div>
     </div>
