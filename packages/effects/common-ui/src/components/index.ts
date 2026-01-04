@@ -23,6 +23,7 @@ export {
   VbenButtonGroup,
   VbenCheckbox,
   VbenCheckButtonGroup,
+  VbenContextMenu,
   VbenCountToAnimator,
   VbenFullScreen,
   VbenInputCaptcha,

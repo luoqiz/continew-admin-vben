@@ -7,10 +7,8 @@ import { h, isRef } from 'vue';
 
 import { IconifyIcon } from '@vben/icons';
 import { $te } from '@vben/locales';
-import {
-  setupVbenVxeTable,
-  useVbenVxeGrid as useGrid,
-} from '@vben/plugins/vxe-table';
+import { setupVbenVxeTable, useVbenVxeGrid } from '@vben/plugins/vxe-table';
+
 import { get, isFunction, isString, isValidColor } from '@vben/utils';
 
 import { objectOmit } from '@vueuse/core';
@@ -51,22 +49,16 @@ setupVbenVxeTable({
       } as VxeTableGridOptions,
     });
 
-    /**
-     * 解决vxeTable在热更新时可能会出错的问题
-     */
-    vxeUI.renderer.forEach((_item, key) => {
-      if (key.startsWith('Cell')) {
-        vxeUI.renderer.delete(key);
-      }
-    });
-
     // 表格配置项可以用 cellRender: { name: 'CellImage' },
     vxeUI.renderer.add('CellImage', {
-      renderTableDefault(_renderOpts, params) {
+      renderTableDefault(renderOpts, params) {
+        const { props } = renderOpts;
         const { column, row } = params;
-        return h(ElImage, { src: row[column.field] });
+        const src = row[column.field];
+        return h(ElImage, { src, previewSrcList: [src], ...props });
       },
     });
+
 
     // 单元格是否渲染： Tag
     vxeUI.renderer.add('CellYesNoTag', {
