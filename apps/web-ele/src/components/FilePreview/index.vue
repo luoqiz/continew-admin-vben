@@ -3,11 +3,13 @@ import type { FilePreview } from './type';
 
 import { computed, onUnmounted, reactive, ref } from 'vue';
 
+import { SvgLaunchIcon } from '@vben/icons';
+
 import VueOfficeDocx from '@vue-office/docx';
 import VueOfficeExcel from '@vue-office/excel';
 import VueOfficePdf from '@vue-office/pdf';
 import { useWindowSize } from '@vueuse/core';
-import { ElMessage } from 'element-plus';
+import { ElDialog, ElMessage } from 'element-plus';
 
 import { ExcelTypes, WordTypes } from '#/constant/file';
 
@@ -37,6 +39,7 @@ const onPreview = (previewInfo: FilePreview) => {
   filePreview.fileInfo = previewInfo.fileInfo;
   visible.value = true;
   loading.value = true;
+  console.error('previewInfo', previewInfo);
 };
 
 const renderedHandler = () => {
@@ -50,7 +53,7 @@ const errorHandler = () => {
 // 新标签页打开
 const onOpen = () => {
   const data = filePreview.fileInfo?.data;
-
+  console.error('onOpen', data);
   if (!data) {
     console.error('没有数据提供');
     return;
@@ -105,24 +108,24 @@ defineExpose({ onPreview });
 </script>
 
 <template>
-  <a-modal
-    v-model:visible="visible"
+  <ElDialog
+    v-model="visible"
     :width="width >= 1350 ? 1350 : '100%'"
     :on-before-close="onClose"
-    :footer="false"
-    esc-to-close="esc-to-close"
+    body-class="h-full pb-10"
+    :style="{ height: '75%' }"
     @close="onClose"
   >
-    <template #title>
+    <template #header>
       {{ modalTitle }}
       <div class="toolbar">
-        <a-tooltip position="tl" content="在新标签页打开">
-          <icon-launch style="cursor: pointer" @click="onOpen" />
-        </a-tooltip>
+        <el-tooltip position="tl" content="在新标签页打开">
+          <SvgLaunchIcon style="cursor: pointer" @click="onOpen" />
+        </el-tooltip>
       </div>
     </template>
-    <a-spin :loading="loading" class="mt--10 w-full">
-      <a-card class="preview-content">
+    <div v-loading="loading" class="h-full w-full">
+      <el-card class="preview-content h-full w-full">
         <VueOfficePdf
           v-if="filePreview.fileInfo?.fileType === 'pdf'"
           :src="filePreview.fileInfo?.data"
@@ -140,29 +143,24 @@ defineExpose({ onPreview });
         <VueOfficeExcel
           v-else-if="ExcelTypes.includes(filePreview.fileInfo?.fileType || '')"
           :src="filePreview.fileInfo?.data"
-          style="width: 100%; height: 80vh"
+          style="width: 100%; height: 100%"
           :options="filePreview.excelConfig"
           @rendered="renderedHandler"
           @error="errorHandler"
         />
-      </a-card>
-    </a-spin>
-  </a-modal>
+      </el-card>
+    </div>
+  </ElDialog>
 </template>
 
-<style scoped lang="scss">
-.h-full {
-  height: 100vh;
-}
-
-.card {
-  padding-bottom: 5px;
-  background: white !important;
+<style scoped>
+.preview-content {
+  overflow: auto;
 }
 
 .toolbar {
   position: absolute;
-  top: 10px;
+  top: 14px;
   right: 50px;
   float: right;
 }

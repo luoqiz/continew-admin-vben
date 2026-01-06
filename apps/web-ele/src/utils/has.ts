@@ -2,9 +2,9 @@ import { useUserStore } from '@vben/stores';
 
 function authPermission(permission: string) {
   const all_permission = '*:*:*';
-  const permissions = useUserStore().permissions;
+  const permissions = useUserStore().userInfo?.permissions || [];
   return permission && permission.length > 0
-    ? permissions.some((v) => {
+    ? permissions.some((v: string) => {
         return all_permission === v || v === permission;
       })
     : false;
@@ -12,7 +12,7 @@ function authPermission(permission: string) {
 
 function authRole(role: string) {
   const super_admin = 'role_admin';
-  const roles = useUserStore().roles;
+  const roles = useUserStore().userRoles;
   return role && role.length > 0
     ? roles.some((v) => {
         return super_admin === v || v === role;

@@ -1,85 +1,73 @@
 <script setup lang="ts">
-import type { FileItem, FileQuery } from '#/api/system/file';
+import type { VbenFormSchema } from '@vben/common-ui';
 
-import { h, reactive, ref } from 'vue';
+import type { VxeTableGridOptions } from '#/adapter/vxe-table';
+import type { FileItem } from '#/api/system/file';
 
-import { useWindowSize } from '@vueuse/core';
+import { useVbenModal } from '@vben/common-ui';
+import { $t } from '@vben/locales';
+
 import { ElMessage, ElMessageBox } from 'element-plus';
 
+import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import {
   calcDirSize,
+  cleanRecycleBin,
   deleteRecycleFile,
   listRecycleFiles,
   restoreRecycleFile,
 } from '#/api/system/file';
 import { FileTypeList } from '#/constant/file';
-import { useTable } from '#/hooks/modules/useTable';
+import { isMobile } from '#/utils';
 import { formatFileSize } from '#/utils/file';
 import has from '#/utils/has';
 
 const emit = defineEmits<{
   (e: 'close'): void;
+  (e: 'click', record: FileItem): void;
+  (e: 'dblclick', record: FileItem): void;
 }>();
 
-const visible = ref(false);
-const { width } = useWindowSize();
-
-const queryForm = reactive<FileQuery>({
-  sort: ['updateTime,desc'],
-});
-const {
-  tableData: dataList,
-  loading,
-  pagination,
-  search,
-  handleDelete,
-} = useTable((page) => listRecycleFiles({ ...queryForm, ...page }), {
-  immediate: false,
-});
-// const columns: TableInstance['columns'] = [
-const columns: any = [
-  {
-    title: '序号',
-    width: 66,
-    align: 'center',
-    render: ({ rowIndex }) =>
-      h(
-        'span',
-        {},
-        rowIndex + 1 + (pagination.current - 1) * pagination.pageSize,
-      ),
-  },
-  {
-    title: '名称',
-    dataIndex: 'originalName',
-    slotName: 'originalName',
-    minWidth: 100,
-    ellipsis: true,
-    tooltip: true,
-  },
-  { title: '类型', dataIndex: 'type', slotName: 'type', width: 100 },
-  { title: '大小', dataIndex: 'size', slotName: 'size' },
-  { title: '删除时间', dataIndex: 'updateTime', width: 180 },
-  {
-    title: '操作',
-    dataIndex: 'action',
-    slotName: 'action',
-    width: 130,
-    align: 'center',
-    fixed: isMobile() ? undefined : 'right',
-    show: has.hasPermOr([
-      'system:fileRecycle:restore',
-      'system:fileRecycle:delete',
-    ]),
-  },
-];
-
-// 重置
-const reset = () => {
-  queryForm.originalName = undefined;
-  queryForm.type = undefined;
-  search();
-};
+function useGridFieldColumns(): VxeTableGridOptions['columns'] {
+  return [
+    { type: 'seq', width: 50, fixed: 'left' },
+    {
+      title: '名称',
+      field: 'originalName',
+      minWidth: 100,
+      slots: { default: 'originalName' },
+      showOverflow: true,
+    },
+    {
+      title: '类型',
+      field: 'type',
+      slots: { default: 'type' },
+      width: 100,
+    },
+    {
+      title: '大小',
+      field: 'size',
+      slots: { default: 'size' },
+    },
+    {
+      title: '删除时间',
+      field: 'updateTime',
+      width: 180,
+    },
+    {
+      title: $t('common.operation'),
+      field: 'action',
+      slots: { default: 'action' },
+      width: 130,
+      align: 'center',
+      fixed: isMobile() ? undefined : 'right',
+      visible: has.hasPermOr([
+        'system:fileRecycle:restore',
+        'system:fileRecycle:delete',
+      ]),
+    },
+  ];
+}
 
 // 获取文件类型
 const getFileType = (type: number) => {
@@ -113,7 +101,8 @@ const onRestore = (record: FileItem) => {
     .then(async () => {
       await restoreRecycleFile(record.id);
       ElMessage.success('还原成功');
-      search();
+      await tableGridApi.query();
+      return true;
     })
     .catch(() => {
       ElMessage({
@@ -125,123 +114,191 @@ const onRestore = (record: FileItem) => {
 
 // 删除
 const onDelete = (record: FileItem) => {
-  return handleDelete(() => deleteRecycleFile(record.id), {
-    content: `是否确定删除${record.type === 0 ? '文件夹' : '文件'}「${record.originalName}」？`,
-    showModal: true,
-  });
+  ElMessageBox.confirm(
+    `是否确定删除${record.type === 0 ? '文件夹' : '文件'}「${record.originalName}」？`,
+    '提示',
+    {
+      confirmButtonClass: 'el-button--danger',
+      confirmButtonText: 'OK',
+      cancelButtonText: 'Cancel',
+      type: 'warning',
+    },
+  )
+    .then(async () => {
+      await deleteRecycleFile(record.id);
+      ElMessage.success('删除成功');
+      await tableGridApi.query();
+      return true;
+    })
+    .catch(() => {});
 };
 
 // 清空回收站
 const onClean = () => {
-  // Modal.warning({
-  //   title: '提示',
-  //   content: '是否确定清空回收站？',
-  //   hideCancel: false,
-  //   maskClosable: false,
-  //   onOk: async () => {
-  //     await cleanRecycleBin();
-  //     Message.success('清空成功');
-  //     search();
-  //   },
-  // });
+  ElMessageBox.confirm('是否确定清空回收站？', '提示', {
+    confirmButtonClass: 'el-button--danger',
+    confirmButtonText: 'OK',
+    cancelButtonText: 'Cancel',
+    type: 'warning',
+  })
+    .then(async () => {
+      await cleanRecycleBin();
+      ElMessage.success('清空成功');
+      await tableGridApi.query();
+      return true;
+    })
+    .catch(() => {});
 };
 
-// 关闭
-const onClose = () => {
-  visible.value = false;
-  dataList.value = [];
-  emit('close');
+const [Modal] = useVbenModal({
+  centered: true,
+  showCancelButton: false,
+  showConfirmButton: false,
+  onClosed() {
+    // 关闭弹窗时触发
+    emit('close');
+  },
+});
+
+function useGridSearchFormSchema(): VbenFormSchema[] {
+  return [
+    {
+      fieldName: 'originalName',
+      label: '搜索名称',
+      component: 'Input',
+    },
+  ];
+}
+
+// 单击事件
+const handleClick = (record: FileItem) => {
+  emit('click', record);
 };
 
-// 打开
-const onOpen = () => {
-  reset();
-  visible.value = true;
+// 双击事件
+const handleDblclickFile = (item: FileItem) => {
+  emit('dblclick', item);
 };
 
-defineExpose({ onOpen });
+const [TableGrid, tableGridApi] = useVbenVxeGrid({
+  formOptions: {
+    schema: useGridSearchFormSchema(),
+    submitOnChange: true,
+    showCollapseButton: false,
+    wrapperClass: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
+  },
+  gridOptions: {
+    columns: useGridFieldColumns(),
+    border: true,
+    height: 'auto',
+    keepSource: true,
+    columnConfig: {
+      resizable: true,
+    },
+    proxyConfig: {
+      autoLoad: true,
+      response: {
+        list: 'list',
+      },
+      ajax: {
+        query: async ({ page }, formValues) => {
+          const res = await listRecycleFiles({
+            page: page.currentPage,
+            size: page.pageSize,
+            ...formValues,
+            sort: ['updateTime,desc'],
+          });
+          return res;
+        },
+      },
+    },
+    rowConfig: {
+      keyField: 'id',
+      isHover: true,
+    },
+    toolbarConfig: {
+      custom: true,
+      export: false,
+      refresh: true,
+      refreshOptions: {
+        code: 'query',
+      },
+      search: true,
+      zoom: true,
+      zoomOptions: {},
+    },
+  } as VxeTableGridOptions<FileItem>,
+});
 </script>
 
 <template>
-  <a-modal
-    v-model:visible="visible"
-    title="文件回收站"
-    :width="width >= 1100 ? 1100 : '100%'"
-    draggable
-    :footer="false"
-    @close="onClose"
-  >
-    <GiTable
-      row-key="id"
-      :data="dataList"
-      :columns="columns"
-      :loading="loading"
-      :scroll="{ x: '100%', y: '100%', minWidth: 600 }"
-      :pagination="pagination"
-      :disabled-tools="['size', 'setting', 'fullscreen']"
-      :disabled-column-keys="['label']"
-      @refresh="search"
-    >
-      <template #toolbar-left>
-        <a-input-search
-          v-model="queryForm.originalName"
-          placeholder="搜索名称"
-          allow-clear
-          style="width: 200px"
-          @search="search"
-        />
-        <a-button @click="reset">
-          <template #icon><icon-refresh /></template>
-          <template #default>重置</template>
-        </a-button>
-      </template>
-      <template #toolbar-right>
-        <a-button
-          v-permission="['system:fileRecycle:clean']"
-          type="outline"
-          status="danger"
+  <Modal class="h-[90%] w-[90%]" title="文件回收站">
+    <TableGrid>
+      <template #toolbar-tools>
+        <el-button
+          v-access:code="['system:fileRecycle:clean']"
+          type="danger"
           @click="onClean"
         >
-          <template #icon><icon-delete /></template>
-          <template #default>清空回收站</template>
-        </a-button>
+          <SvgDelete />
+          清空回收站
+        </el-button>
       </template>
-      <template #type="{ record }">{{ getFileType(record.type) }}</template>
-      <template #size="{ record }">
-        <span
-          v-if="record.type === 0"
-          v-permission="['system:file:calcDirSize']"
+      <template #originalName="{ row }">
+        <section
+          class="file-name"
+          @click="handleClick(row)"
+          @dblclick="handleDblclickFile(row)"
         >
-          <a-link v-if="record.size === null" @click="calculateDirSize(record)">
+          <!-- <div class="file-image">
+            <FileImage :data="row" />
+          </div> -->
+          {{ row.originalName }}
+        </section>
+      </template>
+      <template #type="{ row }">{{ getFileType(row.type) }}</template>
+      <template #size="{ row }">
+        <span v-if="row.type === 0" v-access:code="['system:file:calcDirSize']">
+          <el-link v-if="row.size === null" @click="calculateDirSize(row)">
             计算
-          </a-link>
+          </el-link>
           <span v-else>
-            {{ formatFileSize(record.size) }}
+            {{ formatFileSize(row.size) }}
           </span>
         </span>
-        <span v-else>{{ formatFileSize(record.size) }}</span>
+        <span v-else>{{ formatFileSize(row.size) }}</span>
       </template>
-      <template #action="{ record }">
-        <a-space>
-          <a-link
-            v-permission="['system:fileRecycle:restore']"
-            title="还原"
-            @click="onRestore(record)"
-          >
-            还原
-          </a-link>
-          <a-link
-            v-permission="['system:fileRecycle:delete']"
-            status="danger"
-            title="删除"
-            @click="onDelete(record)"
-          >
-            删除
-          </a-link>
-        </a-space>
+      <template #action="{ row }">
+        <el-space>
+          <span v-access:code="['system:fileRecycle:restore']">
+            <ElButton type="warning" text link @click="onRestore(row)">
+              还原
+            </ElButton>
+          </span>
+          <span v-access:code="['system:fileRecycle:delete']">
+            <ElButton type="danger" text link @click="onDelete(row)">
+              {{ $t('pages.common.delete') }}
+            </ElButton>
+          </span>
+        </el-space>
       </template>
-    </GiTable>
-  </a-modal>
+    </TableGrid>
+  </Modal>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.file-name {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  cursor: pointer;
+}
+
+.file-image {
+  width: 30px;
+  height: 30px;
+  margin-right: 10px;
+}
+</style>

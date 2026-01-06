@@ -7,6 +7,7 @@ import type { ExcelConfig } from '#/components/FilePreview/type';
 import { computed, defineAsyncComponent, onMounted, reactive, ref } from 'vue';
 import { onBeforeRouteUpdate, useRoute } from 'vue-router';
 
+import { useVbenModal } from '@vben/common-ui';
 import {
   SvgAppsIcon,
   SvgDeleteIcon,
@@ -36,14 +37,14 @@ import {
   previewFileVideoModal,
 } from '../../components/index';
 import FileGrid from './FileGrid.vue';
-// import RecycleBinModal from './RecycleBinModal.vue';
+import RecycleBinModal from './RecycleBinModal.vue';
 import useFileManage from './useFileManage';
 
 import 'viewerjs/dist/viewer.css';
 
-// const FilePreview = defineAsyncComponent(
-//   () => import('#/components/FilePreview/index.vue'),
-// );
+const FilePreview = defineAsyncComponent(
+  () => import('#/components/FilePreview/index.vue'),
+);
 
 const FileList = defineAsyncComponent(() => import('./FileList.vue'));
 const route = useRoute();
@@ -71,6 +72,7 @@ const {
   loading,
   pagination,
   search,
+  getTableData,
 } = useTable((page) => listFile({ ...queryForm, ...page }), {
   immediate: false,
   paginationOption,
@@ -81,6 +83,7 @@ const pathNameMap = ref<Map<string, string>>(new Map());
 
 // 点击文件
 const handleClickFile = (item: FileItem) => {
+  item.extension = item.extension?.toLowerCase();
   if (ImageTypes.includes(item.extension) && item.url) {
     const imgList: string[] = fileList.value
       .filter((i) => ImageTypes.includes(i.extension))
@@ -302,9 +305,12 @@ const handleBreadcrumbClick = (item) => {
 };
 
 // 回收站
-// const RecycleBinModalRef = ref<InstanceType<typeof RecycleBinModal>>();
+const [FormModal, formModalApi] = useVbenModal({
+  connectedComponent: RecycleBinModal,
+  destroyOnClose: true,
+});
 const onRecycleBin = () => {
-  // RecycleBinModalRef.value?.onOpen();
+  formModalApi.open();
 };
 
 onMounted(() => {
@@ -487,7 +493,7 @@ onMounted(() => {
       <!-- 文件列表为空时显示 -->
       <el-empty v-if="fileList.length === 0" />
     </div>
-    <!-- <FilePreview ref="filePreviewRef" /> -->
+    <FilePreview ref="filePreviewRef" />
     <div class="pagination">
       <div>
         <el-pagination
@@ -496,6 +502,8 @@ onMounted(() => {
           :page-sizes="pagination.pageSizeOptions"
           layout="total, sizes, prev, pager, next, jumper"
           :total="pagination.total"
+          @current-change="getTableData"
+          @size-change="search"
         />
       </div>
     </div>
@@ -517,7 +525,7 @@ onMounted(() => {
     </el-dialog>
 
     <!-- 回收站 -->
-    <!-- <RecycleBinModal ref="RecycleBinModalRef" @close="" /> -->
+    <FormModal @close="search" />
   </div>
 </template>
 

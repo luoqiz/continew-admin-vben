@@ -70,7 +70,8 @@ const close = () => {
       <section style="padding: 10px 14px 14px">
         <div ref="audioHeadRef" class="audio-box__header">
           <div class="audio-name">
-            <icon-music :size="16" spin />
+            <!-- <icon-music :size="16" spin /> -->
+            <SvgMusicIcon class="size-16" />
             <span>{{ props.data?.originalName }}</span>
           </div>
           <div class="close-icon" @click="close">

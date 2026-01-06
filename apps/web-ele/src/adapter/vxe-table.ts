@@ -7,8 +7,10 @@ import { h, isRef } from 'vue';
 
 import { IconifyIcon } from '@vben/icons';
 import { $te } from '@vben/locales';
-import { setupVbenVxeTable, useVbenVxeGrid } from '@vben/plugins/vxe-table';
-
+import {
+  setupVbenVxeTable,
+  useVbenVxeGrid as useGrid,
+} from '@vben/plugins/vxe-table';
 import { get, isFunction, isString, isValidColor } from '@vben/utils';
 
 import { objectOmit } from '@vueuse/core';
@@ -58,7 +60,6 @@ setupVbenVxeTable({
         return h(ElImage, { src, previewSrcList: [src], ...props });
       },
     });
-
 
     // 单元格是否渲染： Tag
     vxeUI.renderer.add('CellYesNoTag', {

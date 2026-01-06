@@ -127,11 +127,6 @@ const [Grid, gridApi] = useVbenVxeGrid({
     checkboxChange: (params: VxeGridDefines.CheckboxChangeEventParams) => {
       select(params.row);
     },
-    // 全选事件
-    // checkboxAll: (params: VxeGridDefines.CheckboxAllEventParams) => {
-    //   const records = params.$grid.getCheckboxRecords();
-    //   console.log('checkboxAll------', records);
-    // },
   },
 });
 
