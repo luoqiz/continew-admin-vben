@@ -2,8 +2,6 @@ import type * as T from './type';
 
 import { requestClient as http } from '#/api/request';
 
-export type * from './type';
-
 const BASE_URL = '/system/menu';
 
 /** @desc 查询菜单列表 */

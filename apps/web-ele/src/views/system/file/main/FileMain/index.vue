@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { UploadRequestOptions } from 'element-plus';
 
-import type { FileItem, FileQuery } from '#/api/system/file';
+import type { FileItem, FileQuery } from '#/api/system/type';
 import type { ExcelConfig } from '#/components/FilePreview/type';
 
 import { computed, defineAsyncComponent, onMounted, reactive, ref } from 'vue';

@@ -10,3 +10,21 @@ export const formatFileSize = (fileSize: number) => {
   const size = srcSize / 1024 ** index;
   return `${size.toFixed(2)} ${unitArr[index]}`;
 };
+
+/** @desc 文件的转换base64 */
+export const fileToBase64 = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.addEventListener('load', () => {
+      if (reader.result) {
+        resolve(reader.result.toString());
+      } else {
+        reject(new Error('文件转base64失败'));
+      }
+    });
+    reader.addEventListener('error', (error) => {
+      reject(error);
+    });
+    reader.readAsDataURL(file);
+  });
+};

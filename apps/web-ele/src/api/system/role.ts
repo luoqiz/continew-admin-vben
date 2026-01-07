@@ -28,19 +28,12 @@ export interface RoleResp extends BaseEntity {
   deptCheckStrictly: string;
 }
 
-export interface RoleDetailResp extends BaseEntity {
-  id: string;
-  name: string;
-  code: string;
-  dataScope: string;
-  description: string;
-  sort: string;
-  isSystem: string;
-  menuCheckStrictly: boolean;
+export type RoleDetailResp = RoleResp & {
   deptCheckStrictly: boolean;
-  menuIds: Array<number>;
   deptIds: Array<number>;
-}
+  menuCheckStrictly: boolean;
+  menuIds: Array<number>;
+};
 
 export interface RoleQuery {
   description: string | undefined;

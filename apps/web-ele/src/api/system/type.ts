@@ -1,3 +1,5 @@
+import type { PageQuery } from '#/types/api';
+
 /** 用户类型 */
 export interface UserResp {
   id: string;
@@ -42,36 +44,6 @@ export interface UserQuery {
 }
 export interface UserPageQuery extends PageQuery, UserQuery {}
 
-/** 角色类型 */
-export interface RoleResp {
-  id: string;
-  name: string;
-  code: string;
-  sort: number;
-  description: string;
-  dataScope: number;
-  isSystem: boolean;
-  createUserString: string;
-  createTime: string;
-  updateUserString: string;
-  updateTime: string;
-  disabled: boolean;
-}
-export type RoleDetailResp = RoleResp & {
-  deptCheckStrictly: boolean;
-  deptIds: Array<number>;
-  menuCheckStrictly: boolean;
-  menuIds: Array<number>;
-};
-export interface RolePermissionResp {
-  id: string;
-  title: string;
-  parentId: string;
-  permission?: string;
-  children?: RolePermissionResp[];
-  permissions?: RolePermissionResp[];
-  isChecked?: boolean;
-}
 export interface RoleUserResp {
   id: string;
   username: string;
@@ -86,16 +58,6 @@ export interface RoleUserResp {
   roleNames: Array<string>;
   disabled: boolean;
 }
-export interface RoleQuery {
-  description?: string;
-  sort: Array<string>;
-}
-export interface RoleUserQuery {
-  description?: string;
-  sort: Array<string>;
-}
-export interface RoleUserPageQuery extends PageQuery, RoleUserQuery {}
-
 /** 菜单类型 */
 export interface MenuResp {
   id: string;
@@ -234,6 +196,7 @@ export interface FileItem {
   createTime: string;
   updateUserString?: string;
   updateTime?: string;
+  status?: string;
 }
 /** 文件资源统计信息 */
 export interface FileStatisticsResp {
@@ -347,12 +310,12 @@ export interface BasicConfig {
 
 /** 基础配置类型 */
 export interface SiteConfig {
-  SITE_FAVICON: OptionResp;
-  SITE_LOGO: OptionResp;
-  SITE_TITLE: OptionResp;
-  SITE_DESCRIPTION: OptionResp;
-  SITE_COPYRIGHT: OptionResp;
-  SITE_BEIAN: OptionResp;
+  SITE_FAVICON?: OptionResp;
+  SITE_LOGO?: OptionResp;
+  SITE_TITLE?: OptionResp;
+  SITE_DESCRIPTION?: OptionResp;
+  SITE_COPYRIGHT?: OptionResp;
+  SITE_BEIAN?: OptionResp;
 }
 
 /** 安全配置类型 */
@@ -380,7 +343,7 @@ export interface MailConfig {
 
 /** 登录配置类型 */
 export interface LoginConfig {
-  LOGIN_CAPTCHA_ENABLED: OptionResp;
+  LOGIN_CAPTCHA_ENABLED?: OptionResp;
 }
 
 /** 短信配置类型 */

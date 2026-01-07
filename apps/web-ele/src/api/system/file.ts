@@ -4,8 +4,6 @@ import type { PageRes } from '#/types/api';
 
 import { requestClient as http } from '#/api/request';
 
-export type * from './type';
-
 const BASE_URL = '/system/file';
 const RECYCLE_URL = `${BASE_URL}/recycle`;
 
