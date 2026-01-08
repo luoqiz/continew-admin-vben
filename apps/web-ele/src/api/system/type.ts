@@ -287,11 +287,11 @@ export interface ClientPageQuery extends ClientQuery, PageQuery {}
 
 /** 系统参数类型 */
 export interface OptionResp {
-  id: string;
-  name: string;
-  code: string;
-  value: string;
-  description: string;
+  id?: string;
+  name?: string;
+  code?: string;
+  value?: string;
+  description?: string;
 }
 
 export interface OptionQuery {
@@ -343,7 +343,7 @@ export interface MailConfig {
 
 /** 登录配置类型 */
 export interface LoginConfig {
-  LOGIN_CAPTCHA_ENABLED?: OptionResp;
+  LOGIN_CAPTCHA_ENABLED: OptionResp;
 }
 
 /** 短信配置类型 */

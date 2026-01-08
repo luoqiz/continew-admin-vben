@@ -32,7 +32,9 @@ const rules = reactive<FormRules<typeof form>>({
     { required: true, message: '请选择', trigger: 'blur' },
   ],
 });
-const loginConfig = ref<LoginConfig>({});
+const loginConfig = ref<LoginConfig>({
+  LOGIN_CAPTCHA_ENABLED: {},
+});
 
 // 重置
 const reset = () => {
@@ -121,7 +123,7 @@ onMounted(() => {
     >
       <el-form-item
         field="LOGIN_CAPTCHA_ENABLED"
-        :label="loginConfig.LOGIN_CAPTCHA_ENABLED?.name"
+:label="loginConfig.LOGIN_CAPTCHA_ENABLED.name"
       >
         <el-switch
           v-model="form.LOGIN_CAPTCHA_ENABLED"
