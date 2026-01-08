@@ -123,7 +123,7 @@ onMounted(() => {
     >
       <el-form-item
         field="LOGIN_CAPTCHA_ENABLED"
-:label="loginConfig.LOGIN_CAPTCHA_ENABLED.name"
+        :label="loginConfig.LOGIN_CAPTCHA_ENABLED.name"
       >
         <el-switch
           v-model="form.LOGIN_CAPTCHA_ENABLED"
