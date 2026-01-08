@@ -109,6 +109,7 @@ const getDataList = async () => {
   // eslint-disable-next-line unicorn/no-array-reduce
   securityConfig.value = data.reduce(
     (obj: SecurityConfig, option: OptionResp) => {
+      option.value = Number.parseInt(option.value);
       obj = { ...obj, [option.code]: option };
       return obj;
     },
@@ -260,10 +261,6 @@ onMounted(() => {
         :label="securityConfig.PASSWORD_ALLOW_CONTAIN_USERNAME.name"
         :help="securityConfig.PASSWORD_ALLOW_CONTAIN_USERNAME.description"
       >
-        <!-- <el-switch v-model="form.PASSWORD_ALLOW_CONTAIN_USERNAME" type="round" :checked-value="1" :unchecked-value="0">
-          <template #checked>是</template>
-          <template #unchecked>否</template>
-        </el-switch> -->
         <el-switch
           v-model="form.PASSWORD_ALLOW_CONTAIN_USERNAME"
           type="round"

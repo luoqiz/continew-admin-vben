@@ -290,7 +290,7 @@ export interface OptionResp {
   id?: string;
   name?: string;
   code?: string;
-  value?: string;
+  value?: number | string;
   description?: string;
 }
 
