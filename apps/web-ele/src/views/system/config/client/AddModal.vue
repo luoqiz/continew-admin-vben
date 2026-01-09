@@ -1,75 +1,85 @@
 <script setup lang="ts">
-import type { ClientResp } from '#/api'
+import type { ClientResp } from '#/api';
 
-import { ref, computed } from 'vue'
-import { ElMessage } from 'element-plus'
+import { computed, ref } from 'vue';
 
-import { useVbenForm } from '#/adapter/form'
-import { useVbenDrawer } from '@vben/common-ui'
-import { addClient, getClient, updateClient } from '#/api'
-import { useClientEditFormSchema } from './ClientData'
-import { defaultFormValueGetter, useBeforeCloseDiff } from '#/utils/popup'
+import { useVbenDrawer } from '@vben/common-ui';
 
-const emits = defineEmits(['success'])
-const dataId = ref('')
-const isUpdate = computed(() => !!dataId.value)
+import { ElMessage } from 'element-plus';
 
-const [ClientForm, clientFormApi] = useVbenForm({ schema: useClientEditFormSchema(), submitButtonOptions: { show: false } })
+import { useVbenForm } from '#/adapter/form';
+import { addClient, getClient, updateClient } from '#/api';
+import { defaultFormValueGetter, useBeforeCloseDiff } from '#/utils/popup';
 
-const { onBeforeClose, markInitialized, resetInitialized } = useBeforeCloseDiff({
-  initializedGetter: defaultFormValueGetter(clientFormApi),
-  currentGetter: defaultFormValueGetter(clientFormApi),
-})
+import { useClientEditFormSchema } from './ClientData';
+
+const emits = defineEmits(['success']);
+const dataId = ref('');
+const isUpdate = computed(() => !!dataId.value);
+
+const [ClientForm, clientFormApi] = useVbenForm({
+  schema: useClientEditFormSchema(),
+  submitButtonOptions: { show: false },
+});
+
+const { onBeforeClose, markInitialized, resetInitialized } = useBeforeCloseDiff(
+  {
+    initializedGetter: defaultFormValueGetter(clientFormApi),
+    currentGetter: defaultFormValueGetter(clientFormApi),
+  },
+);
 
 async function handleClosed() {
-  await clientFormApi.resetForm()
-  resetInitialized()
+  await clientFormApi.resetForm();
+  resetInitialized();
 }
 
 const [Drawer, drawerApi] = useVbenDrawer({
   onBeforeClose,
   onClosed: handleClosed,
   async onConfirm() {
-    const { valid } = await clientFormApi.validate()
-    if (!valid) return false
-    drawerApi.lock()
+    const { valid } = await clientFormApi.validate();
+    if (!valid) return false;
+    drawerApi.lock();
     try {
       if (isUpdate.value) {
-        await updateClient(clientFormApi.form.values, dataId.value)
-        ElMessage.success('修改成功')
+        await updateClient(clientFormApi.form.values, dataId.value);
+        ElMessage.success('修改成功');
       } else {
-        await addClient(clientFormApi.form.values)
-        ElMessage.success('新增成功')
+        await addClient(clientFormApi.form.values);
+        ElMessage.success('新增成功');
       }
-      resetInitialized()
-      emits('success')
-      drawerApi.close()
-      return true
+      resetInitialized();
+      emits('success');
+      drawerApi.close();
+      return true;
     } catch (error) {
-      console.error(error)
+      console.error(error);
     } finally {
-      drawerApi.unlock()
+      drawerApi.unlock();
     }
   },
   async onOpenChange(isOpen) {
     if (isOpen) {
       try {
-        drawerApi.lock(true)
-        const data = drawerApi.getData<ClientResp>()
-        dataId.value = data?.id
+        drawerApi.lock(true);
+        const data = drawerApi.getData<ClientResp>();
+        dataId.value = data?.id;
         if (data && data.id) {
-          const res = await getClient(data.id)
-          clientFormApi.form.setValues(res)
+          const res = await getClient(data.id);
+          clientFormApi.form.setValues(res);
         }
       } finally {
-        await markInitialized()
-        drawerApi.unlock()
+        await markInitialized();
+        drawerApi.unlock();
       }
     }
   },
-})
+});
 
-const getDrawerTitle = computed(() => (isUpdate.value ? '修改客户端' : '新增客户端'))
+const getDrawerTitle = computed(() =>
+  isUpdate.value ? '修改客户端' : '新增客户端',
+);
 </script>
 
 <template>

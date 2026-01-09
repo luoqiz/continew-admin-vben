@@ -1,3 +1,4 @@
+export * from './client';
 export * from './common';
 export * from './dept';
 export * from './dict';
@@ -7,6 +8,5 @@ export * from './option';
 export * from './role';
 export * from './smsConfig';
 export * from './storage';
-export * from './client';
 export type * from './type';
 export * from './user-profile';
