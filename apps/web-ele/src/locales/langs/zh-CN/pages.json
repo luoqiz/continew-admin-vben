@@ -33,6 +33,8 @@
     "tip": "提示",
     "unlock": "解锁",
     "second": "秒",
-    "notAvailable": "暂无数据"
+    "notAvailable": "暂无数据",
+    "yes": "是",
+    "no": "否"
   }
 }

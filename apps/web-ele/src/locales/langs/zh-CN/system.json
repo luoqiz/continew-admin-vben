@@ -177,6 +177,33 @@
     "createTime": "操作时间",
     "createUserString": "操作人"
   },
+  "sms": {
+    "listTitle": "短信配置",
+    "name": "名称",
+    "supplier": "厂商",
+    "accessKey": "Access Key",
+    "secretKey": "Secret Key",
+    "signature": "短信签名",
+    "templateId": "模板 ID",
+    "isDefault": "是否默认",
+    "sendLog": "发送记录",
+    "setDefault": "设为默认",
+    "status": "状态",
+    "weight": "权重",
+    "retryInterval": "重试间隔",
+    "maxRetries": "重试次数",
+    "maximum": "发送上限",
+    "supplierConfig": "厂商配置"
+  },
+  "storage": {
+    "listTitle": "存储配置",
+    "name": "名称",
+    "code": "编码",
+    "type": "类型",
+    "recycleBinEnabled": "启用回收站",
+    "recycleBinPath": "回收站路径",
+    "setDefault": "设为默认"
+  },
   "notice": {
     "listTitle": "公告管理",
     "id": "ID",

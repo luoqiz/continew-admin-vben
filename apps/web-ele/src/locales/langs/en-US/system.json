@@ -152,6 +152,33 @@
     "createTime": "",
     "createUserString": ""
   },
+  "sms": {
+    "listTitle": "SMS Config",
+    "name": "Name",
+    "supplier": "Supplier",
+    "accessKey": "Access Key",
+    "secretKey": "Secret Key",
+    "signature": "Signature",
+    "templateId": "Template ID",
+    "isDefault": "Is Default",
+    "sendLog": "Send Log",
+    "setDefault": "Set Default",
+    "status": "Status",
+    "weight": "Weight",
+    "retryInterval": "Retry Interval",
+    "maxRetries": "Max Retries",
+    "maximum": "Maximum",
+    "supplierConfig": "Supplier Config"
+  },
+  "storage": {
+    "listTitle": "Storage Config",
+    "name": "Name",
+    "code": "Code",
+    "type": "Type",
+    "recycleBinEnabled": "Recycle Bin Enabled",
+    "recycleBinPath": "Recycle Bin Path",
+    "setDefault": "Set Default"
+  },
   "notice": {
     "listTitle": "sys_notice manage",
     "id": "Id",

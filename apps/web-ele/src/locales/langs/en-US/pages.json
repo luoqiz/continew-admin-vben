@@ -33,6 +33,8 @@
     "resetAdminPwd": "Reset admin password",
     "clearCache": "Clear Cache",
     "second": "Second",
-    "notAvailable": "No data available"
+    "notAvailable": "No data available",
+    "yes": "Yes",
+    "no": "No"
   }
 }
