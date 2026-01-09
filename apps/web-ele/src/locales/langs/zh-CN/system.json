@@ -223,6 +223,29 @@
     "updateTime": "修改时间",
     "tenantId": "租户ID"
   },
+  "storage": {
+    "listTitle": "存储配置",
+    "name": "名称",
+    "code": "编码",
+    "type": "类型",
+    "recycleBinEnabled": "启用回收站",
+    "recycleBinPath": "回收站路径",
+    "setDefault": "设为默认",
+    "status": "状态"
+  },
+  "client": {
+    "listTitle": "客户端配置",
+    "clientId": "客户端ID",
+    "clientType": "客户端类型",
+    "authType": "认证类型",
+    "activeTimeout": "Token最低活跃频率",
+    "timeout": "Token有效期",
+    "isConcurrent": "多地登录",
+    "replacedRange": "下线范围",
+    "maxLoginCount": "登录数量",
+    "overflowLogoutMode": "溢出处理",
+    "status": "状态"
+  },
   "msg": {
     "title": "公告标题",
     "type": "分类",
