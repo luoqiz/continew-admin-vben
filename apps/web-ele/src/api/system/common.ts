@@ -15,7 +15,7 @@ export function listSiteOptionDict() {
 }
 
 /** @desc 上传文件 */
-export function uploadFile(data: FormData) {
+export function upload(data: FormData) {
   return http.post(`${BASE_URL}/file`, data);
 }
 

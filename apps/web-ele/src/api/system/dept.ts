@@ -4,8 +4,6 @@ import type * as T from './type';
 
 import { requestClient as http } from '#/api/request';
 
-export type * from './type';
-
 const BASE_URL = '/system/dept';
 
 /** @desc 查询部门列表 */
