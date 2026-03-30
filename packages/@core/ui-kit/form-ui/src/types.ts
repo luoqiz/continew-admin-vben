@@ -68,6 +68,14 @@ export type FormActions = FormContext<GenericObject>;
 
 export type CustomRenderType = (() => Component | string) | string;
 
+// 动态渲染参数
+export type CustomParamsRenderType =
+  | ((
+      value: Partial<Record<string, any>>,
+      actions: FormActions,
+    ) => Component | string)
+  | string;
+
 export type FormSchemaRuleType =
   | 'required'
   | 'selectRequired'
@@ -255,7 +263,7 @@ export interface FormSchema<
   /** 字段名 */
   fieldName: string;
   /** 帮助信息 */
-  help?: CustomRenderType;
+  help?: CustomParamsRenderType;
   /** 是否隐藏表单项 */
   hide?: boolean;
   /** 表单项 */
@@ -351,9 +359,9 @@ export interface ActionButtonOptions extends VbenButtonProps {
 export interface VbenFormProps<
   T extends BaseFormComponentType = BaseFormComponentType,
 > extends Omit<
-    FormRenderProps<T>,
-    'componentBindEventMap' | 'componentMap' | 'form'
-  > {
+  FormRenderProps<T>,
+  'componentBindEventMap' | 'componentMap' | 'form'
+> {
   /**
    * 操作按钮是否反转（提交按钮前置）
    */

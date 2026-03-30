@@ -17,6 +17,7 @@ const SvgQQChatIcon = createIconifyIcon('svg:qqchat');
 const SvgWeChatIcon = createIconifyIcon('svg:wechat');
 const SvgDingDingIcon = createIconifyIcon('svg:dingding');
 const SvgTDesignIcon = createIconifyIcon('svg:tdesign-logo');
+const SvgAntdvNextLogoIcon = createIconifyIcon('svg:antdv-next-logo');
 const SvgAlignCenterIcon = createIconifyIcon('svg:align-center');
 const SvgAlignLeftIcon = createIconifyIcon('svg:align-left');
 const SvgAlignRightIcon = createIconifyIcon('svg:align-right');
@@ -349,6 +350,7 @@ export {
   SvgAlignLeftIcon,
   SvgAlignRightIcon,
   SvgAntdvLogoIcon,
+  SvgAntdvNextLogoIcon,
   SvgApiManagementIcon,
   SvgAppsIcon,
   SvgArchiveIcon,
