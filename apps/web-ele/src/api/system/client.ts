@@ -18,12 +18,12 @@ export function getClient(id: string) {
 
 /** @desc 新增客户端 */
 export function addClient(data: any) {
-  return http.post(`${BASE_URL}`, { data });
+  return http.post(`${BASE_URL}`, data);
 }
 
 /** @desc 修改客户端 */
 export function updateClient(data: any, id: string) {
-  return http.put(`${BASE_URL}/${id}`, { data });
+  return http.put(`${BASE_URL}/${id}`, data);
 }
 
 /** @desc 删除客户端 */

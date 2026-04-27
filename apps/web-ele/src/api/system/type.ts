@@ -255,6 +255,9 @@ export interface ClientResp {
   activeTimeout: string;
   timeout: string;
   status: string;
+  isConcurrent: boolean;
+  isEnableRefreshToken: boolean;
+  refreshTokenTimeout: number;
   createUser: string;
   createTime: string;
   updateUser: string;
@@ -270,6 +273,9 @@ export interface ClientDetailResp {
   activeTimeout: string;
   timeout: string;
   status: string;
+  isConcurrent: boolean;
+  isEnableRefreshToken: boolean;
+  refreshTokenTimeout: number;
   createUser: string;
   createTime: string;
   updateUser: string;

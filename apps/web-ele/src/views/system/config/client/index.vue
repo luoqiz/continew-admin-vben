@@ -89,6 +89,13 @@ const handleDelete = async (row: ClientResp) => {
         <ElTag v-else type="danger">{{ $t('common.disabled') }}</ElTag>
       </template>
 
+      <template #isEnableRefreshToken="{ row }">
+        <ElTag v-if="row.isEnableRefreshToken" type="success">
+          {{ $t('common.enabled') }}
+        </ElTag>
+        <ElTag v-else type="danger">{{ $t('common.disabled') }}</ElTag>
+      </template>
+
       <template #action="{ row }">
         <ElSpace>
           <ElButton type="text" @click="() => handleEdit(row)">

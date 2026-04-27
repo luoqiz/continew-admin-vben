@@ -215,6 +215,8 @@
     "authType": "Auth Type",
     "activeTimeout": "Active Timeout",
     "timeout": "Timeout",
+    "isEnableRefreshToken": "Enable Refresh Token",
+    "refreshTokenTimeout": "Refresh Token Timeout",
     "isConcurrent": "Is Concurrent",
     "replacedRange": "Replaced Range",
     "maxLoginCount": "Max Login Count",
