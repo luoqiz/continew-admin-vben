@@ -18,12 +18,12 @@ export function getSmsConfig(id: string) {
 
 /** @desc 新增短信配置 */
 export function addSmsConfig(data: any) {
-  return http.post(`${BASE_URL}`, { data });
+  return http.post(`${BASE_URL}`, data);
 }
 
 /** @desc 修改短信配置 */
 export function updateSmsConfig(data: any, id: string) {
-  return http.put(`${BASE_URL}/${id}`, { data });
+  return http.put(`${BASE_URL}/${id}`, data);
 }
 
 /** @desc 删除短信配置 */
