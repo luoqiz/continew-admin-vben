@@ -1,7 +1,7 @@
 import type { VxeTableGridOptions } from '@vben/plugins/vxe-table';
 import type { Recordable } from '@vben/types';
 
-import type { ComponentType } from './component/index';
+import type { ComponentPropsMap, ComponentType } from './component';
 
 import { h, isRef } from 'vue';
 
@@ -152,7 +152,7 @@ setupVbenVxeTable({
           );
         });
         const className =
-          attrs?.class ?? 'flex flex-row gap-2 items-center justify-center';
+          attrs?.class ?? 'flex flex-row items-center justify-center gap-2';
         return h(
           'div',
           { class: className },
@@ -275,7 +275,7 @@ setupVbenVxeTable({
           link: true,
           ...props,
         };
-        let align = 'end';
+        let align: string;
         switch (column.align) {
           case 'center': {
             align = 'center';
@@ -395,8 +395,8 @@ setupVbenVxeTable({
 });
 
 export const useVbenVxeGrid = <T extends Record<string, any>>(
-  ...rest: Parameters<typeof useGrid<T, ComponentType>>
-) => useGrid<T, ComponentType>(...rest);
+  ...rest: Parameters<typeof useGrid<T, ComponentType, ComponentPropsMap>>
+) => useGrid<T, ComponentType, ComponentPropsMap>(...rest);
 
 export type OnActionClickParams<T = Recordable<any>> = {
   code: string;

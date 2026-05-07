@@ -3,9 +3,29 @@
  * 可用于 vben-form、vben-modal、vben-drawer 等组件使用,
  */
 
+import type {
+  CheckboxGroupProps,
+  CheckboxProps,
+  DatePickerProps,
+  DividerProps,
+  ElTimePicker as ElTimePickerType,
+  ElTreeSelect as ElTreeSelectType,
+  InputNumberProps,
+  InputProps,
+  RadioGroupProps,
+  SelectV2Props,
+  SpaceProps,
+  SwitchProps,
+  UploadProps,
+} from 'element-plus';
+
 import type { Component } from 'vue';
 
-import type { BaseFormComponentType } from '@vben/common-ui';
+import type {
+  ApiComponentSharedProps,
+  BaseFormComponentType,
+  IconPickerProps,
+} from '@vben/common-ui';
 import type { Recordable } from '@vben/types';
 
 import { defineAsyncComponent, defineComponent, h, ref } from 'vue';
@@ -15,6 +35,9 @@ import { $t } from '@vben/locales';
 
 import { ElNotification } from 'element-plus';
 import { isFunction } from 'xe-utils';
+
+type ElTreeSelectSchemaProps = InstanceType<typeof ElTreeSelectType>['$props'];
+type ElTimePickerSchemaProps = InstanceType<typeof ElTimePickerType>['$props'];
 
 const ElButton = defineAsyncComponent(() =>
   Promise.all([
@@ -183,6 +206,28 @@ export type ComponentType =
   | 'Upload'
   | BaseFormComponentType;
 
+/**
+ * 与 {@link ComponentType} 中注册的组件名一一对应，便于 Schema 上 `component` + `componentProps` 联动提示
+ */
+export interface ComponentPropsMap {
+  ApiSelect: ApiComponentSharedProps & SelectV2Props;
+  ApiTreeSelect: ApiComponentSharedProps & ElTreeSelectSchemaProps;
+  Checkbox: CheckboxProps;
+  CheckboxGroup: CheckboxGroupProps;
+  DatePicker: DatePickerProps;
+  Divider: DividerProps;
+  IconPicker: IconPickerProps;
+  Input: InputProps;
+  InputNumber: InputNumberProps;
+  RadioGroup: RadioGroupProps;
+  Select: SelectV2Props;
+  Space: SpaceProps;
+  Switch: SwitchProps;
+  TimePicker: ElTimePickerSchemaProps;
+  TreeSelect: ElTreeSelectSchemaProps;
+  Upload: UploadProps;
+}
+
 async function initComponentAdapter() {
   const components: Partial<Record<ComponentType, Component>> = {
     // 如果你的组件体积比较大，可以使用异步加载
@@ -222,7 +267,8 @@ async function initComponentAdapter() {
       if (Reflect.has(slots, 'default')) {
         defaultSlot = slots.default;
       } else {
-        let { options, isButton } = attrs;
+        const { isButton } = attrs;
+        let options = attrs.options;
         if (isFunction(options)) {
           options = options();
         }

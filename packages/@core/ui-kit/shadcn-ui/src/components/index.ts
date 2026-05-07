@@ -4,6 +4,7 @@ export * from './breadcrumb';
 export * from './button';
 export * from './checkbox';
 export * from './code-view';
+export * from './collapsible';
 export * from './context-menu';
 export * from './count-to-animator';
 export * from './dropdown-menu';
