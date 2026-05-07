@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import type { VbenFormSchema } from '@vben/common-ui';
-import type { BasicOption } from '@vben/types';
 
 import type { ImageCaptchaResp } from '#/api';
 
@@ -10,26 +9,12 @@ import { AuthenticationLogin, z } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
 import { getImageCaptcha } from '#/api';
-import { useAuthStore } from '#/store';
+import { useAuthStore, useTenantStore } from '#/store';
 
 defineOptions({ name: 'Login' });
 
 const authStore = useAuthStore();
-
-const MOCK_USER_OPTIONS: BasicOption[] = [
-  {
-    label: 'Super',
-    value: 'vben',
-  },
-  {
-    label: 'Admin',
-    value: 'admin',
-  },
-  {
-    label: 'User',
-    value: 'jack',
-  },
-];
+const tenantStore = useTenantStore();
 
 const captchaInfo = ref<ImageCaptchaResp>({
   uuid: '',
@@ -40,41 +25,62 @@ const captchaInfo = ref<ImageCaptchaResp>({
 
 const formSchema = computed((): VbenFormSchema[] => {
   return [
+    // {
+    //   component: 'VbenSelect',
+    //   componentProps: {
+    //     options: tenantStore.tenantOptions as BasicOption[],
+    //     placeholder: $t('authentication.selectTenant'),
+    //   },
+    //   dependencies: {
+    //     if: () => tenantStore.tenantEnabled,
+    //     triggerFields: [''],
+    //   },
+    //   fieldName: 'selectAccount',
+    //   label: $t('authentication.selectAccount'),
+    //   rules: z
+    //     .string()
+    //     .min(1, { message: $t('authentication.selectAccount') })
+    //     .optional()
+    //     .default(''),
+    // },
     {
-      component: 'VbenSelect',
+      component: 'VbenInput',
       componentProps: {
-        options: MOCK_USER_OPTIONS,
-        placeholder: $t('authentication.selectAccount'),
+        placeholder: $t('authentication.selectTenant'),
       },
-      fieldName: 'selectAccount',
-      label: $t('authentication.selectAccount'),
-      rules: z
-        .string()
-        .min(1, { message: $t('authentication.selectAccount') })
-        .optional()
-        .default('admin'),
+      dependencies: {
+        if: () => tenantStore.tenantEnabled && !tenantStore.tenantId,
+        triggerFields: [''],
+      },
+      fieldName: 'TenantCode',
+      label: $t('authentication.selectTenant'),
+      // rules: z
+      //   .string()
+      //   .min(1, { message: $t('authentication.selectTenant') })
+      //   .optional()
+      //   .default(''),
     },
     {
       component: 'VbenInput',
       componentProps: {
         placeholder: $t('authentication.usernameTip'),
       },
-      dependencies: {
-        trigger(values, form) {
-          if (values.selectAccount) {
-            const findUser = MOCK_USER_OPTIONS.find(
-              (item) => item.value === values.selectAccount,
-            );
-            if (findUser) {
-              form.setValues({
-                password: 'admin123',
-                username: findUser.value,
-              });
-            }
-          }
-        },
-        triggerFields: ['selectAccount'],
-      },
+      // dependencies: {
+      //   trigger(values, form) {
+      //     if (values.selectAccount) {
+      //       const findUser = MOCK_USER_OPTIONS.find(
+      //         (item) => item.value === values.selectAccount,
+      //       );
+      //       if (findUser) {
+      //         form.setValues({
+      //           password: 'admin123',
+      //           username: findUser.value,
+      //         });
+      //       }
+      //     }
+      //   },
+      //   triggerFields: ['selectAccount'],
+      // },
       fieldName: 'username',
       label: $t('authentication.username'),
       rules: z.string().min(1, { message: $t('authentication.usernameTip') }),
@@ -112,7 +118,7 @@ const formSchema = computed((): VbenFormSchema[] => {
       defaultValue: captchaInfo.value.uuid,
       componentProps: {},
       dependencies: {
-        show: true,
+        show: false,
         disabled: true,
         triggerFields: ['captcha'],
         trigger(values, form) {

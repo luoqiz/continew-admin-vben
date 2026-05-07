@@ -25,6 +25,14 @@ export default defineConfig(async (config: any) => {
         }),
       ],
       server: {
+        host: '0.0.0.0',
+        // 设置允许访问的域名
+        allowedHosts: [
+          'my.custom.domain', // 允许特定的自定义域名
+          '.dev.local',       // 允许该域名下的所有子域名
+        ],
+        // 如果想要允许所有主机名访问（不安全,仅用于临时测试,否则可能遭受DNS重绑定攻击）
+        // allowedHosts: true,
         proxy: {
           [env.VITE_API_PREFIX]: {
             changeOrigin: true,

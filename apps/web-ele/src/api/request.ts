@@ -15,7 +15,7 @@ import { useAccessStore } from '@vben/stores';
 
 import { ElMessage } from 'element-plus';
 
-import { useAuthStore } from '#/store';
+import { useAuthStore, useTenantStore } from '#/store';
 
 import { refreshTokenApi } from './core';
 import { code2statusResponseInterceptor } from './helper';
@@ -68,8 +68,10 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
   client.addRequestInterceptor({
     fulfilled: async (config) => {
       const accessStore = useAccessStore();
+      const tenantStore = useTenantStore();
 
       config.headers.Authorization = formatToken(accessStore.accessToken);
+      config.headers['X-Tenant-Id'] = tenantStore.tenantId;
       config.headers['Accept-Language'] = preferences.app.locale;
       return config;
     },

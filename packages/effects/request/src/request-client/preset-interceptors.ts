@@ -130,7 +130,8 @@ export const errorMessageResponseInterceptor = (
         return Promise.reject(error);
       }
 
-      let errorMessage: string;
+      let errorMessage: string =
+        error?.response?.data?.msg || error?.message || '';
       const status = error?.response?.status;
 
       switch (status) {
@@ -161,7 +162,9 @@ export const errorMessageResponseInterceptor = (
           break;
         }
         default: {
-          errorMessage = $t('ui.fallback.http.internalServerError');
+          if (!errorMessage) {
+            errorMessage = $t('ui.fallback.http.internalServerError');
+          }
         }
       }
       makeErrorMessage?.(errorMessage, error);

@@ -1,3 +1,4 @@
+import type { RequestClientConfig } from '@vben/request';
 import type { Recordable, UserInfo } from '@vben/types';
 
 import { ref } from 'vue';
@@ -37,7 +38,12 @@ export const useAuthStore = defineStore('auth', () => {
       params.password = encryptByRsa(params.password) || '';
       params.clientId = import.meta.env.VITE_CLIENT_ID;
       params.authType = AuthTypeConstants.ACCOUNT;
-      const { token } = await loginApi(params);
+      const config: RequestClientConfig = {
+        headers: {
+          'x-tenant-code': params.TenantCode || '', // 如果租户功能启用，携带租户信息
+        },
+      };
+      const { token } = await loginApi(params, config);
 
       // 如果成功获取到 accessToken
       if (token) {
