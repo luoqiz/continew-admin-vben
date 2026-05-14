@@ -49,7 +49,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
           return await listDictItem({
             page: page.currentPage,
             size: page.pageSize,
-            sort: 'createTime,desc',
+            sort: 'sort,asc,createTime,desc',
             ...formValues,
           });
         },
@@ -124,7 +124,7 @@ const onSuccess = () => {
           <ElTag :type="row.color">{{ row.value }}</ElTag>
         </template>
         <template #status="{ row }">
-          {{ row.status ? $t('common.enabled') : $t('common.disable') }}
+          {{ row.status === 1 ? $t('common.enabled') : $t('common.disabled') }}
         </template>
         <template #action="{ row }">
           <ElSpace>
