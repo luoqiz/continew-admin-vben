@@ -21,6 +21,8 @@ import { globalShareState } from '@vben-core/shared/global-state';
 
 import { defineRule } from 'vee-validate';
 
+import VbenFormFieldArray from './components/form-field-array.vue';
+
 const DEFAULT_MODEL_PROP_NAME = 'modelValue';
 
 export const DEFAULT_FORM_COMMON_CONFIG: FormCommonConfig = {};
@@ -29,6 +31,7 @@ export const COMPONENT_MAP: Record<BaseFormComponentType, Component> = {
   DefaultButton: h(VbenButton, { size: 'sm', variant: 'outline' }),
   PrimaryButton: h(VbenButton, { size: 'sm', variant: 'default' }),
   VbenCheckbox,
+  VbenFormFieldArray,
   VbenInput,
   VbenInputCaptcha,
   VbenInputPassword,
@@ -50,7 +53,7 @@ export function setupVbenForm<
   const {
     disabledOnChangeListener = true,
     disabledOnInputListener = true,
-    emptyStateValue = undefined,
+    emptyStateValue,
   } = (config || {}) as FormCommonConfig;
 
   Object.assign(DEFAULT_FORM_COMMON_CONFIG, {

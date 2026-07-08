@@ -148,8 +148,8 @@ const ElAlert = defineAsyncComponent(() =>
   ]).then(([res]) => res.ElAlert),
 );
 
-const withDefaultPlaceholder = <T extends Component>(
-  component: T,
+const withDefaultPlaceholder = (
+  component: Component,
   type: 'input' | 'select',
   componentProps: Recordable<any> = {},
 ) => {
@@ -303,9 +303,11 @@ async function initComponentAdapter() {
       modelValueProp: 'model-value',
       inputComponent: ElInput,
     }),
-    Input: withDefaultPlaceholder(ElInput, 'input', { clearable: true }),
+    Input: withDefaultPlaceholder(ElInput, 'input'),
     Textarea: withDefaultPlaceholder(ElInput, 'input', { type: 'textarea' }),
-    InputNumber: withDefaultPlaceholder(ElInputNumber, 'input'),
+    InputNumber: withDefaultPlaceholder(ElInputNumber, 'input', {
+      style: { width: '100%' },
+    }),
     Radio: ElRadio,
     RadioGroup: (props, { attrs, slots }) => {
       let defaultSlot;
