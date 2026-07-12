@@ -11,26 +11,20 @@ defineOptions({ name: 'UserProfile' });
 </script>
 
 <template>
-  <Page style="height: 100%" class="gi-page">
-    <div class="h-full w-full">
-      <ElRow :gutter="24">
-        <ElCol :xs="24" :sm="24" :md="8" :lg="8" :xl="6" :xxl="6">
-          <LeftBox />
-        </ElCol>
-        <ElCol :xs="24" :sm="24" :md="16" :lg="16" :xl="18" :xxl="18">
-          <div>
-            <PasswordPolicy />
-          </div>
-          <div style="margin-top: 16px">
-            <RightBox />
-          </div>
-        </ElCol>
-      </ElRow>
-    </div>
+  <Page style="height: 100%">
+    <ElRow :gutter="24">
+      <ElCol :xs="24" :sm="24" :md="8" :lg="8" :xl="6" :xxl="6">
+        <LeftBox />
+      </ElCol>
+      <ElCol :xs="24" :sm="24" :md="16" :lg="16" :xl="18" :xxl="18">
+        <div>
+          <PasswordPolicy />
+        </div>
+        <div style="margin-top: 16px">
+          <RightBox />
+        </div>
+      </ElCol>
+    </ElRow>
   </Page>
 </template>
-<style scoped>
-.gi-page {
-  background-color: hsl(var(--background));
-}
-</style>
+<style scoped></style>

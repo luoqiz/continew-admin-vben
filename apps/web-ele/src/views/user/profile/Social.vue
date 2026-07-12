@@ -90,8 +90,8 @@ onMounted(() => {
 });
 </script>
 <template>
-  <Card bordered class="gradient-card">
-    <CardHeader class="card-header">
+  <Card bordered class="gradient-card p-0">
+    <CardHeader class="card-header p-2">
       <CardTitle>第三方账号</CardTitle>
     </CardHeader>
     <CardContent class="h-500px flex flex-col">
