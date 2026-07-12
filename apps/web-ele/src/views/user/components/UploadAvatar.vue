@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { VueCropper } from 'vue-cropper';
-import 'vue-cropper/dist/index.css';
 
 import { useVbenModal } from '@vben/common-ui';
 import { $t } from '@vben/locales';
+
+import { VueCropper } from 'cropper-next-vue';
+
+import 'cropper-next-vue/style.css';
 
 // 定义emits
 const emits = defineEmits(['cropSuccess']);
@@ -53,24 +55,63 @@ const previews = ref({
 });
 const previewStyle = ref<any>({});
 
-const cropperRef = ref<VueCropper>();
+const cropperRef = ref();
 
 // 实时预览
 // 实时预览：仅更新尺寸信息，不处理 URL（URL 在确认时生成）
-const handleRealTime = (data: {
-  div: string;
-  h: number;
-  html: string;
-  img: any;
-  url: string;
-  w: number;
-}) => {
+// const handleRealTime = (data: {
+//   div: string;
+//   h: number;
+//   html: string;
+//   img: any;
+//   url: string;
+//   w: number;
+// }) => {
+//   previewStyle.value = {
+//     width: `${data.w}px`,
+//     height: `${data.h}px`,
+//     overflow: 'hidden',
+//     margin: '0 auto',
+//     zoom: 100 / data.h,
+//     borderRadius: '50%',
+//     border: '1px solid #ccc',
+//   };
+//   // 修复缩放逻辑：基于容器尺寸和裁剪尺寸计算缩放比例
+//   const scale = Math.min(
+//     // Number(previewStyle.value.width.replace('px', '')) / data.img.width,
+//     // Number(previewStyle.value.height.replace('px', '')) / data.img.height
+//     Number(previewStyle.value.width.replace('px', '')) / data.w,
+//     Number(previewStyle.value.height.replace('px', '')) / data.h,
+//   );
+//   previewStyle.value.zoom = scale;
+
+//   // const imgScale = data.img.transform.match(/scale\(([^)]+)\)/);
+//   // const imgTranslate3d = data.img.transform.match(/translate3d\(([^)]+)\)/);
+//   // const imgRotateZ = data.img.transform.match(/rotateZ\(([^)]+)\)/);
+//   // const xyz = imgTranslate3d ? imgTranslate3d[1].replaceAll('px', '').replaceAll(' ', '').split(',') : [0, 0, 0];
+//   previews.value = {
+//     ...previews.value,
+//     url: data.url,
+//     w: data.w,
+//     h: data.h,
+//     img: data.img,
+//     div: {
+//       width: `${data.img.width}`,
+//       height: `${data.img.height}`,
+//     },
+//     html: data.html,
+//   };
+// };
+
+// 实时预览
+// 实时预览：仅更新尺寸信息，不处理 URL（URL 在确认时生成）
+const handleRealTime = (payload: any) => {
   previewStyle.value = {
-    width: `${data.w}px`,
-    height: `${data.h}px`,
+    width: `${payload.w}px`,
+    height: `${payload.h}px`,
     overflow: 'hidden',
     margin: '0 auto',
-    zoom: 100 / data.h,
+    zoom: 100 / payload.h,
     borderRadius: '50%',
     border: '1px solid #ccc',
   };
@@ -78,8 +119,8 @@ const handleRealTime = (data: {
   const scale = Math.min(
     // Number(previewStyle.value.width.replace('px', '')) / data.img.width,
     // Number(previewStyle.value.height.replace('px', '')) / data.img.height
-    Number(previewStyle.value.width.replace('px', '')) / data.w,
-    Number(previewStyle.value.height.replace('px', '')) / data.h,
+    Number(previewStyle.value.width.replace('px', '')) / payload.w,
+    Number(previewStyle.value.height.replace('px', '')) / payload.h,
   );
   previewStyle.value.zoom = scale;
 
@@ -89,15 +130,15 @@ const handleRealTime = (data: {
   // const xyz = imgTranslate3d ? imgTranslate3d[1].replaceAll('px', '').replaceAll(' ', '').split(',') : [0, 0, 0];
   previews.value = {
     ...previews.value,
-    url: data.url,
-    w: data.w,
-    h: data.h,
-    img: data.img,
+    url: payload.url,
+    w: payload.w,
+    h: payload.h,
+    img: payload.img,
     div: {
-      width: `${data.img.width}`,
-      height: `${data.img.height}`,
+      width: `${payload.img.width}`,
+      height: `${payload.img.height}`,
     },
-    html: data.html,
+    html: payload.html,
   };
 };
 

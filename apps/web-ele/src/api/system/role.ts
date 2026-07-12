@@ -23,15 +23,13 @@ export interface RoleResp extends BaseEntity {
   /** 是否为系统内置数据 */
   isSystem: string;
   /** 菜单选择是否父子节点关联 */
-  menuCheckStrictly: string;
+  menuCheckStrictly: boolean;
   /** 部门选择是否父子节点关联 */
-  deptCheckStrictly: string;
+  deptCheckStrictly: boolean;
 }
 
 export type RoleDetailResp = RoleResp & {
-  deptCheckStrictly: boolean;
   deptIds: Array<number>;
-  menuCheckStrictly: boolean;
   menuIds: Array<number>;
 };
 

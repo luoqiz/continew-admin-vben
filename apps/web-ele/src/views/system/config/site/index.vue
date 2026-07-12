@@ -55,8 +55,52 @@ const reset = () => {
   form.SITE_DESCRIPTION = siteConfig.value.SITE_DESCRIPTION?.value || '';
   form.SITE_COPYRIGHT = siteConfig.value.SITE_COPYRIGHT?.value || '';
   form.SITE_BEIAN = siteConfig.value.SITE_BEIAN?.value || '';
-  faviconFile.value[0] = { url: siteConfig.value.SITE_FAVICON?.value || '' };
-  logoFile.value[0] = { url: siteConfig.value.SITE_LOGO?.value || '' };
+  faviconFile.value[0] = {
+    id: '',
+    name: '',
+    status: 'success',
+    url: `${siteConfig.value.SITE_FAVICON?.value}` || '',
+    parentPath: '',
+    path: '',
+    sha256: '',
+    contentType: '',
+    metadata: '',
+    thumbnailSize: 0,
+    thumbnailName: '',
+    thumbnailMetadata: '',
+    thumbnailUrl: '',
+    extension: '',
+    type: 0,
+    storageId: '',
+    storageName: '',
+    createUserString: '',
+    createTime: '',
+    originalName: '',
+    size: 0,
+  };
+  logoFile.value[0] = {
+    id: '',
+    name: '',
+    status: 'success',
+    url: `${siteConfig.value.SITE_LOGO?.value}` || '',
+    parentPath: '',
+    path: '',
+    sha256: '',
+    contentType: '',
+    metadata: '',
+    thumbnailSize: 0,
+    thumbnailName: '',
+    thumbnailMetadata: '',
+    thumbnailUrl: '',
+    extension: '',
+    type: 0,
+    storageId: '',
+    storageName: '',
+    createUserString: '',
+    createTime: '',
+    originalName: '',
+    size: 0,
+  };
 };
 
 const isUpdate = ref(false);
@@ -78,11 +122,16 @@ const queryForm = reactive({
 const getDataList = async () => {
   loading.value = true;
   const data = await listOption(queryForm);
-  // eslint-disable-next-line unicorn/no-array-reduce
-  siteConfig.value = data.reduce((obj: SiteConfig, option: OptionResp) => {
-    obj = { ...obj, [option.code]: option };
-    return obj;
-  }, {} as SiteConfig);
+
+  // siteConfig.value = data.reduce((obj: SiteConfig, option: OptionResp) => {
+  //   obj = { ...obj, [option.code]: option };
+  //   return obj;
+  // }, {} as SiteConfig);
+  const config = siteConfig.value as Record<string, OptionResp>;
+  for (const option of data) {
+    config[option.code] = option;
+    form[option.code] = option.value;
+  }
   handleCancel();
   loading.value = false;
 };
@@ -92,9 +141,10 @@ const getDataList = async () => {
 const handleSave = async () => {
   const valid = await formRef.value?.validate();
   if (!valid) return false;
+  const config = siteConfig.value as Record<string, OptionResp>;
   await updateOption(
     Object.entries(form).map(([key, value]) => {
-      return { id: siteConfig.value[key].id, code: key, value };
+      return { id: config[key]?.id, code: key, value };
     }),
   );
   // appStore.setSiteConfig(form);

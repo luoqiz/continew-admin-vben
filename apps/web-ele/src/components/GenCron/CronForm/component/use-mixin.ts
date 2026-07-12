@@ -23,18 +23,20 @@ export const WEEK_MAP: any = {
 };
 
 // use 公共 props
-export function useFormProps(options: any) {
-  const defaultValue = options?.defaultValue ?? '?';
+export function useFormProps<T extends Record<string, any>>(
+  options: T & { defaultValue?: string },
+) {
+  const { defaultValue, ...extraProps } = options; // 分离默认值和额外属性
   return {
     modelValue: {
       type: String,
-      default: defaultValue,
+      default: defaultValue ?? '?',
     },
     disabled: {
       type: Boolean,
       default: false,
     },
-    ...options?.props,
+    ...extraProps, // 展开所有额外属性（如 week）
   };
 }
 

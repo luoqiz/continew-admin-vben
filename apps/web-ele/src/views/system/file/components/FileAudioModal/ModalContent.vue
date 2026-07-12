@@ -13,6 +13,7 @@ const props = withDefaults(defineProps<Props>(), {});
 
 const visible = ref(false);
 const audioRef = ref<HTMLElement | null>(null);
+// @ts-expect-error 用于模板 ref，JS 中不需要读取
 const audioHeadRef = ref<HTMLElement | null>(null);
 
 const audioSrc = computed(() => {

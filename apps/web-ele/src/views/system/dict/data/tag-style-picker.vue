@@ -39,9 +39,9 @@ const color = defineModel<string | undefined>('value', {
   default: undefined,
 });
 
-function handleSelectTypeChange(e) {
+function handleSelectTypeChange(value: boolean | number | string | undefined) {
   // 必须给默认hex颜色 不能为空字符串
-  color.value = e.target.value === 'custom' ? '#1677ff' : undefined;
+  color.value = value === 'custom' ? '#1677ff' : undefined;
 }
 
 // const { isDark } = usePreferences();
@@ -49,7 +49,7 @@ function handleSelectTypeChange(e) {
 //   return isDark.value ? 'black' : 'white';
 // });
 
-const tagSelectOption = ref<[]>([]);
+const tagSelectOption = ref<any[]>([]);
 onMounted(() => {
   tagSelectOption.value = tagSelectOptions();
 });

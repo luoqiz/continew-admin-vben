@@ -40,25 +40,25 @@ const rules: FormInstance['rules'] = {
 };
 
 const mailConfig = ref<MailConfig>({
-  MAIL_PROTOCOL: {},
-  MAIL_HOST: {},
-  MAIL_PORT: {},
-  MAIL_USERNAME: {},
-  MAIL_PASSWORD: {},
-  MAIL_SSL_ENABLED: {},
-  MAIL_SSL_PORT: {},
+  MAIL_PROTOCOL: undefined,
+  MAIL_HOST: undefined,
+  MAIL_PORT: undefined,
+  MAIL_USERNAME: undefined,
+  MAIL_PASSWORD: undefined,
+  MAIL_SSL_ENABLED: undefined,
+  MAIL_SSL_PORT: undefined,
 });
 
 // 重置
 const reset = () => {
   formRef.value?.resetFields();
-  form.MAIL_PROTOCOL = mailConfig.value.MAIL_PROTOCOL.value || '';
-  form.MAIL_HOST = mailConfig.value.MAIL_HOST.value || '';
-  form.MAIL_PORT = mailConfig.value.MAIL_PORT.value || 0;
-  form.MAIL_USERNAME = mailConfig.value.MAIL_USERNAME.value || '';
+  form.MAIL_PROTOCOL = mailConfig.value.MAIL_PROTOCOL?.value || '';
+  form.MAIL_HOST = mailConfig.value.MAIL_HOST?.value || '';
+  form.MAIL_PORT = mailConfig.value.MAIL_PORT?.value || 0;
+  form.MAIL_USERNAME = mailConfig.value.MAIL_USERNAME?.value || '';
   form.MAIL_PASSWORD = mailConfig.value.MAIL_PASSWORD?.value || '';
-  form.MAIL_SSL_ENABLED = mailConfig.value.MAIL_SSL_ENABLED.value || 0;
-  form.MAIL_SSL_PORT = mailConfig.value.MAIL_SSL_PORT.value || 0;
+  form.MAIL_SSL_ENABLED = mailConfig.value.MAIL_SSL_ENABLED?.value || 0;
+  form.MAIL_SSL_PORT = mailConfig.value.MAIL_SSL_PORT?.value || 0;
 };
 
 const isUpdate = ref(false);
@@ -80,16 +80,27 @@ const queryForm = {
 const getDataList = async () => {
   loading.value = true;
   const data = await listOption(queryForm);
-  // eslint-disable-next-line unicorn/no-array-reduce
-  mailConfig.value = data.reduce((obj: MailConfig, option: OptionResp) => {
+  // mailConfig.value = data.reduce((obj: MailConfig, option: OptionResp) => {
+  //   option.value = ['MAIL_PORT', 'MAIL_SSL_ENABLED', 'MAIL_SSL_PORT'].includes(
+  //     option.code ?? 'MAIL_PORT',
+  //   )
+  //     ? Number.parseInt(option.value as string)
+  //     : option.value;
+  //   obj = { ...obj, [option.code ?? 'MAIL_PORT']: option };
+  //   return obj;
+  // }, {} as MailConfig);
+
+  const config = mailConfig.value as Record<string, OptionResp>;
+  for (const option of data) {
     option.value = ['MAIL_PORT', 'MAIL_SSL_ENABLED', 'MAIL_SSL_PORT'].includes(
       option.code ?? 'MAIL_PORT',
     )
       ? Number.parseInt(option.value as string)
       : option.value;
-    obj = { ...obj, [option.code ?? 'MAIL_PORT']: option };
-    return obj;
-  }, {} as MailConfig);
+    config[option.code ?? 'MAIL_PORT'] = option as OptionResp;
+    // form[option.code ?? 'MAIL_PORT'] = option.value;
+  }
+
   handleCancel();
   loading.value = false;
 };
@@ -105,7 +116,7 @@ const handleSave = async () => {
         id: config?.id,
         code: key,
         value,
-        name: config?.name,
+        name: `${config?.name}`,
         description: config?.description,
       };
     }),
@@ -137,7 +148,6 @@ onMounted(() => {
 </script>
 <template>
   <div v-loading="loading">
-    {{ typeof form.MAIL_PORT }}
     <el-form
       ref="formRef"
       :model="form"
@@ -151,8 +161,8 @@ onMounted(() => {
     >
       <el-form-item
         field="MAIL_PROTOCOL"
-        :label="mailConfig.MAIL_PROTOCOL.name"
-        :help="mailConfig.MAIL_PROTOCOL.description"
+        :label="mailConfig.MAIL_PROTOCOL?.name"
+        :help="mailConfig.MAIL_PROTOCOL?.description"
         hide-asterisk
       >
         <el-select v-model="form.MAIL_PROTOCOL">
@@ -161,24 +171,24 @@ onMounted(() => {
       </el-form-item>
       <el-form-item
         field="MAIL_HOST"
-        :label="mailConfig.MAIL_HOST.name"
-        :help="mailConfig.MAIL_HOST.description"
+        :label="mailConfig.MAIL_HOST?.name"
+        :help="mailConfig.MAIL_HOST?.description"
         hide-asterisk
       >
         <el-input v-model="form.MAIL_HOST" />
       </el-form-item>
       <el-form-item
         field="MAIL_PORT"
-        :label="mailConfig.MAIL_PORT.name"
-        :help="mailConfig.MAIL_PORT.description"
+        :label="mailConfig.MAIL_PORT?.name"
+        :help="mailConfig.MAIL_PORT?.description"
         hide-asterisk
       >
         <el-input-number v-model="form.MAIL_PORT" :min="0" />
       </el-form-item>
       <el-form-item
         field="MAIL_USERNAME"
-        :label="mailConfig.MAIL_USERNAME.name"
-        :help="mailConfig.MAIL_USERNAME.description"
+        :label="mailConfig.MAIL_USERNAME?.name"
+        :help="mailConfig.MAIL_USERNAME?.description"
         hide-asterisk
       >
         <el-input v-model="form.MAIL_USERNAME" />
@@ -186,7 +196,7 @@ onMounted(() => {
       <el-form-item
         field="MAIL_PASSWORD"
         :label="mailConfig.MAIL_PASSWORD?.name"
-        :help="mailConfig.MAIL_PASSWORD.description"
+        :help="mailConfig.MAIL_PASSWORD?.description"
         hide-asterisk
       >
         <el-input v-model="form.MAIL_PASSWORD" type="password" show-password />
@@ -194,7 +204,7 @@ onMounted(() => {
       <el-form-item
         field="MAIL_SSL_ENABLED"
         :label="mailConfig.MAIL_SSL_ENABLED?.name"
-        :help="mailConfig.MAIL_SSL_ENABLED.description"
+        :help="mailConfig.MAIL_SSL_ENABLED?.description"
         hide-asterisk
       >
         <el-switch
@@ -210,8 +220,8 @@ onMounted(() => {
       <el-form-item
         v-if="form.MAIL_SSL_ENABLED === 1"
         field="MAIL_SSL_PORT"
-        :label="mailConfig.MAIL_SSL_PORT.name"
-        :help="mailConfig.MAIL_SSL_PORT.description"
+        :label="mailConfig.MAIL_SSL_PORT?.name"
+        :help="mailConfig.MAIL_SSL_PORT?.description"
         hide-asterisk
       >
         <el-input-number v-model="form.MAIL_SSL_PORT" :min="0" />

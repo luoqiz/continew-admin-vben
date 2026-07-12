@@ -127,6 +127,8 @@ export interface DictItemResp {
   label: string;
   value: string;
   color: string;
+  listClass: string;
+  cssClass: string;
   sort: number;
   description: string;
   status: 1 | 2;
@@ -154,6 +156,7 @@ export interface NoticeResp {
   isTiming: boolean;
   publishTime?: string;
   isTop: boolean;
+  isRead: boolean;
   status?: number;
 }
 export type NoticeDetailResp = NoticeResp & {
@@ -200,7 +203,7 @@ export interface FileItem {
 }
 /** 文件资源统计信息 */
 export interface FileStatisticsResp {
-  type: string;
+  type: number;
   size: any;
   number: number;
   unit: string;
@@ -293,11 +296,11 @@ export interface ClientPageQuery extends ClientQuery, PageQuery {}
 
 /** 系统参数类型 */
 export interface OptionResp {
-  id?: string;
-  name?: string;
-  code?: string;
-  value?: number | string;
-  description?: string;
+  id: string;
+  name: string;
+  code: string;
+  value: number | string;
+  description: string;
 }
 
 export interface OptionQuery {
@@ -326,30 +329,30 @@ export interface SiteConfig {
 
 /** 安全配置类型 */
 export interface SecurityConfig {
-  PASSWORD_ERROR_LOCK_COUNT: OptionResp;
-  PASSWORD_ERROR_LOCK_MINUTES: OptionResp;
-  PASSWORD_EXPIRATION_DAYS: OptionResp;
-  PASSWORD_EXPIRATION_WARNING_DAYS: OptionResp;
-  PASSWORD_REPETITION_TIMES: OptionResp;
-  PASSWORD_MIN_LENGTH: OptionResp;
-  PASSWORD_ALLOW_CONTAIN_USERNAME: OptionResp;
-  PASSWORD_REQUIRE_SYMBOLS: OptionResp;
+  PASSWORD_ERROR_LOCK_COUNT: OptionResp | undefined;
+  PASSWORD_ERROR_LOCK_MINUTES: OptionResp | undefined;
+  PASSWORD_EXPIRATION_DAYS: OptionResp | undefined;
+  PASSWORD_EXPIRATION_WARNING_DAYS: OptionResp | undefined;
+  PASSWORD_REPETITION_TIMES: OptionResp | undefined;
+  PASSWORD_MIN_LENGTH: OptionResp | undefined;
+  PASSWORD_ALLOW_CONTAIN_USERNAME: OptionResp | undefined;
+  PASSWORD_REQUIRE_SYMBOLS: OptionResp | undefined;
 }
 
 /** 邮箱配置类型 */
 export interface MailConfig {
-  MAIL_PROTOCOL: OptionResp;
-  MAIL_HOST: OptionResp;
-  MAIL_PORT: OptionResp;
-  MAIL_USERNAME: OptionResp;
-  MAIL_PASSWORD: OptionResp;
-  MAIL_SSL_ENABLED: OptionResp;
-  MAIL_SSL_PORT: OptionResp;
+  MAIL_PROTOCOL: OptionResp | undefined;
+  MAIL_HOST: OptionResp | undefined;
+  MAIL_PORT: OptionResp | undefined;
+  MAIL_USERNAME: OptionResp | undefined;
+  MAIL_PASSWORD: OptionResp | undefined;
+  MAIL_SSL_ENABLED: OptionResp | undefined;
+  MAIL_SSL_PORT: OptionResp | undefined;
 }
 
 /** 登录配置类型 */
 export interface LoginConfig {
-  LOGIN_CAPTCHA_ENABLED: OptionResp;
+  LOGIN_CAPTCHA_ENABLED: OptionResp | undefined;
 }
 
 /** 短信配置类型 */

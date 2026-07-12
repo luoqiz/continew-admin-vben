@@ -12,9 +12,7 @@ export default defineComponent({
   name: 'DayForm',
   props: useFormProps({
     defaultValue: '*',
-    props: {
-      week: { type: String, default: '?' },
-    },
+    week: { type: String, default: '?' },
   }),
   emits: useFromEmits(),
   setup(props, context) {

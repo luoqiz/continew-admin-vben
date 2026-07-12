@@ -2,7 +2,7 @@
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 import type { FileTask } from '#/hooks/modules/useMultipartUploader';
 
-import { h, ref, resolveComponent, watch } from 'vue';
+import { ref, watch } from 'vue';
 
 import {
   SvgCloseIcon,
@@ -116,7 +116,10 @@ async function onDrop(e: DragEvent) {
 
   let files: File[];
   if (isFileSystemAccessAPISupported()) {
-    files = await getFilesFromDataTransferItems(e.dataTransfer!.items);
+    if (!e.dataTransfer?.items) {
+      return;
+    }
+    files = await getFilesFromDataTransferItems(e.dataTransfer.items);
     addFiles(files, props.rootPath || '', true);
   } else {
     files = [...(e.dataTransfer?.files || [])];
@@ -191,12 +194,12 @@ function statusColor(status: string) {
 }
 
 // 表格列定义
-const useFileColumns = () => {
+const useFileColumns = (): VxeTableGridOptions['columns'] => {
   return [
     {
       field: 'fileName',
       title: '名称',
-      minwidth: 280,
+      minWidth: 280,
       slots: { default: 'fileName' },
       showOverflow: true,
     },
@@ -205,27 +208,27 @@ const useFileColumns = () => {
       field: 'relativePath',
       // slots: { default: 'relativePath' },
       showOverflow: true,
-      render: ({ record }) => {
-        // 显示完整路径
-        const displayPath = record.parentPath;
+      // render: ({ record }) => {
+      //   // 显示完整路径
+      //   const displayPath = record.parentPath;
 
-        // 确保路径格式正确
-        if (record.relativePath && record.relativePath !== '/') {
-          // 对于文件夹上传，relativePath格式为：folderName/file.txt
-          // 我们只需要显示parentPath，因为它已经包含了正确的路径
-          const pathParts = record.relativePath.split('/');
-          if (pathParts.length > 1) {
-            // 如果是文件夹内的文件，只显示parentPath
-            // parentPath已经是/test/upload这样的格式
-          }
-        }
+      //   // 确保路径格式正确
+      //   if (record.relativePath && record.relativePath !== '/') {
+      //     // 对于文件夹上传，relativePath格式为：folderName/file.txt
+      //     // 我们只需要显示parentPath，因为它已经包含了正确的路径
+      //     const pathParts = record.relativePath.split('/');
+      //     if (pathParts.length > 1) {
+      //       // 如果是文件夹内的文件，只显示parentPath
+      //       // parentPath已经是/test/upload这样的格式
+      //     }
+      //   }
 
-        return h(
-          resolveComponent('el-tooltip'),
-          { content: displayPath, placement: 'top' },
-          () => h('span', displayPath),
-        );
-      },
+      //   return h(
+      //     resolveComponent('el-tooltip'),
+      //     { content: displayPath, placement: 'top' },
+      //     () => h('span', displayPath),
+      //   );
+      // },
     },
     {
       title: '文件类型',

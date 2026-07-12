@@ -83,7 +83,7 @@ const handleDelete = async (row: ClientResp) => {
       </template>
 
       <template #status="{ row }">
-        <ElTag v-if="row.status === 1" type="success">
+        <ElTag v-if="Number(row?.status) === 1" type="success">
           {{ $t('common.enabled') }}
         </ElTag>
         <ElTag v-else type="danger">{{ $t('common.disabled') }}</ElTag>

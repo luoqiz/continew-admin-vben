@@ -79,7 +79,7 @@ function generateMenus(
       path: resultPath,
       show: !meta.hideInMenu,
       children: resultChildren,
-    };
+    } as MenuRecordRaw;
   });
 
   // 对菜单进行排序，避免order=0时被替换成999的问题

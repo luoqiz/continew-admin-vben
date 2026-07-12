@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { SmsConfigQuery, SmsConfigResp } from '#/api';
+import type { SmsConfigPageQuery, SmsConfigResp } from '#/api';
 
 import { Page, useVbenDrawer } from '@vben/common-ui';
 import { $t } from '@vben/locales';
@@ -31,7 +31,7 @@ const [TableGrid, tableGridApi] = useVbenVxeGrid({
             page: page.currentPage,
             size: page.pageSize,
             ...formValues,
-          } as SmsConfigQuery);
+          } as SmsConfigPageQuery);
           return res;
         },
       },

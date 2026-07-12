@@ -54,7 +54,7 @@ const fetchNoticeDetail = async (index: number) => {
 
   try {
     contentLoading.value = true;
-    const data = await getUserNotice(noticeId);
+    const data = await getUserNotice(`${noticeId}`);
     noticeCache.value.set(noticeId, data as NoticePreviewResp);
     // 确保设置当前索引，触发计算属性更新
     currentIndex.value = index;
@@ -62,11 +62,15 @@ const fetchNoticeDetail = async (index: number) => {
     console.error(`获取公告详情失败:`, error);
     // 创建一个错误状态的公告对象
     noticeCache.value.set(noticeId, {
-      id: noticeId,
+      id: `${noticeId}`,
       title: '获取公告失败',
       content: '获取公告内容失败，请稍后重试',
       createUserString: '',
       publishTime: '',
+      type: '',
+      noticeScope: 0,
+      isTiming: false,
+      isTop: false,
     } as NoticePreviewResp);
     // 即使出错也要设置当前索引
     currentIndex.value = index;

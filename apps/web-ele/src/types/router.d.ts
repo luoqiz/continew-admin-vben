@@ -7,7 +7,7 @@ declare module 'vue-router' {
     /** 设置该路由的图标, 记得将svg导入 @/icons/svg */
     svgIcon?: string;
     /** 设置该路由的图标, 直接使用Arco Design的Icon(与svgIcon同时设置时, svgIcon将优先生效) */
-    icon?: string;
+    icon?: Component | string;
     /**  默认false, 设置true的时候该路由不会在侧边栏出现 */
     hidden?: boolean;
     /** 默认true, 如果设置为false, 则不会在面包屑中显示 */

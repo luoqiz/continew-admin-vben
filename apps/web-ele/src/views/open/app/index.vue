@@ -109,7 +109,11 @@ function onDetail(row: OpenAppApi.AppResp) {
 }
 
 function onDelete(row: OpenAppApi.AppResp) {
-  const loading = ElMessage.loading(`正在删除应用 "${row.name}"...`);
+  const loading = ElMessage({
+    message: `正在删除应用 "${row.name}" ...`,
+    type: 'info',
+    duration: 0,
+  });
   deleteApp(row.id)
     .then(() => {
       loading.close();

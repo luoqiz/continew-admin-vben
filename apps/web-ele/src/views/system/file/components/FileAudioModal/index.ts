@@ -58,7 +58,15 @@ export function previewFileAudioModal(data: FileItem) {
       height: '50%',
     },
     showConfirmButton: false,
-    message: h(ModalContent, { data }),
+    message: () =>
+      h(ModalContent, {
+        data,
+        onClose: () => {
+          // 关闭弹窗
+          ElMessageBox.close();
+          // 注意：清理 fileAudioId 已在 beforeClose 中处理，这里不再重复
+        },
+      }),
     beforeClose: () => {
       fileAudioId = '';
     },

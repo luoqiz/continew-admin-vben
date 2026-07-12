@@ -61,9 +61,8 @@ const [Drawer, drawerApi] = useVbenDrawer({
   async onOpenChange(isOpen) {
     if (isOpen) {
       const data = drawerApi.getData<DictItemResp>();
-      dictId.value = data.dictId;
+      dataId.value = `${data.id}`;
       if (data && data.id) {
-        dataId.value = data.id;
         const res = await getDictItem(data.id);
         dictItemFormApi.form.setValues(res);
       } else {

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { DeptQuery, DeptResp } from '#/api/system/dept';
+import type { DeptQuery, DeptResp } from '#/api/system';
 
 import { ref } from 'vue';
 

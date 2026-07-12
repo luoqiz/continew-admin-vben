@@ -57,34 +57,34 @@ const rules: FormInstance['rules'] = {
 };
 
 const securityConfig = ref<SecurityConfig>({
-  PASSWORD_ERROR_LOCK_COUNT: {},
-  PASSWORD_ERROR_LOCK_MINUTES: {},
-  PASSWORD_EXPIRATION_DAYS: {},
-  PASSWORD_EXPIRATION_WARNING_DAYS: {},
-  PASSWORD_REPETITION_TIMES: {},
-  PASSWORD_MIN_LENGTH: {},
-  PASSWORD_ALLOW_CONTAIN_USERNAME: {},
-  PASSWORD_REQUIRE_SYMBOLS: {},
+  PASSWORD_ERROR_LOCK_COUNT: undefined,
+  PASSWORD_ERROR_LOCK_MINUTES: undefined,
+  PASSWORD_EXPIRATION_DAYS: undefined,
+  PASSWORD_EXPIRATION_WARNING_DAYS: undefined,
+  PASSWORD_REPETITION_TIMES: undefined,
+  PASSWORD_MIN_LENGTH: undefined,
+  PASSWORD_ALLOW_CONTAIN_USERNAME: undefined,
+  PASSWORD_REQUIRE_SYMBOLS: undefined,
 });
 // 重置
 const reset = () => {
   formRef.value?.resetFields();
   form.PASSWORD_ERROR_LOCK_COUNT =
-    securityConfig.value.PASSWORD_ERROR_LOCK_COUNT.value || 0;
+    securityConfig.value.PASSWORD_ERROR_LOCK_COUNT?.value || 0;
   form.PASSWORD_ERROR_LOCK_MINUTES =
-    securityConfig.value.PASSWORD_ERROR_LOCK_MINUTES.value || 0;
+    securityConfig.value.PASSWORD_ERROR_LOCK_MINUTES?.value || 0;
   form.PASSWORD_EXPIRATION_DAYS =
-    securityConfig.value.PASSWORD_EXPIRATION_DAYS.value || 0;
+    securityConfig.value.PASSWORD_EXPIRATION_DAYS?.value || 0;
   form.PASSWORD_EXPIRATION_WARNING_DAYS =
-    securityConfig.value.PASSWORD_EXPIRATION_WARNING_DAYS.value || 0;
+    securityConfig.value.PASSWORD_EXPIRATION_WARNING_DAYS?.value || 0;
   form.PASSWORD_REPETITION_TIMES =
-    securityConfig.value.PASSWORD_REPETITION_TIMES.value || 0;
+    securityConfig.value.PASSWORD_REPETITION_TIMES?.value || 0;
   form.PASSWORD_MIN_LENGTH =
-    securityConfig.value.PASSWORD_MIN_LENGTH.value || 0;
+    securityConfig.value.PASSWORD_MIN_LENGTH?.value || 0;
   form.PASSWORD_ALLOW_CONTAIN_USERNAME =
-    securityConfig.value.PASSWORD_ALLOW_CONTAIN_USERNAME.value || 0;
+    securityConfig.value.PASSWORD_ALLOW_CONTAIN_USERNAME?.value || 0;
   form.PASSWORD_REQUIRE_SYMBOLS =
-    securityConfig.value.PASSWORD_REQUIRE_SYMBOLS.value || 0;
+    securityConfig.value.PASSWORD_REQUIRE_SYMBOLS?.value || 0;
 };
 
 const isUpdate = ref(false);
@@ -106,15 +106,19 @@ const queryForm = {
 const getDataList = async () => {
   loading.value = true;
   const data = await listOption(queryForm);
-  // eslint-disable-next-line unicorn/no-array-reduce
-  securityConfig.value = data.reduce(
-    (obj: SecurityConfig, option: OptionResp) => {
-      option.value = Number.parseInt(option.value);
-      obj = { ...obj, [option.code]: option };
-      return obj;
-    },
-    {} as SecurityConfig,
-  );
+  // securityConfig.value = data.reduce(
+  //   (obj: SecurityConfig, option: OptionResp) => {
+  //     option.value = Number.parseInt(option.value);
+  //     obj = { ...obj, [option.code]: option };
+  //     return obj;
+  //   },
+  //   {} as SecurityConfig,
+  // );
+  const config = securityConfig.value as Record<string, OptionResp>;
+  for (const option of data) {
+    config[option.code] = option;
+    form[option.code] = option.value;
+  }
   handleCancel();
   loading.value = false;
 };
@@ -123,9 +127,10 @@ const getDataList = async () => {
 const handleSave = async () => {
   const valid = await formRef.value?.validate();
   if (!valid) return false;
+  const config = securityConfig.value as Record<string, OptionResp>;
   await updateOption(
     Object.entries(form).map(([key, value]) => {
-      return { id: securityConfig.value[key].id, code: key, value };
+      return { id: config[key]?.id, code: key, value };
     }),
   );
   await getDataList();
@@ -185,8 +190,8 @@ onMounted(() => {
       </el-form-item>
       <el-form-item
         field="PASSWORD_ERROR_LOCK_MINUTES"
-        :label="securityConfig.PASSWORD_ERROR_LOCK_MINUTES.name"
-        :help="securityConfig.PASSWORD_ERROR_LOCK_MINUTES.description"
+        :label="securityConfig.PASSWORD_ERROR_LOCK_MINUTES?.name"
+        :help="securityConfig.PASSWORD_ERROR_LOCK_MINUTES?.description"
         hide-asterisk
       >
         <el-input-number
@@ -200,8 +205,8 @@ onMounted(() => {
       </el-form-item>
       <el-form-item
         field="PASSWORD_EXPIRATION_DAYS"
-        :label="securityConfig.PASSWORD_EXPIRATION_DAYS.name"
-        :help="securityConfig.PASSWORD_EXPIRATION_DAYS.description"
+        :label="securityConfig.PASSWORD_EXPIRATION_DAYS?.name"
+        :help="securityConfig.PASSWORD_EXPIRATION_DAYS?.description"
         hide-asterisk
       >
         <el-input-number
@@ -214,9 +219,9 @@ onMounted(() => {
         </el-input-number>
       </el-form-item>
       <el-form-item
-        :label="securityConfig.PASSWORD_EXPIRATION_WARNING_DAYS.name"
+        :label="securityConfig.PASSWORD_EXPIRATION_WARNING_DAYS?.name"
         field="PASSWORD_EXPIRATION_WARNING_DAYS"
-        :help="securityConfig.PASSWORD_EXPIRATION_WARNING_DAYS.description"
+        :help="securityConfig.PASSWORD_EXPIRATION_WARNING_DAYS?.description"
         hide-asterisk
       >
         <el-input-number
@@ -230,8 +235,8 @@ onMounted(() => {
       </el-form-item>
       <el-form-item
         field="PASSWORD_REPETITION_TIMES"
-        :label="securityConfig.PASSWORD_REPETITION_TIMES.name"
-        :help="securityConfig.PASSWORD_REPETITION_TIMES.description"
+        :label="securityConfig.PASSWORD_REPETITION_TIMES?.name"
+        :help="securityConfig.PASSWORD_REPETITION_TIMES?.description"
         hide-asterisk
       >
         <el-input-number
@@ -245,8 +250,8 @@ onMounted(() => {
       </el-form-item>
       <el-form-item
         field="PASSWORD_MIN_LENGTH"
-        :label="securityConfig.PASSWORD_MIN_LENGTH.name"
-        :help="securityConfig.PASSWORD_MIN_LENGTH.description"
+        :label="securityConfig.PASSWORD_MIN_LENGTH?.name"
+        :help="securityConfig.PASSWORD_MIN_LENGTH?.description"
         hide-asterisk
       >
         <el-input-number
@@ -258,8 +263,8 @@ onMounted(() => {
       </el-form-item>
       <el-form-item
         field="PASSWORD_ALLOW_CONTAIN_USERNAME"
-        :label="securityConfig.PASSWORD_ALLOW_CONTAIN_USERNAME.name"
-        :help="securityConfig.PASSWORD_ALLOW_CONTAIN_USERNAME.description"
+        :label="securityConfig.PASSWORD_ALLOW_CONTAIN_USERNAME?.name"
+        :help="securityConfig.PASSWORD_ALLOW_CONTAIN_USERNAME?.description"
       >
         <el-switch
           v-model="form.PASSWORD_ALLOW_CONTAIN_USERNAME"
@@ -273,8 +278,8 @@ onMounted(() => {
       </el-form-item>
       <el-form-item
         field="PASSWORD_REQUIRE_SYMBOLS"
-        :label="securityConfig.PASSWORD_REQUIRE_SYMBOLS.name"
-        :help="securityConfig.PASSWORD_REQUIRE_SYMBOLS.description"
+        :label="securityConfig.PASSWORD_REQUIRE_SYMBOLS?.name"
+        :help="securityConfig.PASSWORD_REQUIRE_SYMBOLS?.description"
       >
         <!-- <el-switch v-model="form.PASSWORD_REQUIRE_SYMBOLS" type="round" :checked-value="1" :unchecked-value="0">
           <template #checked>是</template>

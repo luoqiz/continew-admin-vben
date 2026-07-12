@@ -33,7 +33,7 @@ const rules = reactive<FormRules<typeof form>>({
   ],
 });
 const loginConfig = ref<LoginConfig>({
-  LOGIN_CAPTCHA_ENABLED: {},
+  LOGIN_CAPTCHA_ENABLED: undefined,
 });
 
 // 重置
@@ -63,11 +63,14 @@ const getDataList = async () => {
   try {
     loading.value = true;
     const data = await listOption(queryForm);
-    // eslint-disable-next-line unicorn/no-array-reduce
-    loginConfig.value = data.reduce((obj: LoginConfig, option: OptionResp) => {
-      obj = { ...obj, [option.code]: option };
-      return obj;
-    }, {} as LoginConfig);
+    // loginConfig.value = data.reduce((obj: LoginConfig, option: OptionResp) => {
+    //   obj = { ...obj, [option.code]: option };
+    //   return obj;
+    // }, {} as LoginConfig);
+    const config = loginConfig.value as Record<string, OptionResp>;
+    for (const option of data) {
+      config[option.code] = option as OptionResp;
+    }
     handleCancel();
   } finally {
     loading.value = false;
@@ -78,9 +81,10 @@ const getDataList = async () => {
 const handleSave = async () => {
   const valid = await formRef.value?.validate();
   if (!valid) return false;
+  const config = loginConfig.value as Record<string, OptionResp>;
   await updateOption(
     Object.entries(form).map(([key, value]) => {
-      return { id: loginConfig.value[key].id, code: key, value };
+      return { id: config[key]?.id, code: key, value };
     }),
   );
   await getDataList();
@@ -123,7 +127,7 @@ onMounted(() => {
     >
       <el-form-item
         field="LOGIN_CAPTCHA_ENABLED"
-        :label="loginConfig.LOGIN_CAPTCHA_ENABLED.name"
+        :label="loginConfig.LOGIN_CAPTCHA_ENABLED?.name"
       >
         <el-switch
           v-model="form.LOGIN_CAPTCHA_ENABLED"

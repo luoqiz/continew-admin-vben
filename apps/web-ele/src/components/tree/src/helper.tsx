@@ -8,6 +8,11 @@ import { eachTree, isEmpty, treeToList } from '@vben/utils';
 import notification from 'element-plus/es/components/notification/index.mjs';
 import { isNil, isUndefined } from 'es-toolkit';
 
+// 类型守卫：判断对象是否为 MenuPermissionOption
+function isMenuPermissionOption(item: any): item is MenuPermissionOption {
+  return !isUndefined(item.permissions) && Array.isArray(item.permissions);
+}
+
 /**
  * 权限列设置是否全选
  * @param record 行记录
@@ -129,7 +134,8 @@ export function setTableChecked(
    */
   if (!association) {
     const emptyRows = checkedRows.filter((item) => {
-      if (isUndefined(item.permissions) || isEmpty(item.permissions)) {
+      // 使用类型守卫检查
+      if (!isMenuPermissionOption(item)) {
         return false;
       }
       return item.permissions.every(

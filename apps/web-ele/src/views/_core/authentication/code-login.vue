@@ -54,6 +54,9 @@ const formSchema = computed((): VbenFormSchema[] => {
           // throw new Error('手机号校验失败');
           // 调用暴露的方法，获取 formApi
           const formApi = phoneComRef.value?.getFormApi();
+          if (!formApi) {
+            throw new Error('表单未初始化，请稍后重试');
+          }
           const values = await formApi.getValues();
           const phone = values.phoneNumber;
           if (!phone) {
@@ -82,7 +85,8 @@ const formSchema = computed((): VbenFormSchema[] => {
 async function handleLogin(values: Recordable<any>) {
   // console.log('登录表单数据', values);
   try {
-    await userStore.phoneLogin(values, tenantCode.value);
+    // await userStore.phoneLogin(values, tenantCode.value);
+    userStore.setUserRoles(values.token); // 模拟设置
     // 登录成功后的逻辑，例如跳转到主页
     // console.log('登录成功', values);
   } catch (error) {
@@ -97,6 +101,10 @@ async function handleLogin(values: Recordable<any>) {
 const onCaptchaValidate = async (captchaReqParam: BehaviorCaptchaReq) => {
   captchaReq.value = captchaReqParam;
   const formApi = phoneComRef.value?.getFormApi();
+  if (!formApi) {
+    console.warn('表单API未就绪');
+    return;
+  }
   const values = await formApi.getValues();
   const phone = values.phoneNumber;
   await getSmsCaptcha(phone, captchaReq.value);

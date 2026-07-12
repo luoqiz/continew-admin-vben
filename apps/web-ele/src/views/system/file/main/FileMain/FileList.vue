@@ -1,9 +1,5 @@
 <script setup lang="ts">
-import type {
-  VxeGridDefines,
-  VxeGridProps,
-  VxeTableGridOptions,
-} from '#/adapter/vxe-table';
+import type { VxeGridDefines, VxeTableGridOptions } from '#/adapter/vxe-table';
 import type { FileItem } from '#/api/system';
 
 import { watch } from 'vue';
@@ -28,9 +24,7 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const emit = defineEmits<{
-  (e: 'click', record: FileItem): void;
-  (e: 'dblclick', record: FileItem): void;
-  (e: 'select', record: FileItem): void;
+  (e: 'click' | 'dblclick' | 'select', record: FileItem): void;
   (e: 'rightMenuClick', mode: string, item: FileItem): void;
 }>();
 
@@ -71,14 +65,14 @@ const handleRightMenuClick = (mode: string, item: FileItem) => {
   emit('rightMenuClick', mode, item);
 };
 
-const useFileColumns: VxeGridProps['columns'] = () => {
+const useFileColumns = () => {
   return [
     { type: 'checkbox', width: 40, fixed: 'left', visible: props.isBatchMode },
     { type: 'seq', width: 50, fixed: 'left' },
     {
       field: 'originalName',
       title: '名称',
-      minwidth: 280,
+      minWidth: 280,
       slots: { default: 'originalName' },
       fixed: 'left',
     },
@@ -140,7 +134,7 @@ watch(
 watch(
   () => props.isBatchMode,
   () => {
-    gridApi.grid.reloadColumn(useFileColumns());
+    gridApi.grid.reloadColumn(useFileColumns() as any);
   },
 );
 

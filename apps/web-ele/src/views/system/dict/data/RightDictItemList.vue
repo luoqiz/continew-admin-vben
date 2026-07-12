@@ -121,7 +121,7 @@ const onSuccess = () => {
           </ElSpace>
         </template>
         <template #value="{ row }">
-          <ElTag :type="row.color">{{ row.value }}</ElTag>
+          <ElTag :color="row.color">{{ row.value }}</ElTag>
         </template>
         <template #status="{ row }">
           {{ row.status === 1 ? $t('common.enabled') : $t('common.disabled') }}

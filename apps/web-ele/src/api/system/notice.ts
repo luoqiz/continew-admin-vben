@@ -20,11 +20,13 @@ export interface NoticeResp extends BaseEntity {
   /** 通知方式（1：系统消息；2：登录弹窗） */
   noticeMethods: string;
   /** 是否定时 */
-  isTiming: string;
+  isTiming: boolean;
+  /** 是否已读 */
+  isRead: boolean;
   /** 发布时间 */
   publishTime: string;
   /** 是否置顶 */
-  isTop: string;
+  isTop: boolean;
   /** 状态（1：草稿；2：待发布；3：已发布） */
   status: number;
   /** 创建人 */
@@ -41,9 +43,10 @@ export interface NoticeDetailResp extends BaseEntity {
   noticeScope: string;
   noticeUsers: string;
   noticeMethods: string;
-  isTiming: string;
+  isTiming: boolean;
   publishTime: string;
-  isTop: string;
+  isTop: boolean;
+  isRead: boolean;
   status: number;
   createUser: string;
   createTime: string;

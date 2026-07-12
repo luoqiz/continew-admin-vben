@@ -20,7 +20,7 @@ const isImage = computed(() => {
 });
 
 // 获取文件图标，如果是图片就显示图片
-const getFileImg = computed<string>(() => {
+const getFileImg = computed(() => {
   // 文件夹
   if (props.data.type === 0) {
     return FileIcon.dir;

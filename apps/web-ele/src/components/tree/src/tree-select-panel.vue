@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { PropType, SetupContext } from 'vue';
 
+import type { VxeGridDefines } from '#/adapter/vxe-table';
+
 import { computed, nextTick, onMounted, ref, useSlots, watch } from 'vue';
 
 import { findGroupParentIds, treeToList } from '@vben/utils';
@@ -108,7 +110,7 @@ const stop = watch([checkedKeys, () => props.treeData], () => {
 type CheckedState<T = number | string> =
   | T[]
   | { checked: T[]; halfChecked: T[] };
-function handleChecked(checkedStateKeys: CheckedState, info: CheckInfo) {
+function handleChecked(checkedStateKeys: CheckedState, info: any) {
   // 数组的话为节点关联
   if (Array.isArray(checkedStateKeys)) {
     const halfCheckedKeys: number[] = (info.halfCheckedKeys || []) as number[];
@@ -120,21 +122,26 @@ function handleChecked(checkedStateKeys: CheckedState, info: CheckInfo) {
   }
 }
 
-function handleExpandChange(e: CheckboxChangeEvent) {
+function handleExpandChange(params: VxeGridDefines.CheckboxChangeEventParams) {
+  const { checked } = params;
   // 这个用于展示
-  checkedKeys.value = e.target.checked ? allKeys.value : [];
+  checkedKeys.value = checked ? allKeys.value : [];
   // 这个用于提交
-  checkedRealKeys.value = e.target.checked ? allKeys.value : [];
+  checkedRealKeys.value = checked ? allKeys.value : [];
 }
 
 const expandedKeys = ref<string[]>([]);
-function handleExpandOrCollapseAll(e: CheckboxChangeEvent) {
-  const expand = e.target.checked;
+function handleExpandOrCollapseAll(
+  params: VxeGridDefines.CheckboxChangeEventParams,
+) {
+  const expand = params.checked;
   expandedKeys.value = expand ? allKeys.value : [];
 }
 
-function handleCheckStrictlyChange(e: CheckboxChangeEvent) {
-  emit('checkStrictlyChange', e.target.checked);
+function handleCheckStrictlyChange(
+  params: VxeGridDefines.CheckboxChangeEventParams,
+) {
+  emit('checkStrictlyChange', params.checked);
   if (props.resetOnStrictlyChange) {
     checkedKeys.value = [];
     checkedRealKeys.value = [];

@@ -30,7 +30,7 @@ use([
 ]);
 
 const totalData = ref<FileStatisticsResp>({
-  type: '',
+  type: 0,
   size: 0,
   number: 0,
   unit: '',
@@ -58,7 +58,7 @@ const { chartOption } = useChart(() => {
     },
     tooltip: {
       show: true,
-      formatter(params) {
+      formatter(params: any) {
         return `总计：${params.value}<br>${params.data.size}`;
       },
     },
@@ -85,10 +85,10 @@ const getStatisticsData = async () => {
     const resData = await getFileStatistics();
     const formatSize = formatFileSize(resData.size).split(' ');
     totalData.value = {
-      type: '',
-      size: Number.parseFloat(formatSize[0]!),
+      type: 0,
+      size: Number.parseFloat(formatSize[0] ?? '0'),
       number: resData.number ?? 0,
-      unit: formatSize[1]!,
+      unit: formatSize[1] ?? '',
       data: [],
     };
     resData?.data.forEach((fs: FileStatisticsResp) => {

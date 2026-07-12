@@ -45,7 +45,7 @@ emitter.on('rowClick', async (value) => {
     await nextTick();
     // 查询角色详情
     roleDetail.value = await getRole(dataId.value);
-    selectKeys.value = roleDetail.value.menuIds;
+    selectKeys.value = roleDetail.value?.menuIds;
   } finally {
     menuSelectRef.value?.setLoading(false);
   }
@@ -56,16 +56,18 @@ emitter.on('rowClick', async (value) => {
  * @param value 菜单选择是否严格模式
  */
 function handleMenuCheckStrictlyChange(value: boolean) {
-  roleDetail.value!.menuCheckStrictly = value;
+  if (roleDetail.value) {
+    roleDetail.value.menuCheckStrictly = value;
+  }
 }
 
 // 保存权限
 const handleSave = async () => {
   // 这个用于提交
   const menuIds = menuSelectRef.value?.getCheckedKeys?.() ?? [];
-  await updateRolePermission(dataId.value!.toString(), {
+  await updateRolePermission(dataId.value?.toString() ?? '', {
     menuIds,
-    menuCheckStrictly: roleDetail.value!.menuCheckStrictly,
+    menuCheckStrictly: roleDetail.value?.menuCheckStrictly,
   });
   ElMessage.success('保存成功');
 };
@@ -77,7 +79,9 @@ const handleCheckEvent = (values: (number | string)[]) => {
 };
 // 刷新当前角色权限
 const handleRefresh = () => {
-  emitter.emit('rowClick', roleDetail.value!.id);
+  if (roleDetail.value?.id) {
+    emitter.emit('rowClick', roleDetail.value.id);
+  }
 };
 </script>
 <template>
@@ -108,7 +112,7 @@ const handleRefresh = () => {
           </div>
         </ElTabPane>
         <ElTabPane :label="$t('system.role.user')" class="h-full">
-          <RoleUser :role-id="dataId!" :role-name="roleDetail?.name!" />
+          <RoleUser :role-id="dataId!" :role-name="roleDetail?.name ?? ''" />
         </ElTabPane>
       </ElTabs>
     </CardContent>

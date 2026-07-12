@@ -304,7 +304,10 @@ const [Grid, gridApi] = useVbenVxeGrid({
       autoLoad: true,
       ajax: {
         query: async () => {
-          const res = await listFieldConfig(genTable.value?.tableName!, false);
+          if (!genTable.value?.tableName) {
+            return { list: [], total: 0 };
+          }
+          const res = await listFieldConfig(genTable.value?.tableName, false);
           fields.value = res.map((item) => ({
             label: `${item.fieldName}  ${item.comment ? `---  ${item.comment}` : ''}`,
             value: item.fieldName,
@@ -336,7 +339,11 @@ const [Drawer, drawerApi] = useVbenDrawer({
     if (!valid) return false;
     drawerApi.lock();
     try {
-      await saveGenConfig(genTable.value!.tableName, {
+      if (!genTable.value?.tableName) {
+        message.error('表名不存在');
+        return false;
+      }
+      await saveGenConfig(genTable.value?.tableName, {
         genConfig: firstFormApi.form.values,
         fieldConfigs: gridApi.grid.getFullData(),
       } as GeneratorConfigResp);
@@ -354,7 +361,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
       if (data) {
         genTable.value = data;
         // 查询生成配置
-        const genData = await getGenConfig(genTable.value!.tableName);
+        const genData = await getGenConfig(genTable.value?.tableName);
         firstFormApi.form.setValues(genData);
       }
       // 获取字典列表
@@ -496,7 +503,7 @@ const getDrawerTitle = computed(() => {
         </Grid>
       </div>
     </div>
-    {{ fieldOptions }}
+    <!-- {{ fieldOptions }} -->
   </Drawer>
 </template>
 <style lang="css" scoped></style>

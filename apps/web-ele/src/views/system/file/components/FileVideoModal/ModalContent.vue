@@ -11,7 +11,7 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {});
 
 onMounted(() => {
-  Player({
+  new Player({
     id: 'videoId',
     url: props.data?.url ?? '',
     lang: 'zh-cn',

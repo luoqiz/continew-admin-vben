@@ -299,7 +299,7 @@ const breadcrumbList = computed(() => {
 });
 
 // 处理面包屑点击
-const handleBreadcrumbClick = (item) => {
+const handleBreadcrumbClick = (item: { name: string; path: string }) => {
   queryForm.parentPath = item.path;
   search();
 };

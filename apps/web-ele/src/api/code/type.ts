@@ -1,3 +1,5 @@
+import type { PageQuery } from '#/types/api.js';
+
 /** 工具代码生成类型 */
 export interface GenConfigResp {
   tableName: string;

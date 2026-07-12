@@ -2,7 +2,7 @@
 import type { VbenFormSchema } from '@vben/common-ui';
 
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { FileItem } from '#/api/system/file';
+import type { FileItem } from '#/api/system';
 
 import { useVbenModal } from '@vben/common-ui';
 import { $t } from '@vben/locales';
@@ -24,8 +24,7 @@ import has from '#/utils/has';
 
 const emit = defineEmits<{
   (e: 'close'): void;
-  (e: 'click', record: FileItem): void;
-  (e: 'dblclick', record: FileItem): void;
+  (e: 'click' | 'dblclick', record: FileItem): void;
 }>();
 
 function useGridFieldColumns(): VxeTableGridOptions['columns'] {
