@@ -11,6 +11,7 @@ import {
 export const overridesPreferences = defineOverridesPreferences({
   // overrides
   app: {
+    accessMode: 'mixed',
     name: import.meta.env.VITE_APP_TITLE,
   },
   copyright: appCopyrightPreferences,
