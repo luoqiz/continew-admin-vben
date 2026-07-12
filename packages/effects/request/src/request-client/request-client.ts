@@ -153,6 +153,7 @@ class RequestClient {
   ): Promise<T> {
     return this.request<T>(url, { ...config, data, method: 'PUT' });
   }
+
   /**
    * 通用的请求方法
    */
@@ -161,7 +162,6 @@ class RequestClient {
     config: RequestClientConfig,
   ): Promise<T> {
     try {
-      console.error('RequestClient request url:', url, 'config:', config);
       const response: AxiosResponse<T> = await this.instance({
         url,
         ...config,

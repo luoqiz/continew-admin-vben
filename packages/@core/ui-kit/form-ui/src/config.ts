@@ -53,7 +53,7 @@ export function setupVbenForm<
   const {
     disabledOnChangeListener = true,
     disabledOnInputListener = true,
-    emptyStateValue,
+    emptyStateValue = undefined,
   } = (config || {}) as FormCommonConfig;
 
   Object.assign(DEFAULT_FORM_COMMON_CONFIG, {
