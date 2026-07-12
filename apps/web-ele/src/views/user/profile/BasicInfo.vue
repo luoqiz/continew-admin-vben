@@ -21,7 +21,7 @@ import {
 import { $t } from '@vben/locales';
 import { useUserStore } from '@vben/stores';
 
-import { ElMessage } from 'element-plus';
+import { ElDescriptions, ElDescriptionsItem, ElMessage } from 'element-plus';
 
 import { uploadAvatar } from '#/api';
 import { SvgIdIcon } from '#/components/Icons';
@@ -80,16 +80,21 @@ const handleUpload = async (data: any) => {
   const formData = new FormData();
   formData.append('avatarFile', data, 'avatar.png');
   uploadAvatar(formData).then((res) => {
-    userStore.userInfo!.avatar = res.avatar;
-    avatarList.value[0]!.url = getAvatar(res.avatar, undefined);
+    if (userStore.userInfo) {
+      userStore.userInfo.avatar = res.avatar;
+    }
+    const firstAvatar = avatarList.value[0];
+    if (firstAvatar) {
+      firstAvatar.url = getAvatar(res.avatar, userStore.userInfo?.gender ?? 1);
+    }
     ElMessage.success('更新成功');
     avatarModalApi.close();
   });
 };
 </script>
 <template>
-  <Card bordered class="gradient-card">
-    <CardHeader class="card-header">
+  <Card bordered class="gradient-card p-0">
+    <CardHeader class="card-header p-2">
       <CardTitle>{{ $t('system.user.profile.basicInfo') }}</CardTitle>
     </CardHeader>
     <CardContent class="h-500px flex flex-col" style="height: 500px">
@@ -139,23 +144,29 @@ const handleUpload = async (data: any) => {
         </div>
       </div>
       <div class="h-360px items-center justify-center">
-        <el-descriptions column="1" label-width="80">
-          <el-descriptions-item :label="$t('system.user.username')">
+        <ElDescriptions :column="1" label-width="80">
+          <ElDescriptionsItem :label="$t('system.user.username')">
             {{ userStore.userInfo?.username }}
-          </el-descriptions-item>
-          <el-descriptions-item :label="$t('system.user.phone')">
+          </ElDescriptionsItem>
+          <ElDescriptionsItem :label="$t('system.user.phone')">
             {{ userStore.userInfo?.phone || $t('pages.common.notAvailable') }}
-          </el-descriptions-item>
-          <el-descriptions-item :label="$t('system.user.email')">
+          </ElDescriptionsItem>
+          <ElDescriptionsItem :label="$t('system.user.email')">
             {{ userStore.userInfo?.email || $t('pages.common.notAvailable') }}
-          </el-descriptions-item>
-          <el-descriptions-item :label="$t('system.user.deptId')">
-            {{ userStore.userInfo?.deptName }}
-          </el-descriptions-item>
-          <el-descriptions-item :label="$t('system.user.roleIds')">
-            {{ userStore.userInfo?.roleNames.join(' · ') }}
-          </el-descriptions-item>
-        </el-descriptions>
+          </ElDescriptionsItem>
+          <ElDescriptionsItem :label="$t('system.user.deptId')">
+            {{
+              userStore.userInfo?.deptName || $t('pages.common.notAvailable')
+            }}
+          </ElDescriptionsItem>
+          <ElDescriptionsItem :label="$t('system.user.roleIds')">
+            {{
+              userStore.userInfo
+                ? (userStore.userInfo.roleNames || []).join(' · ')
+                : $t('pages.common.notAvailable')
+            }}
+          </ElDescriptionsItem>
+        </ElDescriptions>
       </div>
     </CardContent>
     <CardFooter class="justify-center border-t-2 p-4">
