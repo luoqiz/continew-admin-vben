@@ -149,6 +149,17 @@ const handleSave = async () => {
     }),
   );
   // appStore.setSiteConfig(form);
+  // 更改系统图标
+  document
+    .querySelector('link[rel="icon"]')
+    ?.setAttribute('href', form.SITE_FAVICON || '/favicon.ico');
+  // 更改系统logo
+  updatePreferences({
+    logo: {
+      source: form.SITE_LOGO,
+      sourceDark: form.SITE_LOGO,
+    },
+  });
   await getDataList();
   ElMessage.success('保存成功');
 };
@@ -180,8 +191,8 @@ const handleUploadFile = (options: UploadRequestOptions) => {
       ElMessage.error('请选择文件');
       return false;
     }
-    if (file.size > 500 * 1024) {
-      ElMessage.error('文件大小不能超过500KB');
+    if (file.size > 1024 * 1024) {
+      ElMessage.error('文件大小不能超过1MB');
       return false;
     }
     fileToBase64(file)
@@ -209,12 +220,6 @@ const onSuccessUploadFavicon = (response: any) => {
 // 上传 Logo 成功回调
 const onSuccessUploadLogo = (response: any) => {
   form.SITE_LOGO = response.url;
-  updatePreferences({
-    logo: {
-      source: response.url,
-      sourceDark: response.url,
-    },
-  });
 };
 
 onMounted(async () => {
@@ -254,7 +259,7 @@ onMounted(async () => {
         >
           <template #tip>
             <div class="el-upload__tip">
-              jpg/png files with a size less than 500kb
+              jpg/png files with a size less than 1M
             </div>
           </template>
         </el-upload>

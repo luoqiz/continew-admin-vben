@@ -33,6 +33,9 @@ onMounted(() => {
         settingShow: !!resMap.get('SITE_COPYRIGHT'),
       },
     });
+    document
+      .querySelector('link[rel="icon"]')
+      ?.setAttribute('href', resMap.get('SITE_FAVICON') || '/favicon.ico');
     // siteConfig.SITE_FAVICON = resMap.get('SITE_FAVICON')
     // siteConfig.SITE_TITLE = resMap.get('SITE_TITLE')
     // siteConfig.SITE_BEIAN = resMap.get('SITE_BEIAN')
