@@ -15,6 +15,7 @@ import {
   SvgSaveIcon,
   SvgUndoIcon,
 } from '@vben/icons';
+import { updatePreferences } from '@vben/preferences';
 
 import { ElMessage, ElMessageBox } from 'element-plus';
 
@@ -176,7 +177,12 @@ const handleUploadFile = (options: UploadRequestOptions) => {
   (async function requestWrap() {
     const { file, onSuccess, onError } = options;
     if (!file) {
-      return;
+      ElMessage.error('请选择文件');
+      return false;
+    }
+    if (file.size > 500 * 1024) {
+      ElMessage.error('文件大小不能超过500KB');
+      return false;
     }
     fileToBase64(file)
       .then()
@@ -203,6 +209,12 @@ const onSuccessUploadFavicon = (response: any) => {
 // 上传 Logo 成功回调
 const onSuccessUploadLogo = (response: any) => {
   form.SITE_LOGO = response.url;
+  updatePreferences({
+    logo: {
+      source: response.url,
+      sourceDark: response.url,
+    },
+  });
 };
 
 onMounted(async () => {
