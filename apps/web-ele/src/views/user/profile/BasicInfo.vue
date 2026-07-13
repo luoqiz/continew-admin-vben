@@ -21,7 +21,12 @@ import {
 import { $t } from '@vben/locales';
 import { useUserStore } from '@vben/stores';
 
-import { ElDescriptions, ElDescriptionsItem, ElMessage } from 'element-plus';
+import {
+  ElDescriptions,
+  ElDescriptionsItem,
+  ElMessage,
+  ElUpload,
+} from 'element-plus';
 
 import { uploadAvatar } from '#/api';
 import { SvgIdIcon } from '#/components/Icons';
@@ -48,7 +53,7 @@ const [AvatarUploadModel, avatarModalApi] = useVbenModal({
   closable: true,
   draggable: true,
   connectedComponent: UploadAvatarModal,
-  destroyOnClose: true,
+  destroyOnClose: false,
 });
 
 // 定义已存在默认头像
@@ -106,7 +111,7 @@ const handleUpload = async (data: any) => {
             :alt="`${userStore.userInfo?.nickname}`"
           />
           <div class="text-red relative right-10 top-0">
-            <el-upload
+            <ElUpload
               class="avatar-uploader"
               v-model:file-list="avatarList"
               :show-file-list="false"
@@ -119,7 +124,7 @@ const handleUpload = async (data: any) => {
                 @click="changeAvatar"
                 class="size-6 cursor-pointer text-blue-500"
               />
-            </el-upload>
+            </ElUpload>
           </div>
         </div>
         <div class="flex flex-row items-center justify-center">

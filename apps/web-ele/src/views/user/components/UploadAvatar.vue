@@ -5,6 +5,7 @@ import { useVbenModal } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
 import { VueCropper } from 'cropper-next-vue';
+import { ElCol, ElRow } from 'element-plus';
 
 import 'cropper-next-vue/style.css';
 
@@ -153,6 +154,10 @@ const [VerifyModel, modalApi] = useVbenModal({
   showCancelButton: true,
   showConfirmButton: true,
   bordered: true,
+  draggable: true,
+  class: 'h-500px w-700px',
+  destroyOnClose: true,
+  closeOnClickModal: false,
   onOpenChange(isOpen: boolean) {
     if (isOpen) {
       const data = modalApi.getData();
@@ -164,9 +169,9 @@ const [VerifyModel, modalApi] = useVbenModal({
   onConfirm: async () => {
     // 修复：通过 cropperRef 实例获取裁剪结果
     if (!cropperRef.value) return;
-    cropperRef.value.getCropBlob((data: any) => {
+    cropperRef.value.getCropBlob().then((type: any) => {
       // 发送有效结果
-      emits('cropSuccess', data);
+      emits('cropSuccess', type);
     });
   },
 });
@@ -178,15 +183,10 @@ const getWindowTitle = computed(() => {
 </script>
 
 <template>
-  <VerifyModel :title="getWindowTitle">
-    <div class="border">
+  <VerifyModel :title="getWindowTitle" class="w-158" draggable>
+    <div class="h-80 w-150 p-4">
       <ElRow>
-        <ElCol
-          v-if="visible"
-          :span="14"
-          style="width: 200px; height: 200px"
-          class="border border-blue-500"
-        >
+        <ElCol v-if="visible" :span="14" style="width: 200px; height: 200px">
           <VueCropper
             ref="cropperRef"
             :img="img"
@@ -202,7 +202,6 @@ const getWindowTitle = computed(() => {
             :output-type="options.outputType"
             :output-size="options.outputSize"
             @real-time="handleRealTime"
-            class="h-full w-full"
           />
         </ElCol>
         <ElCol :span="10" class="flex flex-col items-center justify-center">
