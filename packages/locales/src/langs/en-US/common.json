@@ -22,6 +22,8 @@
   "no": "No",
   "showSearchPanel": "Show search panel",
   "hideSearchPanel": "Hide search panel",
+  "notShow": "Don't Show",
+  "hideSearchPanel": "Hide search panel",
   "operation": "Operation",
   "config": "Config",
   "success": "Success",
