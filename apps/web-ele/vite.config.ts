@@ -1,6 +1,6 @@
 import process from 'node:process';
 
-import { defineConfig } from '@vben/vite-config';
+import { defineConfig, viteCssLayerPlugin } from '@vben/vite-config';
 
 import AutoImport from 'unplugin-auto-import/vite';
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers';
@@ -14,6 +14,8 @@ export default defineConfig(async (config: any) => {
     application: {},
     vite: {
       plugins: [
+        // element-plus 的 css 包进 @layer el，使 Tailwind 工具类可覆盖组件样式
+        viteCssLayerPlugin({ layerName: 'el', packageName: 'element-plus' }),
         // ElementPlus({
         //   format: 'esm',
         // }),

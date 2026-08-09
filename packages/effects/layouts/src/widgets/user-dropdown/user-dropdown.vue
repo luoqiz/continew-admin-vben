@@ -3,23 +3,25 @@ import type { Component } from 'vue';
 
 import type { AnyFunction } from '@vben/types';
 
-import { computed, useTemplateRef, watch } from 'vue';
+import { computed, ref, useTemplateRef, watch } from 'vue';
 
-import { useHoverToggle } from '@vben/hooks';
+import { SUPPORT_LANGUAGES } from '@vben/constants';
+import { useHoverToggle, useRefresh } from '@vben/hooks';
 import {
-  Bell,
-  Fullscreen,
+  createIconifyIcon,
   Languages,
   LockKeyhole,
   LogOut,
   RotateCw,
   Search,
   Settings,
-  Sun,
-  SunMoon,
 } from '@vben/icons';
-import { $t } from '@vben/locales';
-import { preferences, usePreferences } from '@vben/preferences';
+import { $t, loadLocaleMessages } from '@vben/locales';
+import {
+  preferences,
+  updatePreferences,
+  usePreferences,
+} from '@vben/preferences';
 import { useAccessStore } from '@vben/stores';
 import { isWindowsOs } from '@vben/utils';
 
@@ -34,13 +36,19 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
   VbenAvatar,
+  VbenFullScreen,
   VbenIcon,
+  VbenIconButton,
 } from '@vben-core/shadcn-ui';
 
-import { useMagicKeys, whenever } from '@vueuse/core';
+import { useFullscreen, useMagicKeys, whenever } from '@vueuse/core';
 
+import { GlobalSearch } from '../global-search';
 import { LockScreenModal } from '../lock-screen';
+import { Notification } from '../notification';
 import { Preferences } from '../preferences';
+import { ThemeToggle } from '../theme-toggle';
+import { TimezoneButton } from '../timezone';
 
 interface Props {
   /**
@@ -91,10 +99,14 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits<{ clearPreferencesAndLogout: []; logout: [] }>();
 
 const {
-  globalLockScreenShortcutKey,
   globalLogoutShortcutKey,
+  globalLockScreenShortcutKey,
+  globalSearchShortcutKey,
+  isDark,
   preferencesButtonPosition,
 } = usePreferences();
+const { refresh } = useRefresh();
+const { toggle: toggleFullscreen } = useFullscreen();
 const accessStore = useAccessStore();
 const [LockModal, lockModalApi] = useVbenModal({
   connectedComponent: LockScreenModal,
@@ -108,6 +120,11 @@ const [LogoutModal, logoutModalApi] = useVbenModal({
 const refTrigger = useTemplateRef('refTrigger');
 const refContent = useTemplateRef('refContent');
 const refPreferences = useTemplateRef('refPreferences');
+const refGlobalSearch = useTemplateRef('refGlobalSearch');
+const refTimezone = useTemplateRef('refTimezone');
+const refNotification = useTemplateRef('refNotification');
+
+const TimezoneIcon = createIconifyIcon('fluent-mdl2:world-clock');
 const [openPopover, hoverWatcher] = useHoverToggle(
   [refTrigger, refContent],
   () => props.hoverDelay,
@@ -202,13 +219,6 @@ const enableLockScreenShortcutKey = computed(() => {
   return showLockInDropdown.value && globalLockScreenShortcutKey.value;
 });
 
-const enableShortcutKey = computed(() => {
-  return (
-    (showLockInDropdown.value || showLogoutInDropdown.value) &&
-    preferences.shortcutKeys.enable
-  );
-});
-
 function handleOpenLock() {
   lockModalApi.open();
 }
@@ -233,7 +243,55 @@ function handleOpenSettings() {
   refPreferences.value?.open();
 }
 
-if (enableShortcutKey.value) {
+// 刷新当前页面
+function handleRefresh() {
+  openPopover.value = false;
+  refresh();
+}
+
+// 搜索 - 不关闭 dropdown，直接触发 GlobalSearch 组件的弹框
+function handleGlobalSearch() {
+  refGlobalSearch.value?.open();
+}
+
+// 主题切换
+function handleThemeToggleSelect(event?: Event) {
+  event?.preventDefault();
+  updatePreferences({ theme: { mode: isDark.value ? 'light' : 'dark' } });
+}
+
+// 时区
+function handleTimezoneSelect() {
+  refTimezone.value?.open();
+}
+
+// 全屏切换
+function handleFullscreenSelect() {
+  toggleFullscreen();
+}
+
+// 通知
+function handleNotificationSelect(event?: Event) {
+  event?.preventDefault();
+  refNotification.value?.toggle();
+}
+
+// 语言切换 - 阻止 Radix 默认关闭外层 dropdown，就地展开/收起 locale 列表
+const showLanguageList = ref(false);
+function handleLanguageToggleSelect(event?: Event) {
+  event?.preventDefault();
+  showLanguageList.value = !showLanguageList.value;
+}
+async function handleLocaleChange(event: Event, value: 'en-US' | 'zh-CN') {
+  // 阻止默认关闭，让用户能继续看到选择结果；选完手动收起
+  event.preventDefault();
+  updatePreferences({ app: { locale: value } });
+  await loadLocaleMessages(value);
+  showLanguageList.value = false;
+  openPopover.value = false;
+}
+
+if (preferences.shortcutKeys.enable) {
   const keys = useMagicKeys();
   const logoutKey = keys['Alt+KeyQ'];
   const lockKey = keys['Alt+KeyL'];
@@ -285,6 +343,20 @@ if (enableShortcutKey.value) {
     @clear-preferences-and-logout="emit('clearPreferencesAndLogout')"
   />
 
+  <GlobalSearch
+    v-if="showGlobalSearchInDropdown"
+    ref="refGlobalSearch"
+    :enable-shortcut-key="globalSearchShortcutKey"
+    :menus="accessStore.accessMenus"
+    :show-button="false"
+  />
+
+  <TimezoneButton
+    v-if="showTimezoneInDropdown"
+    ref="refTimezone"
+    :show-button="false"
+  />
+
   <DropdownMenu v-model:open="openPopover" :modal="false">
     <DropdownMenuTrigger ref="refTrigger" :disabled="props.trigger === 'hover'">
       <div class="mr-2 ml-1 cursor-pointer rounded-full p-1.5 hover:bg-accent">
@@ -331,7 +403,9 @@ if (enableShortcutKey.value) {
           class="mx-1 flex cursor-pointer items-center rounded-sm py-1 leading-8"
           @click="menu.handler"
         >
-          <VbenIcon :icon="menu.icon" class="mr-2 size-4" />
+          <VbenIconButton class="mr-2" @click="menu.handler">
+            <VbenIcon :icon="menu.icon" class="size-4" />
+          </VbenIconButton>
           {{ menu.text }}
         </DropdownMenuItem>
         <template v-if="showLockInDropdown || showLogoutInDropdown">
@@ -341,7 +415,9 @@ if (enableShortcutKey.value) {
             class="mx-1 flex cursor-pointer items-center rounded-sm py-1 leading-8"
             @click="handleOpenLock"
           >
-            <LockKeyhole class="mr-2 size-4" />
+            <VbenIconButton class="mr-2" @click="handleOpenLock">
+              <LockKeyhole class="size-4" />
+            </VbenIconButton>
             {{ $t('ui.widgets.lockScreen.title') }}
             <DropdownMenuShortcut v-if="enableLockScreenShortcutKey">
               {{ altView }} L
@@ -353,7 +429,9 @@ if (enableShortcutKey.value) {
             class="mx-1 flex cursor-pointer items-center rounded-sm py-1 leading-8"
             @click="handleLogout"
           >
-            <LogOut class="mr-2 size-4" />
+            <VbenIconButton class="mr-2" @click="handleLogout">
+              <LogOut class="size-4" />
+            </VbenIconButton>
             {{ $t('common.logout') }}
             <DropdownMenuShortcut v-if="enableLogoutShortcutKey">
               {{ altView }} Q
@@ -375,50 +453,81 @@ if (enableShortcutKey.value) {
           <DropdownMenuItem
             v-if="showGlobalSearchInDropdown"
             class="mx-1 flex cursor-pointer items-center rounded-sm py-1 leading-8"
+            @select="handleGlobalSearch"
           >
-            <Search class="mr-2 size-4" />
+            <VbenIconButton class="mr-2" @click="handleGlobalSearch">
+              <Search class="size-4" />
+            </VbenIconButton>
             {{ $t('preferences.widget.globalSearch') }}
           </DropdownMenuItem>
           <DropdownMenuItem
             v-if="showThemeToggleInDropdown"
             class="mx-1 flex cursor-pointer items-center rounded-sm py-1 leading-8"
+            @select="handleThemeToggleSelect"
           >
-            <Sun class="mr-2 size-4" />
-            {{ $t('preferences.widget.themeToggle') }}
+            <ThemeToggle class="mr-2" />
+            {{ $t('preferences.theme.title') }}
           </DropdownMenuItem>
           <DropdownMenuItem
             v-if="showLanguageToggleInDropdown"
             class="mx-1 flex cursor-pointer items-center rounded-sm py-1 leading-8"
+            @select="handleLanguageToggleSelect"
           >
-            <Languages class="mr-2 size-4" />
+            <VbenIconButton class="mr-2" @click="handleLanguageToggleSelect">
+              <Languages class="size-4" />
+            </VbenIconButton>
             {{ $t('preferences.widget.languageToggle') }}
           </DropdownMenuItem>
+          <template v-if="showLanguageList">
+            <DropdownMenuItem
+              v-for="lang in SUPPORT_LANGUAGES"
+              :key="lang.value"
+              class="mx-1 flex cursor-pointer items-center rounded-sm py-1 pl-8 leading-8"
+              @select="(e: Event) => handleLocaleChange(e, lang.value)"
+            >
+              <span
+                :class="
+                  lang.value === preferences.app.locale ? 'bg-foreground' : ''
+                "
+                class="mr-2 size-1.5 rounded-full"
+              ></span>
+              {{ lang.label }}
+            </DropdownMenuItem>
+          </template>
           <DropdownMenuItem
             v-if="showTimezoneInDropdown"
             class="mx-1 flex cursor-pointer items-center rounded-sm py-1 leading-8"
+            @select="handleTimezoneSelect"
           >
-            <SunMoon class="mr-2 size-4" />
-            {{ $t('preferences.widget.timezone') }}
+            <VbenIconButton class="mr-2" @click="handleTimezoneSelect">
+              <TimezoneIcon class="size-4" />
+            </VbenIconButton>
+            {{ $t('ui.widgets.timezone.setTimezone') }}
           </DropdownMenuItem>
           <DropdownMenuItem
             v-if="showFullscreenInDropdown"
             class="mx-1 flex cursor-pointer items-center rounded-sm py-1 leading-8"
+            @select="handleFullscreenSelect"
           >
-            <Fullscreen class="mr-2 size-4" />
+            <VbenFullScreen class="mr-2" @click.stop />
             {{ $t('preferences.widget.fullscreen') }}
           </DropdownMenuItem>
           <DropdownMenuItem
             v-if="showNotificationInDropdown"
             class="mx-1 flex cursor-pointer items-center rounded-sm py-1 leading-8"
+            @select="handleNotificationSelect"
           >
-            <Bell class="mr-2 size-4" />
+            <Notification ref="refNotification" class="mr-2" />
             {{ $t('preferences.widget.notification') }}
           </DropdownMenuItem>
           <DropdownMenuItem
             v-if="showRefreshInDropdown"
             class="mx-1 flex cursor-pointer items-center rounded-sm py-1 leading-8"
+            @click="handleRefresh"
           >
-            <RotateCw class="mr-2 size-4" />
+            <VbenIconButton class="mr-2" @click="handleRefresh">
+              <RotateCw class="size-4" />
+            </VbenIconButton>
             {{ $t('preferences.widget.refresh') }}
           </DropdownMenuItem>
         </template>
@@ -430,7 +539,9 @@ if (enableShortcutKey.value) {
           class="mx-1 flex cursor-pointer items-center rounded-sm py-1 leading-8"
           @click="handleOpenSettings"
         >
-          <Settings class="mr-2 size-4" />
+          <VbenIconButton class="mr-2" @click="handleOpenSettings">
+            <Settings class="size-4" />
+          </VbenIconButton>
           {{ $t('preferences.title') }}
         </DropdownMenuItem>
       </div>
