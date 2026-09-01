@@ -44,21 +44,22 @@ const formSchema = computed((): VbenFormSchema[] => {
     //     .default(''),
     // },
     {
+      // 只有无域名租户的兼容入口需要用户输入租户编码；域名入口隐藏该字段。
       component: 'VbenInput',
       componentProps: {
         placeholder: $t('authentication.selectTenant'),
       },
       dependencies: {
-        if: () => tenantStore.tenantEnabled && !tenantStore.tenantId,
+        if: () => tenantStore.needInputTenantCode,
         triggerFields: [''],
       },
       fieldName: 'TenantCode',
       label: $t('authentication.selectTenant'),
-      // rules: z
-      //   .string()
-      //   .min(1, { message: $t('authentication.selectTenant') })
-      //   .optional()
-      //   .default(''),
+      rules: tenantStore.needInputTenantCode
+        ? z.string().min(1, {
+            message: $t('authentication.selectTenant'),
+          })
+        : z.string().optional(),
     },
     {
       component: 'VbenInput',

@@ -12,12 +12,20 @@ import { encryptByRsa } from '@vben/utils';
 import { ElNotification } from 'element-plus';
 import { defineStore } from 'pinia';
 
-import { AuthTypeConstants, getUserInfoApi, loginApi, logoutApi } from '#/api';
+import {
+  AuthTypeConstants,
+  getUserInfoApi,
+  loginApi,
+  logoutApi,
+  socialLogin as socialLoginApi,
+} from '#/api';
 import { $t } from '#/locales';
+import { useTenantStore } from './modules/tenant';
 
 export const useAuthStore = defineStore('auth', () => {
   const accessStore = useAccessStore();
   const userStore = useUserStore();
+  const tenantStore = useTenantStore();
   const router = useRouter();
 
   const loginLoading = ref(false);
@@ -38,15 +46,19 @@ export const useAuthStore = defineStore('auth', () => {
       params.password = encryptByRsa(params.password) || '';
       params.clientId = import.meta.env.VITE_CLIENT_ID;
       params.authType = AuthTypeConstants.ACCOUNT;
+      const { TenantCode, ...loginParams } = params;
+      // 仅兼容入口需要把租户编码显式传给后端；域名入口由后端从 Host 解析租户。
       const config: RequestClientConfig = {
         headers: {
-          'x-tenant-code': params.TenantCode || '', // 如果租户功能启用，携带租户信息
+          'x-tenant-code': TenantCode || '', // 如果租户功能启用，携带租户信息
         },
       };
-      const { token } = await loginApi(params, config);
+      const { token, tenantId } = await loginApi(loginParams, config);
 
       // 如果成功获取到 accessToken
       if (token) {
+        tenantStore.setTenantCode(TenantCode);
+        tenantStore.setTenantId(tenantId);
         // 将 accessToken 存储到 accessStore 中
         accessStore.setAccessToken(token);
 
@@ -88,6 +100,45 @@ export const useAuthStore = defineStore('auth', () => {
     };
   }
 
+  async function socialLogin(
+    source: string,
+    params: Recordable<any>,
+    tenantCode?: string,
+    onSuccess?: () => Promise<void> | void,
+  ) {
+    let userInfo: null | UserInfo = null;
+    try {
+      loginLoading.value = true;
+      const { token, tenantId } = await socialLoginApi(
+        {
+          ...params,
+          source,
+          clientId: import.meta.env.VITE_CLIENT_ID,
+          authType: AuthTypeConstants.SOCIAL,
+        },
+        tenantCode,
+      );
+      if (token) {
+        // 社交回调阶段的 tenantCode 只来自兼容入口；域名入口始终信任当前 Host。
+        tenantStore.setTenantCode(tenantCode);
+        tenantStore.setTenantId(tenantId);
+        accessStore.setAccessToken(token);
+        const fetchUserInfoResult = await fetchUserInfo();
+        userInfo = fetchUserInfoResult;
+        userStore.setUserInfo(userInfo);
+        accessStore.setAccessCodes(userInfo.permissions);
+        await (onSuccess
+          ? onSuccess()
+          : router.push(
+              userInfo.homePath || preferences.app.defaultHomePath,
+            ));
+      }
+    } finally {
+      loginLoading.value = false;
+    }
+    return { userInfo };
+  }
+
   async function logout(redirect: boolean = true) {
     try {
       await logoutApi();
@@ -121,6 +172,7 @@ export const useAuthStore = defineStore('auth', () => {
   return {
     $reset,
     authLogin,
+    socialLogin,
     fetchUserInfo,
     loginLoading,
     logout,

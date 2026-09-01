@@ -61,14 +61,23 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
     return token ? `Bearer ${token}` : null;
   }
 
-  // 请求头处理
+  // 请求头处理：域名入口不发送前端租户头，兼容入口才发送租户 ID。
   client.addRequestInterceptor({
     fulfilled: async (config) => {
       const accessStore = useAccessStore();
       const tenantStore = useTenantStore();
 
       config.headers.Authorization = formatToken(accessStore.accessToken);
-      config.headers['X-Tenant-Id'] = tenantStore.tenantId;
+      // 显式配置的 X-Tenant-Code 由兼容登录接口使用；否则根据当前入口补充租户 ID。
+      const hasTenantCode = Object.keys(config.headers).some((name) => {
+        return name.toLowerCase() === 'x-tenant-code' && !!config.headers[name];
+      });
+      if (tenantStore.shouldSendTenantHeader && tenantStore.tenantId && !hasTenantCode) {
+        config.headers['X-Tenant-Id'] = tenantStore.tenantId;
+      } else {
+        // 清除旧的租户 ID，防止切换到域名入口后继续携带本地持久化值。
+        delete config.headers['X-Tenant-Id'];
+      }
       config.headers['Accept-Language'] = preferences.app.locale;
       return config;
     },
@@ -112,8 +121,32 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
   return client;
 }
 
+function addTenantRequestInterceptor(client: RequestClient) {
+  client.addRequestInterceptor({
+    fulfilled: async (config) => {
+      const accessStore = useAccessStore();
+      const tenantStore = useTenantStore();
+
+      config.headers.Authorization = accessStore.accessToken
+        ? `Bearer ${accessStore.accessToken}`
+        : null;
+      // baseRequestClient 也必须遵循同一规则，覆盖刷新 Token、登出等基础请求。
+      const hasTenantCode = Object.keys(config.headers).some((name) => {
+        return name.toLowerCase() === 'x-tenant-code' && !!config.headers[name];
+      });
+      if (tenantStore.shouldSendTenantHeader && tenantStore.tenantId && !hasTenantCode) {
+        config.headers['X-Tenant-Id'] = tenantStore.tenantId;
+      } else {
+        delete config.headers['X-Tenant-Id'];
+      }
+      return config;
+    },
+  });
+}
+
 export const requestClient = createRequestClient(apiURL, {
   responseReturn: 'data',
 });
 
 export const baseRequestClient = new RequestClient({ baseURL: apiURL });
+addTenantRequestInterceptor(baseRequestClient);

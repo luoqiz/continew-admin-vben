@@ -7,6 +7,7 @@ import { startProgress, stopProgress } from '@vben/utils';
 
 import { accessRoutes, coreRouteNames } from '#/router/routes';
 import { useAuthStore } from '#/store';
+import { ensureTenantAuthContext } from '#/api/tenant';
 
 import { generateAccess } from './access';
 
@@ -46,6 +47,19 @@ function setupCommonGuard(router: Router) {
  */
 function setupAccessGuard(router: Router) {
   router.beforeEach(async (to, from) => {
+    // Hash 路由下，OAuth 服务端回调的查询参数位于 hash 前，先转入回调路由。
+    if (to.path === '/' && window.location.pathname.endsWith('/social/callback')) {
+      const query = Object.fromEntries(new URLSearchParams(window.location.search));
+      if (query.source && query.state) {
+        return {
+          path: '/social/callback',
+          query,
+          replace: true,
+        };
+      }
+    }
+    // 权限路由执行前先确定当前 Host 的租户认证入口，避免刷新后沿用上一次入口状态。
+    await ensureTenantAuthContext().catch(() => undefined);
     const accessStore = useAccessStore();
     const userStore = useUserStore();
     const authStore = useAuthStore();

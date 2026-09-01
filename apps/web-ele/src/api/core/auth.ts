@@ -12,6 +12,7 @@ export namespace AuthApi {
   /** 登录接口返回值 */
   export interface LoginResult {
     token: string;
+    tenantId: string;
   }
 
   export interface RefreshTokenResult {

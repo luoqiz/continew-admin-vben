@@ -92,6 +92,17 @@ const coreRoutes: RouteRecordRaw[] = [
       },
     ],
   },
+  // 第三方平台回调通常位于平台域名；该路由负责校验 state 并回到原租户入口。
+  {
+    component: () =>
+      import('#/views/_core/authentication/social-callback.vue'),
+    meta: {
+      hideInTab: true,
+      title: 'Social callback',
+    },
+    name: 'SocialCallback',
+    path: '/social/callback',
+  },
 ];
 
 export { coreRoutes, fallbackNotFoundRoute };

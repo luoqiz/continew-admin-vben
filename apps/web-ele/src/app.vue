@@ -6,10 +6,8 @@ import { updatePreferences } from '@vben/preferences';
 
 import { ElConfigProvider } from 'element-plus';
 
-import { getTenantStatus } from '#/api';
-import { getTenantIdByDomain } from '#/api/tenant';
+import { ensureTenantAuthContext } from '#/api/tenant';
 import { elementLocale } from '#/locales';
-import { useTenantStore } from '#/store';
 
 import { listSiteOptionDict } from './api/system';
 
@@ -17,21 +15,9 @@ defineOptions({ name: 'App' });
 
 useElementPlusDesignTokens();
 
-const tenantStore = useTenantStore();
-
-// 查询租户状态和租户编码
-const onGetTenant = async () => {
-  const data = await getTenantStatus();
-  tenantStore.setTenantEnable(data);
-  // 开启租户 根据地址(域名)查询租户code
-  if (data) {
-    const domain = window.location.hostname;
-    const tenantId = await getTenantIdByDomain(domain);
-    tenantStore.setTenantId(tenantId);
-  }
-};
 onMounted(async () => {
-  await onGetTenant();
+  // 应用启动时先同步租户认证入口，再加载站点配置，保证登录页显示正确的租户模式。
+  await ensureTenantAuthContext().catch(() => undefined);
   listSiteOptionDict().then((res) => {
     const resMap = new Map();
     res.forEach((item) => {
