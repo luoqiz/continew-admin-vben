@@ -42,6 +42,8 @@ outline: deep
 
 每个应用都有不同的 UI 框架，所以在应用的 `src/adapter/form` 和 `src/adapter/component` 内部，你可以根据自己的需求，进行组件适配。下面是 `Ant Design Vue` 的适配器示例代码，可根据注释查看说明：
 
+必须先初始化组件适配器，再调用 `setupVbenForm`。每次调用都会以当前全局组件注册表重建组件及模型属性映射；重复初始化时，已从注册表移除的组件会同步清理，内置组件及其默认绑定保持不变。
+
 ::: details ant design vue 表单适配器
 
 ```ts
@@ -262,6 +264,35 @@ export { initComponentAdapter };
 
 <DemoPreview dir="demos/vben-form/query" />
 
+## 表单分组
+
+在 `schema` 中加入 `type: 'group'` 项，可以把若干字段组织成一个可折叠的区块。分组本身不是字段：没有 `fieldName`，不参与取值与校验；`children` 内的字段与顶层字段完全等价，`setValues`、`updateSchema`、`removeSchemaByFields` 以及字段插槽都按 `fieldName` 直接作用于组内字段。
+
+```ts
+const [Form, formApi] = useVbenForm({
+  schema: [
+    { component: 'Input', fieldName: 'name', label: '名称' },
+    {
+      type: 'group',
+      title: '高级选项',
+      defaultCollapsed: true,
+      children: [
+        { component: 'Input', fieldName: 'remark', label: '备注' },
+        { component: 'Switch', fieldName: 'enabled', label: '启用' },
+      ],
+    },
+  ],
+});
+
+// 组内字段照常按 fieldName 更新
+formApi.updateSchema([{ fieldName: 'remark', label: '说明' }]);
+```
+
+- `collapsible: false` 时分组不可折叠，仅作为带标题的区块。
+- 分组默认占满一行，可通过 `formItemClass` 调整；`wrapperClass` 控制分组内部的栅格，缺省继承表单的 `wrapperClass`。
+- 分组内任一字段校验失败时会自动展开，避免错误提示被折叠区域遮住。
+- 分组只支持一层，`children` 只能是字段，不能再嵌套分组；数组字段的 `children` 同样只能是字段。
+
 ## 表单值编解码
 
 当组件值与后端 payload 不一致时，使用表单级 `codec` 统一定义双向转换。`encode` 接收完整 `TFormValues` 并返回完整 `TSubmitValues`；`decode` 执行反向转换。多字段拆分、合并和删除都在一个纯函数边界完成，不依赖 schema 顺序或字符串路径写入。
@@ -417,7 +448,7 @@ useVbenForm 返回的第二个参数，是一个对象，包含了一些表单�
 | validateAndSubmit | 校验通过后提交表单 | `() => Promise<TSubmitValues \| undefined>` | - |
 | reset | 重置表单 | `(state?: FormResetState<TFormValues>, options?: FormResetOptions) => Promise<void>` | - |
 | clearValidation | 清空指定字段或全部校验，并取消进行中的异步校验 | `(fieldNames?: FormFieldName<TFormValues> \| FormFieldName<TFormValues>[]) => Promise<void>` | - |
-| setValues | 设置表单组件值，默认会过滤不在 schema 中定义的字段 | `(fields: Partial<TFormValues>, filterFields?: boolean, shouldValidate?: boolean) => Promise<void>` | - |
+| setValues | 深层补丁更新表单值，默认会过滤不在 schema 中定义的字段 | `(fields: FormValuePatch<TFormValues>, filterFields?: boolean, shouldValidate?: boolean) => Promise<void>` | - |
 | setSubmitValues | 通过 codec.decode 回填完整提交值 | `(values: TSubmitValues, filterFields?: boolean, shouldValidate?: boolean) => Promise<void>` | - |
 | getValues | 获取经过 codec.encode 或旧格式化管道的提交值 | `() => Promise<TSubmitValues>` | - |
 | getRawValues | 获取未格式化的独立表单值快照 | `() => Promise<TFormValues>` | - |
@@ -433,6 +464,8 @@ useVbenForm 返回的第二个参数，是一个对象，包含了一些表单�
 | form | 稳定的 `FormContextApi`，提供 values、errors、set/reset/validate/submit 与数组字段操作，不暴露底层 TanStack 泛型 | `FormContextApi` | - |
 | getFieldComponentRef | 获取指定字段的组件实例 | `<T=unknown>(fieldName: string)=>T` | >5.5.3 |
 | getFocusedField | 获取当前已获得焦点的字段 | `()=>string\|undefined` | >5.5.3 |
+
+`setValues` 在默认的 `filterFields=true` 模式下会将普通对象作为深层补丁合并，因此更新 `profile.email` 时会保留 `profile` 下其他已声明字段和默认值。数组、日期、Day.js、`null`、`undefined` 等叶值仍会整体覆盖。需要替换整个对象分支时，请使用 `setFieldValue('profile', nextProfile)`；需要绕过 schema 字段过滤时，可以将 `filterFields` 设为 `false`。
 
 旧命名 `submitForm`、`validateAndSubmitForm`、`resetForm`、`resetValidate` 分别对应 `submit`、`validateAndSubmit`、`reset`、`clearValidation`。它们仍可调用，但已标记 `@deprecated`，开发环境每个旧名称只警告一次，生产环境静默。
 
@@ -586,8 +619,9 @@ export interface FormCommonConfig {
   labelClass?: string;
   /**
    * 所有表单项的label宽度
+   * 设置为 `auto` 时，水平布局下会按当前表单可见 label 的最大宽度自动对齐
    */
-  labelWidth?: number;
+  labelWidth?: number | string;
   /**
    * 所有表单项的model属性名。使用自定义组件时可通过此配置指定组件的model属性名。已经在modelPropNameMap中注册的组件不受此配置影响
    * @default "modelValue"
@@ -602,10 +636,10 @@ export interface FormCommonConfig {
 
 :::
 
-::: details FormSchema
+::: details FormFieldSchema
 
 ```ts
-export interface FormSchema<
+export interface FormFieldSchema<
   T extends BaseFormComponentType = BaseFormComponentType,
   TValues extends FormValues = FormValues,
 > extends FormCommonConfig {
@@ -643,6 +677,45 @@ export interface FormSchema<
 ```
 
 顶层 `componentProps`、`help` 和 `renderComponentContent` 函数只接收轻量 `FormSchemaContext`，适合数组行索引、字段路径等 schema 信息。需要读取表单值时，使用 `dependencies.resolve({ values, ... })`，避免每个字段订阅整份 values。
+
+:::
+
+::: details FormGroupSchema
+
+`schema` 数组中的每一项要么是字段（`FormFieldSchema`），要么是分组（`FormGroupSchema`），以 `type: 'group'` 区分。
+
+```ts
+export interface FormGroupSchema<
+  T extends BaseFormComponentType = BaseFormComponentType,
+  TValues extends FormValues = FormValues,
+> {
+  /** 分组内的字段定义，只能是字段，不能再嵌套分组 */
+  children: FormFieldSchema<T, TValues>[];
+  /** 是否允许折叠，默认 true */
+  collapsible?: boolean;
+  /** 是否默认折叠，默认 false */
+  defaultCollapsed?: boolean;
+  /** 标题右侧的附加内容 */
+  extra?: CustomRenderType;
+  /** 分组容器在表单栅格中的样式，默认占满一行 */
+  formItemClass?: FormItemClassType;
+  /** 是否隐藏分组 */
+  hide?: boolean;
+  /** 分组标识，用于渲染时的稳定 key，缺省按索引 */
+  name?: string;
+  /** 分组标题 */
+  title?: CustomRenderType;
+  /** 分组标记 */
+  type: 'group';
+  /** 分组内部的栅格布局，缺省继承表单的 wrapperClass */
+  wrapperClass?: WrapperClassType;
+}
+
+export type FormSchema<
+  T extends BaseFormComponentType = BaseFormComponentType,
+  TValues extends FormValues = FormValues,
+> = FormFieldSchema<T, TValues> | FormGroupSchema<T, TValues>;
+```
 
 :::
 
