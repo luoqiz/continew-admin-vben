@@ -1,7 +1,8 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { authenticateResponseInterceptor } from './preset-interceptors';
 import { RequestClient } from './request-client';
 
 describe('requestClient', () => {
@@ -77,6 +78,56 @@ describe('requestClient', () => {
         data: { code: '401', msg: 'Unauthorized' },
         status: 401,
       },
+    });
+  });
+
+  it('should not invalidate an existing session after a failed login', async () => {
+    const doReAuthenticate = vi.fn();
+    requestClient.addResponseInterceptor(
+      authenticateResponseInterceptor({
+        client: requestClient,
+        doReAuthenticate,
+        doRefreshToken: vi.fn(),
+        enableRefreshToken: true,
+        formatToken: (token) => `Bearer ${token}`,
+      }),
+    );
+    mock.onPost('/auth/login').reply(401, { code: '401' });
+
+    await expect(requestClient.post('/auth/login')).rejects.toMatchObject({
+      response: { status: 401 },
+    });
+    expect(doReAuthenticate).not.toHaveBeenCalled();
+  });
+
+  it('should retry protected requests with the refreshed auth generation', async () => {
+    let authGeneration = 1;
+    const doRefreshToken = vi.fn(async () => {
+      authGeneration = 2;
+      return 'new-access-token';
+    });
+    requestClient.addResponseInterceptor(
+      authenticateResponseInterceptor({
+        client: requestClient,
+        doReAuthenticate: vi.fn(),
+        doRefreshToken,
+        enableRefreshToken: true,
+        formatToken: (token) => `Bearer ${token}`,
+        getAuthGeneration: () => authGeneration,
+      }),
+    );
+    mock.onGet('/protected').replyOnce(401, { code: '401' });
+    mock.onGet('/protected').reply((config) => [200, {
+      authGeneration: config.__authGeneration,
+    }]);
+
+    const response = await requestClient.get('/protected', {
+      __authGeneration: 1,
+    });
+
+    expect(doRefreshToken).toHaveBeenCalledOnce();
+    expect(response.data).toEqual({
+      authGeneration: 2,
     });
   });
 

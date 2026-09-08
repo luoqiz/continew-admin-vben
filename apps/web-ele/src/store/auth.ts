@@ -19,8 +19,8 @@ import {
   logoutApi,
   refreshTokenApi,
 } from '#/api';
+import { withAuthLifecycleLock } from '#/features/auth-session/lifecycle';
 import { $t } from '#/locales';
-import { withAuthLifecycleLock } from '#/utils/auth-lifecycle';
 
 import { useTenantStore } from './modules/tenant';
 
@@ -110,13 +110,26 @@ export const useAuthStore = defineStore('auth', () => {
     };
   }
 
-  async function logout(redirect: boolean = true) {
-    const accessToken = accessStore.accessToken;
+  async function logout(
+    redirect: boolean = true,
+    expectedGeneration?: number,
+  ) {
+    let loggedOut = false;
     try {
       await withAuthLifecycleLock(async () => {
+        if (
+          expectedGeneration !== undefined &&
+          expectedGeneration !== accessStore.getAuthGeneration()
+        ) {
+          return;
+        }
+        const accessToken = accessStore.accessToken;
         await logoutApi(accessToken);
+        // 先经 action 清理令牌，确保认证代次递增；resetAllStores 不会触发该 action。
+        accessStore.setAccessToken(null);
         resetAllStores();
         accessStore.setLoginExpired(false);
+        loggedOut = true;
       });
     } catch (error) {
       ElMessage.error(
@@ -125,6 +138,7 @@ export const useAuthStore = defineStore('auth', () => {
       throw error;
     }
 
+    if (!loggedOut) return false;
     // 回登录页带上当前路由地址
     await router.replace({
       path: LOGIN_PATH,
@@ -134,6 +148,7 @@ export const useAuthStore = defineStore('auth', () => {
           }
         : {},
     });
+    return true;
   }
 
   async function fetchUserInfo() {

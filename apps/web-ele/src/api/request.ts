@@ -15,8 +15,8 @@ import { useAccessStore } from '@vben/stores';
 
 import { ElMessage } from 'element-plus';
 
+import { withAuthLifecycleLock } from '#/features/auth-session/lifecycle';
 import { useAuthStore, useTenantStore } from '#/store';
-import { withAuthLifecycleLock } from '#/utils/auth-lifecycle';
 
 import { logoutApi, refreshTokenApi } from './core';
 import { code2statusResponseInterceptor } from './helper';
@@ -34,7 +34,7 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
   /**
    * 重新认证逻辑
    */
-  async function doReAuthenticate() {
+  async function doReAuthenticate(failedGeneration?: number) {
     console.warn('登录状态已失效，请重新登录。');
     const accessStore = useAccessStore();
     const authStore = useAuthStore();
@@ -45,16 +45,25 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
     ) {
       // 弹窗重新认证期间清除旧令牌并关闭刷新重试，避免并发 401 不断触发刷新接口。
       // 用户重新登录成功后会重新建立完整会话。
-      try {
-        await withAuthLifecycleLock(() => logoutApi(accessToken));
-      } catch {
-        // 服务端不可用时仍继续本地重新认证，避免用户被阻塞在过期状态。
-      }
-      accessStore.setAccessToken(null);
-      accessStore.setLoginExpired(true);
+      await withAuthLifecycleLock(async () => {
+        // 迟到的旧 401 到达时，新登录或刷新可能已建立下一代会话。
+        if (
+          failedGeneration !== undefined &&
+          failedGeneration !== accessStore.getAuthGeneration()
+        ) {
+          return;
+        }
+        try {
+          await logoutApi(accessToken);
+        } catch {
+          // Refresh Token 已被明确判定无效时，服务端注销失败不应阻塞重新认证。
+        }
+        accessStore.setAccessToken(null);
+        accessStore.setLoginExpired(true);
+      });
     } else {
       // logout 需要在清理 Access Token 前带上它，否则后端无法清除当前登录会话。
-      await authStore.logout();
+      await authStore.logout(true, failedGeneration);
     }
   }
 
@@ -84,6 +93,9 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
       const tenantStore = useTenantStore();
 
       config.headers.Authorization = formatToken(accessStore.accessToken);
+      if (config.__authGeneration === undefined) {
+        config.__authGeneration = accessStore.getAuthGeneration();
+      }
       const isLoginEndpoint = config.url?.endsWith('/auth/login');
       const loginData = config.data;
       const isSocialLogin =
@@ -136,6 +148,7 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
       doRefreshToken,
       enableRefreshToken: preferences.app.enableRefreshToken,
       formatToken,
+      getAuthGeneration: () => useAccessStore().getAuthGeneration(),
     }),
   );
 

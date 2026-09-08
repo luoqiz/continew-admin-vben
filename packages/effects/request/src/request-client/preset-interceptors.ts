@@ -50,12 +50,14 @@ export const authenticateResponseInterceptor = ({
   doRefreshToken,
   enableRefreshToken,
   formatToken,
+  getAuthGeneration,
 }: {
   client: RequestClient;
-  doReAuthenticate: () => Promise<void>;
+  doReAuthenticate: (failedGeneration?: number) => Promise<void>;
   doRefreshToken: () => Promise<string>;
   enableRefreshToken: boolean;
   formatToken: (token: string) => null | string;
+  getAuthGeneration?: () => number;
 }): ResponseInterceptorConfig => {
   return {
     rejected: async (error) => {
@@ -71,10 +73,14 @@ export const authenticateResponseInterceptor = ({
         requestUrl.endsWith('/auth/login') ||
         requestUrl.endsWith('/auth/refresh') ||
         requestUrl.endsWith('/auth/logout');
+      // 登录失败只表示本次凭证无效，不能注销当前可能仍有效的会话。
+      if (requestUrl.endsWith('/auth/login')) {
+        throw error;
+      }
       // 判断是否启用了 refreshToken 功能
       // 如果没有启用或者已经是重试请求了，直接跳转到重新登录
       if (!enableRefreshToken || config.__isRetryRequest || isAuthEndpoint) {
-        await doReAuthenticate();
+        await doReAuthenticate(config.__authGeneration);
         throw error;
       }
       // 如果正在刷新 token，则将请求加入队列，等待刷新完成
@@ -83,6 +89,8 @@ export const authenticateResponseInterceptor = ({
           client.refreshTokenQueue.push({
             resolve: (newToken: string) => {
               config.__isRetryRequest = true;
+              config.__authGeneration = getAuthGeneration?.();
+              config.headers = config.headers || {};
               config.headers.Authorization = formatToken(newToken);
               resolve(client.request(config.url, { ...config }));
             },
@@ -98,6 +106,7 @@ export const authenticateResponseInterceptor = ({
 
       try {
         const newToken = await doRefreshToken();
+        config.__authGeneration = getAuthGeneration?.();
 
         // 处理队列中的请求
         client.refreshTokenQueue.forEach((item) => item.resolve(newToken));
@@ -115,7 +124,7 @@ export const authenticateResponseInterceptor = ({
           axios.isAxiosError(refreshError) &&
           refreshError.response?.status === 401
         ) {
-          await doReAuthenticate();
+          await doReAuthenticate(config.__authGeneration);
         }
 
         throw refreshError;

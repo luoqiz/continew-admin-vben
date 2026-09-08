@@ -6,6 +6,9 @@ import { acceptHMRUpdate, defineStore } from 'pinia';
 
 type AccessToken = null | string;
 
+// 不持久化的认证代次：每次 Access Token 变更递增，用于忽略迟到的 401 响应。
+let accessTokenGeneration = 0;
+
 interface AccessState {
   /**
    * 权限码
@@ -79,7 +82,13 @@ export const useAccessStore = defineStore('core-access', {
       this.accessRoutes = routes;
     },
     setAccessToken(token: AccessToken) {
+      if (this.accessToken !== token) {
+        accessTokenGeneration += 1;
+      }
       this.accessToken = token;
+    },
+    getAuthGeneration() {
+      return accessTokenGeneration;
     },
     setIsAccessChecked(isAccessChecked: boolean) {
       this.isAccessChecked = isAccessChecked;
