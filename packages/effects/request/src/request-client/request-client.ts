@@ -46,8 +46,11 @@ class RequestClient {
   // 是否正在刷新token
   public isRefreshing = false;
   public postSSE: SSE['postSSE'];
-  // 刷新token队列
-  public refreshTokenQueue: ((token: string) => void)[] = [];
+  // 刷新等待队列：刷新失败时必须 reject，避免请求永久 pending。
+  public refreshTokenQueue: {
+    reject: (error: unknown) => void;
+    resolve: (token: string) => void;
+  }[] = [];
   public requestSSE: SSE['requestSSE'];
   public upload: FileUploader['upload'];
 
@@ -161,18 +164,14 @@ class RequestClient {
     url: string,
     config: RequestClientConfig,
   ): Promise<T> {
-    try {
-      const response: AxiosResponse<T> = await this.instance({
-        url,
-        ...config,
-        ...(config.paramsSerializer
-          ? { paramsSerializer: getParamsSerializer(config.paramsSerializer) }
-          : {}),
-      });
-      return response as T;
-    } catch (error: any) {
-      throw error.response ? error.response.data : error;
-    }
+    const response: AxiosResponse<T> = await this.instance({
+      url,
+      ...config,
+      ...(config.paramsSerializer
+        ? { paramsSerializer: getParamsSerializer(config.paramsSerializer) }
+        : {}),
+    });
+    return response as T;
   }
 }
 

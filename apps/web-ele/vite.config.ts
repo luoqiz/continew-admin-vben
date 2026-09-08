@@ -40,8 +40,8 @@ export default defineConfig(async (config: any) => {
             changeOrigin: true,
             rewrite: (path: string) =>
               path.replace(new RegExp(`^${env.VITE_API_PREFIX}`), ''),
-            // mock代理目标地址
-            target: env.VITE_GLOB_API_URL,
+            // 浏览器访问 /api，代理转发到后端实际地址，保证 Refresh Token Cookie 同源可携带。
+            target: env.VITE_API_BASE_URL || env.VITE_GLOB_API_URL,
             ws: true,
           },
         },

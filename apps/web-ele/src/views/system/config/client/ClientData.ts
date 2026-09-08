@@ -42,26 +42,31 @@ export function useClientEditFormSchema(): VbenFormSchema[] {
       rules: 'required',
     },
     {
-      label: $t('system.client.isEnableRefreshToken') || '启用刷新Token',
-      fieldName: 'isEnableRefreshToken',
-      component: 'Switch',
-      defaultValue: false,
-    },
-    {
       label: $t('system.client.refreshTokenTimeout') || '刷新Token超时时间',
       fieldName: 'refreshTokenTimeout',
       component: 'InputNumber',
-      componentProps: { min: 0 },
-      dependencies: {
-        trigger(values, form) {
-          if (values.isEnableRefreshToken) {
-            form.setValues({ refreshTokenTimeout: 2_592_000 });
-          } else {
-            form.setValues({ refreshTokenTimeout: 0 });
-          }
-        },
-        triggerFields: ['isEnableRefreshToken'],
+      componentProps: { min: 60 },
+      defaultValue: 2_592_000,
+      rules: 'required',
+    },
+    {
+      label: $t('system.client.refreshTokenMode') || '刷新Token传输模式',
+      fieldName: 'refreshTokenMode',
+      component: 'Select',
+      componentProps: {
+        options: [
+          {
+            label: $t('system.client.refreshTokenModeCookie'),
+            value: 'COOKIE',
+          },
+          {
+            label: $t('system.client.refreshTokenModeBody'),
+            value: 'BODY',
+          },
+        ],
       },
+      defaultValue: 'COOKIE',
+      rules: 'required',
     },
     {
       label: $t('system.client.isConcurrent') || '多地登录',
@@ -134,14 +139,13 @@ export function useClientGridFieldColumns(): VxeTableGridOptions['columns'] {
     },
     { field: 'timeout', title: $t('system.client.timeout'), align: 'center' },
     {
-      field: 'isEnableRefreshToken',
-      title: $t('system.client.isEnableRefreshToken'),
-      align: 'center',
-      slots: { default: 'isEnableRefreshToken' },
-    },
-    {
       field: 'refreshTokenTimeout',
       title: $t('system.client.refreshTokenTimeout'),
+      align: 'center',
+    },
+    {
+      field: 'refreshTokenMode',
+      title: $t('system.client.refreshTokenMode'),
       align: 'center',
     },
     {

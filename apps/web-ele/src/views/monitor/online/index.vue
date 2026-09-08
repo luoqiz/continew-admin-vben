@@ -5,7 +5,6 @@ import type { OnlineUserResp } from '#/api/monitor/online';
 
 import { Page } from '@vben/common-ui';
 import { $t } from '@vben/locales';
-import { useAccessStore } from '@vben/stores';
 
 import { ElButton, ElMessage, ElPopconfirm, ElSpace } from 'element-plus';
 
@@ -75,8 +74,8 @@ function usePackageGridFieldColumns(): VxeTableGridOptions['columns'] {
       align: 'center',
     },
     {
-      field: 'lastActiveTime',
-      title: $t('monitor.onlineUser.lastActiveTime'),
+      field: 'lastRefreshTime',
+      title: $t('monitor.onlineUser.lastRefreshTime'),
       align: 'center',
     },
     {
@@ -121,7 +120,7 @@ const [TableGrid, tableGridApi] = useVbenVxeGrid({
       },
     },
     rowConfig: {
-      keyField: 'id',
+      keyField: 'sessionId',
       isHover: true,
     },
     toolbarConfig: {
@@ -138,12 +137,9 @@ const [TableGrid, tableGridApi] = useVbenVxeGrid({
   } as VxeTableGridOptions<OnlineUserResp>,
 });
 
-const accessStore = useAccessStore();
-const currentToken = accessStore.accessToken;
-
 // 强退
-const handleKickout = (token: string) => {
-  kickout(token).then(() => {
+const handleKickout = (sessionId: string) => {
+  kickout(sessionId).then(() => {
     tableGridApi.reload();
     ElMessage.success('强退成功');
   });
@@ -158,15 +154,13 @@ const handleKickout = (token: string) => {
           <ElPopconfirm
             :title="$t('monitor.onlineUser.kickout', [row.nickname])"
             icon-color="red"
-            @confirm="handleKickout(row.token!)"
-            :disabled="currentToken === row.token"
+            @confirm="handleKickout(row.sessionId)"
           >
             <template #reference>
               <ElButton
                 type="danger"
                 text
                 link
-                :disabled="currentToken === row.token"
               >
                 {{ $t('monitor.onlineUser.kickout') }}
               </ElButton>

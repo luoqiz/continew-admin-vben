@@ -76,6 +76,10 @@ export function resetAllStores() {
   }
   const allStores = (pinia as any)._s;
   for (const [_key, store] of allStores) {
-    store.$reset();
+    // setup 语法的 Store 不会自动生成 $reset，具体 Store 可按业务实现。
+    // 未实现时跳过，避免退出流程因单个 Store 抛异常而无法跳转登录页。
+    if (typeof store.$reset === 'function') {
+      store.$reset();
+    }
   }
 }

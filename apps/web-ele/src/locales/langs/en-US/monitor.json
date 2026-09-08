@@ -7,7 +7,7 @@
     "os": "Terminal System",
     "nickname": "User Nickname",
     "loginTime": "Login Time",
-    "lastActiveTime": "Last Active Time",
+    "lastRefreshTime": "Last Refresh Time",
     "kickout": "Kick Out {0}"
   },
   "loginLog": {

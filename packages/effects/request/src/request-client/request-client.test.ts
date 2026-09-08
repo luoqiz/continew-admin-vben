@@ -64,6 +64,22 @@ describe('requestClient', () => {
     });
   });
 
+  it('should preserve axios response error context', async () => {
+    mock.onGet('/test/unauthorized').reply(401, {
+      code: '401',
+      msg: 'Unauthorized',
+    });
+
+    await expect(requestClient.get('/test/unauthorized')).rejects.toMatchObject({
+      isAxiosError: true,
+      config: { url: '/test/unauthorized' },
+      response: {
+        data: { code: '401', msg: 'Unauthorized' },
+        status: 401,
+      },
+    });
+  });
+
   it('should successfully upload a file', async () => {
     const fileData = new Blob(['file contents'], { type: 'text/plain' });
 

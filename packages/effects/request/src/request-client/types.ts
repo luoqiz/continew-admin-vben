@@ -6,6 +6,10 @@ import type {
 } from 'axios';
 
 type ExtendOptions<T = any> = {
+  /** 当前请求是否已经因 Access Token 失效重试过。 */
+  __isRetryRequest?: boolean;
+  /** Refresh Token 请求自身失败时禁止递归刷新。 */
+  __skipRefresh?: boolean;
   /**
    * 参数序列化方式。预置的有
    * - brackets: ids[]=1&ids[]=2&ids[]=3

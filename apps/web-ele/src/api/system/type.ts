@@ -259,8 +259,8 @@ export interface ClientResp {
   timeout: string;
   status: string;
   isConcurrent: boolean;
-  isEnableRefreshToken: boolean;
   refreshTokenTimeout: number;
+  refreshTokenMode: 'BODY' | 'COOKIE';
   createUser: string;
   createTime: string;
   updateUser: string;
@@ -277,8 +277,8 @@ export interface ClientDetailResp {
   timeout: string;
   status: string;
   isConcurrent: boolean;
-  isEnableRefreshToken: boolean;
   refreshTokenTimeout: number;
+  refreshTokenMode: 'BODY' | 'COOKIE';
   createUser: string;
   createTime: string;
   updateUser: string;

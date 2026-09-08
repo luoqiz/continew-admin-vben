@@ -12,9 +12,9 @@ interface UserInfo extends BasicUserInfo {
   homePath: string;
 
   /**
-   * accessToken
+   * Access Token（Refresh Token 不进入前端用户信息或持久化存储）
    */
-  token: string;
+  accessToken: string;
 }
 
 export type { UserInfo };

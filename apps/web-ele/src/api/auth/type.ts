@@ -79,7 +79,14 @@ export interface EmailLoginReq extends AuthReq {
 
 /** 登录响应类型 */
 export interface LoginResp {
-  token: string;
+  accessToken: string;
+  tokenType?: string;
+  expiresIn?: number;
+  /** Refresh Token 剩余有效期。 */
+  refreshExpiresIn: number;
+  refreshToken?: string;
+  /** 登录/刷新会话确定的租户 ID。 */
+  tenantId?: null | number | string;
 }
 
 /** 第三方登录授权类型 */

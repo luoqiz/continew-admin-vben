@@ -28,6 +28,9 @@ const onGetTenant = async () => {
     const domain = window.location.hostname;
     const tenantId = await getTenantIdByDomain(domain);
     tenantStore.setTenantId(tenantId);
+  } else {
+    // 租户功能关闭时清理持久化的旧租户 ID，避免后续重新开启租户功能时误带旧上下文。
+    tenantStore.resetTenantId();
   }
 };
 onMounted(async () => {

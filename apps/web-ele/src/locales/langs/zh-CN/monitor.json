@@ -22,7 +22,7 @@
     "clientType": "终端类型",
     "ip": "登录 IP",
     "kickout": "强退{0}",
-    "lastActiveTime": "最后活跃时间",
+    "lastRefreshTime": "最后刷新时间",
     "loginTime": "登录时间",
     "nickname": "用户昵称",
     "os": "终端系统"

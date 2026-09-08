@@ -60,22 +60,33 @@ export const authenticateResponseInterceptor = ({
   return {
     rejected: async (error) => {
       const { config, response } = error;
-      // 如果不是 401 错误，直接抛出异常
-      if (response?.status !== 401) {
+      if (!axios.isAxiosError(error) || response?.status !== 401) {
         throw error;
       }
+      if (!config?.url) {
+        throw error;
+      }
+      const requestUrl = config.url;
+      const isAuthEndpoint =
+        requestUrl.endsWith('/auth/login') ||
+        requestUrl.endsWith('/auth/refresh') ||
+        requestUrl.endsWith('/auth/logout');
       // 判断是否启用了 refreshToken 功能
       // 如果没有启用或者已经是重试请求了，直接跳转到重新登录
-      if (!enableRefreshToken || config.__isRetryRequest) {
+      if (!enableRefreshToken || config.__isRetryRequest || isAuthEndpoint) {
         await doReAuthenticate();
         throw error;
       }
       // 如果正在刷新 token，则将请求加入队列，等待刷新完成
       if (client.isRefreshing) {
-        return new Promise((resolve) => {
-          client.refreshTokenQueue.push((newToken: string) => {
-            config.headers.Authorization = formatToken(newToken);
-            resolve(client.request(config.url, { ...config }));
+        return new Promise((resolve, reject) => {
+          client.refreshTokenQueue.push({
+            resolve: (newToken: string) => {
+              config.__isRetryRequest = true;
+              config.headers.Authorization = formatToken(newToken);
+              resolve(client.request(config.url, { ...config }));
+            },
+            reject,
           });
         });
       }
@@ -89,17 +100,23 @@ export const authenticateResponseInterceptor = ({
         const newToken = await doRefreshToken();
 
         // 处理队列中的请求
-        client.refreshTokenQueue.forEach((callback) => callback(newToken));
+        client.refreshTokenQueue.forEach((item) => item.resolve(newToken));
         // 清空队列
         client.refreshTokenQueue = [];
 
-        return client.request(error.config.url, { ...error.config });
+        return client.request(requestUrl, { ...config });
       } catch (refreshError) {
-        // 如果刷新 token 失败，处理错误（如强制登出或跳转登录页面）
-        client.refreshTokenQueue.forEach((callback) => callback(''));
+        client.refreshTokenQueue.forEach((item) => item.reject(refreshError));
         client.refreshTokenQueue = [];
-        console.error('Refresh token failed, please login again.');
-        await doReAuthenticate();
+
+        // 只有 Refresh Token 被服务端明确判定无效时才重新认证。403、429、5xx
+        // 和网络异常保留现有登录态，使后续请求可以重新尝试刷新。
+        if (
+          axios.isAxiosError(refreshError) &&
+          refreshError.response?.status === 401
+        ) {
+          await doReAuthenticate();
+        }
 
         throw refreshError;
       } finally {
