@@ -357,7 +357,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
   },
   async onOpenChange(isOpen) {
     if (isOpen) {
-      const data = drawerApi.getData<GenConfigResp>();
+      const data = drawerApi.getData() as GenConfigResp | undefined;
       if (data) {
         genTable.value = data;
         // 查询生成配置

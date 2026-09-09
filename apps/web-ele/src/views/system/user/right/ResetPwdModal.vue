@@ -70,13 +70,15 @@ const [EditWindow, editWindowApi] = useVbenModal({
   async onConfirm() {
     const { valid } = await editFormApi.validate();
     if (!valid) return false;
+    const detail = detailInfo.value;
+    if (!detail) return false;
     editWindowApi.lock();
     try {
       await resetUserPwd(
         {
           newPassword: encryptByRsa(editFormApi.form.values.newPassword) || '',
         },
-        detailInfo.value!.id,
+        detail.id,
       );
       ElMessage.success($t('pages.common.modifySuccess'));
 
@@ -95,7 +97,7 @@ const [EditWindow, editWindowApi] = useVbenModal({
       try {
         editWindowApi.lock(true);
         // 用户id
-        const data = editWindowApi.getData<UserResp>();
+        const data = editWindowApi.getData() as undefined | UserResp;
         if (data && data.id) {
           detailInfo.value = data;
           editFormApi.form.setValues(data);

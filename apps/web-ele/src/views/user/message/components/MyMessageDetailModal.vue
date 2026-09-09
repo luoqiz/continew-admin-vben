@@ -33,7 +33,11 @@ const [Modal, modalApi] = useVbenModal({
   async onOpenChange(isOpen) {
     if (isOpen) {
       contentLoading.value = true;
-      const record = modalApi.getData<MessageResp>();
+      const record = modalApi.getData() as MessageResp | undefined;
+      if (!record) {
+        contentLoading.value = false;
+        return;
+      }
       const data = await getUserMessage(record.id);
       currentMessage.value = data;
       contentLoading.value = false;

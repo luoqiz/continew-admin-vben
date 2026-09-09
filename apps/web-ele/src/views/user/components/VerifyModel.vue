@@ -22,7 +22,7 @@ const [VerifyModel, modalApi] = useVbenModal({
   bordered: true,
   onOpenChange(isOpen) {
     if (isOpen) {
-      const data = modalApi.getData<ModeItem>();
+      const data = modalApi.getData() as ModeItem | undefined;
       if (data) {
         modalInfo.value = data;
       }

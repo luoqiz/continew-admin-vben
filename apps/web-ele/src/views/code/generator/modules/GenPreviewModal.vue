@@ -113,9 +113,11 @@ const onDownload = async () => {
   const res: any = await downloadCode(tableNames);
   const contentDisposition = res.headers['content-disposition'];
   const pattern = /filename=([^;]+\.[^.;]+);*/;
-  const result = pattern.exec(contentDisposition) || '';
+  const encodedFileName = pattern.exec(contentDisposition)?.[1];
   // 对名字进行解码
-  const fileName = window.decodeURI(result[1]!);
+  const fileName = encodedFileName
+    ? window.decodeURI(encodedFileName)
+    : 'generated-code.zip';
   // 创建下载的链接
   const blob = new Blob([res.data]);
   const downloadElement = document.createElement('a');
@@ -177,8 +179,9 @@ const onOpen = async (tableNames: Array<string>) => {
   for (const valueElement of treeData.value) {
     mergeDir(valueElement);
   }
-  selectedKeys.value = [genPreviewList.value[0]!.fileName];
-  currentPreview.value = genPreviewList.value[0];
+  const firstPreview = genPreviewList.value[0];
+  selectedKeys.value = firstPreview ? [firstPreview.fileName] : [];
+  currentPreview.value = firstPreview;
   visible.value = true;
 };
 
@@ -188,7 +191,7 @@ const [Modal, modalApi] = useVbenModal({
   showConfirmButton: false,
   onOpenChange(isOpen) {
     if (isOpen) {
-      const data = modalApi.getData<string[]>();
+      const data = modalApi.getData() as string[] | undefined;
       if (data) {
         onOpen(data);
       }

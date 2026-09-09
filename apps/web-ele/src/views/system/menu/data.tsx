@@ -36,7 +36,7 @@ export function useMenuFormSchema(): VbenFormSchema[] {
         componentProps: (model, api) => {
           // 切换时清空校验
           // 直接抄的源码 没有清空校验的方法
-          Object.keys(api.errors.value).forEach((key) => {
+          Object.keys(api.errors).forEach((key) => {
             api.setFieldError(key, undefined);
           });
           return {
@@ -70,8 +70,8 @@ export function useMenuFormSchema(): VbenFormSchema[] {
         show: (values) => values.type !== 3,
         triggerFields: ['type'],
       },
-      renderComponentContent: (model) => ({
-        addonBefore: () => <VbenIcon icon={model.icon} />,
+      renderComponentContent: (ctx) => ({
+        addonBefore: () => <VbenIcon icon={ctx.rootValues?.icon} />,
         addonAfter: () => (
           <a href="https://icon-sets.iconify.design/" target="_blank">
             搜索图标
@@ -84,9 +84,9 @@ export function useMenuFormSchema(): VbenFormSchema[] {
     },
     {
       component: 'Input',
-      componentProps: (model) => {
+      componentProps: (ctx) => {
         const placeholder =
-          model.isExternal === false
+          ctx.rootValues?.isExternal === false
             ? '填写链接地址http(s)://  使用新页面打开'
             : '填写`路由地址`或者`链接地址`  链接默认使用内部iframe内嵌打开';
         return {
@@ -94,8 +94,8 @@ export function useMenuFormSchema(): VbenFormSchema[] {
         };
       },
       dependencies: {
-        rules: (model) => {
-          if (model.isExternal !== false) {
+        rules: (ctx) => {
+          if (ctx.rootValues?.isExternal !== false) {
             return z
               .string({ message: '请输入路由地址' })
               .min(1, '请输入路由地址')
@@ -103,7 +103,7 @@ export function useMenuFormSchema(): VbenFormSchema[] {
                 message: '路由地址不需要带http',
               });
           }
-          if (model.isExternal) {
+          if (ctx.rootValues?.isExternal) {
             // 为链接
             return z
               .string({ message: '请输入链接地址' })
@@ -133,17 +133,20 @@ export function useMenuFormSchema(): VbenFormSchema[] {
     },
     {
       component: 'Input',
-      componentProps: (model) => {
+      componentProps: (ctx) => {
         return {
           // 为链接时组件disabled
-          disabled: model.isExternal === false,
+          disabled: ctx.rootValues?.isExternal === false,
         };
       },
       defaultValue: '',
       dependencies: {
-        rules: (model) => {
+        rules: (ctx) => {
           // 非链接时为必填项
-          if (model.path && !/^https?:\/\//.test(model.path)) {
+          if (
+            ctx.rootValues?.path &&
+            !/^https?:\/\//.test(ctx.rootValues.path)
+          ) {
             return z
               .string()
               .min(1, { message: '非链接时必填组件路径' })
@@ -164,10 +167,10 @@ export function useMenuFormSchema(): VbenFormSchema[] {
     },
     {
       component: 'Input',
-      componentProps: (model) => {
+      componentProps: (ctx) => {
         return {
           // 为链接时组件disabled
-          disabled: model.isExternal === false,
+          disabled: ctx.rootValues?.isExternal === false,
         };
       },
       defaultValue: '',
@@ -193,9 +196,9 @@ export function useMenuFormSchema(): VbenFormSchema[] {
     },
     {
       component: 'Input',
-      componentProps: (model) => ({
+      componentProps: (ctx) => ({
         // 为链接时组件disabled
-        disabled: model.isExternal === false,
+        disabled: ctx.rootValues?.isExternal === false,
         placeholder: '必须为json字符串格式',
       }),
       dependencies: {

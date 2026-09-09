@@ -80,8 +80,8 @@ const [Drawer, drawerApi] = useVbenDrawer({
     if (isOpen) {
       try {
         drawerApi.lock(true);
-        const data = drawerApi.getData<TenantResp>();
-        dataId.value = data.id;
+        const data = drawerApi.getData() as TenantResp | undefined;
+        dataId.value = data?.id ?? '';
         if (data && data.id) {
           dataId.value = data.id;
           const res = await getTenant(data.id);

@@ -80,7 +80,7 @@ const [VerifyModel, modalApi] = useVbenModal({
   bordered: true,
   onOpenChange(isOpen: boolean) {
     if (isOpen) {
-      const data = modalApi.getData<BasicUserInfo>();
+      const data = modalApi.getData() as BasicUserInfo | undefined;
       if (data) {
         editFormApi.setValues(data);
       }

@@ -147,7 +147,7 @@ const [Modal, modalApi] = useVbenModal({
   },
   onOpenChange(isOpen) {
     if (isOpen) {
-      const data = modalApi.getData<string[]>();
+      const data = modalApi.getData() as string[] | undefined;
       if (data) {
         currentIndex.value = 0;
       }

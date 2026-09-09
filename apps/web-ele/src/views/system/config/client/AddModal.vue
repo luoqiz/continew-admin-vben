@@ -63,8 +63,8 @@ const [Drawer, drawerApi] = useVbenDrawer({
     if (isOpen) {
       try {
         drawerApi.lock(true);
-        const data = drawerApi.getData<ClientResp>();
-        dataId.value = data?.id;
+        const data = drawerApi.getData() as ClientResp | undefined;
+        dataId.value = data?.id ?? '';
         if (data && data.id) {
           const res = await getClient(data.id);
           clientFormApi.form.setValues(res);

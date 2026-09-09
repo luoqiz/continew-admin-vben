@@ -120,8 +120,8 @@ const [Drawer, drawerApi] = useVbenDrawer({
     if (isOpen) {
       try {
         drawerApi.lock(true);
-        const data = drawerApi.getData<MenuResp>();
-        dataId.value = data.id;
+        const data = drawerApi.getData() as MenuResp | undefined;
+        dataId.value = data?.id ?? '';
         // 加载菜单树选择
         await setupMenuSelect();
         if (data && data.id) {

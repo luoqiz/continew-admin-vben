@@ -112,9 +112,9 @@ const [Drawer, drawerApi] = useVbenDrawer({
     if (isOpen) {
       try {
         drawerApi.lock(true);
-        const data = drawerApi.getData<TenantPackageResp>();
+        const data = drawerApi.getData() as TenantPackageResp | undefined;
 
-        dataId.value = data.id;
+        dataId.value = data?.id ?? '';
 
         let menuIds: Array<any> = [];
         if (data && data.id) {
@@ -158,7 +158,7 @@ function handleMenuCheckStrictlyChange(value: boolean) {
               <!-- association为readonly 不能通过v-model绑定 -->
               <MenuSelectTable
                 ref="menuSelectRef"
-                :checked-keys="slotProps.value"
+                :checked-keys="slotProps.modelValue"
                 :association="editorFormApi.form.values.menuCheckStrictly"
                 :menus="menuTree"
                 @update:association="handleMenuCheckStrictlyChange"

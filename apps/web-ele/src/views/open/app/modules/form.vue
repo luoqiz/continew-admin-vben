@@ -41,7 +41,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
   },
   onOpenChange(isOpen) {
     if (isOpen) {
-      const data = drawerApi.getData<OpenAppApi.AppResp>();
+      const data = drawerApi.getData() as OpenAppApi.AppResp | undefined;
       formApi.resetForm();
       if (data) {
         formData.value = data;

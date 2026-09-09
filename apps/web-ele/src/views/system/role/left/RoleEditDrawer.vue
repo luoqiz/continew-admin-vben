@@ -78,8 +78,8 @@ const [Drawer, drawerApi] = useVbenDrawer({
     if (isOpen) {
       try {
         drawerApi.lock(true);
-        const data = drawerApi.getData<RoleResp>();
-        dataId.value = data.id;
+        const data = drawerApi.getData() as RoleResp | undefined;
+        dataId.value = data?.id ?? '';
 
         if (data && data.id) {
           dataId.value = data.id;

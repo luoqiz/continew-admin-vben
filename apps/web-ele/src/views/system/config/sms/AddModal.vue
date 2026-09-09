@@ -63,8 +63,8 @@ const [Drawer, drawerApi] = useVbenDrawer({
     if (isOpen) {
       try {
         drawerApi.lock(true);
-        const data = drawerApi.getData<SmsConfigResp>();
-        dataId.value = data?.id;
+        const data = drawerApi.getData() as SmsConfigResp | undefined;
+        dataId.value = data?.id ?? '';
         if (data && data.id) {
           const res = await getSmsConfig(data.id);
           smsFormApi.form.setValues(res);

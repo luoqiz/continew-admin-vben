@@ -53,13 +53,15 @@ const [EditWindow, editWindowApi] = useVbenModal({
   async onConfirm() {
     const { valid } = await editFormApi.validate();
     if (!valid) return false;
+    const detail = detailInfo.value;
+    if (!detail) return false;
     editWindowApi.lock();
     try {
       await updateTenantAdminUserPwd(
         {
           password: encryptByRsa(editFormApi.form.values.password) || '',
         },
-        detailInfo.value!.id,
+        detail.id,
       );
       ElMessage.success($t('pages.common.modifySuccess'));
 
@@ -78,7 +80,7 @@ const [EditWindow, editWindowApi] = useVbenModal({
       try {
         editWindowApi.lock(true);
         // 租户表id
-        const data = editWindowApi.getData<TenantResp>();
+        const data = editWindowApi.getData() as TenantResp | undefined;
         if (data && data.id) {
           detailInfo.value = data;
           editFormApi.form.setValues(data);

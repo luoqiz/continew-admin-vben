@@ -113,8 +113,8 @@ const [Modal, drawerApi] = useVbenModal({
     if (isOpen) {
       try {
         drawerApi.lock(true);
-        const record = drawerApi.getData<JobResp>();
-        dataId.value = record.id;
+        const record = drawerApi.getData() as JobResp | undefined;
+        dataId.value = record?.id ?? '';
         if (groupList.value.length === 0) {
           await getGroupList();
         }

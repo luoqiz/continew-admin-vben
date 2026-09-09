@@ -16,14 +16,14 @@ const detailInfo = ref<UserResp>();
 const { roleList, getRoleList } = useRole();
 
 const roleIdsRef = ref<Array<number | string>>([]);
-async function handleClosed() {}
 
 const [EditWindow, editWindowApi] = useVbenModal({
-  onClosed: handleClosed,
   async onConfirm() {
+    const detail = detailInfo.value;
+    if (!detail) return false;
     editWindowApi.lock();
     try {
-      await updateUserRole({ roleIds: roleIdsRef.value }, detailInfo.value!.id);
+      await updateUserRole({ roleIds: roleIdsRef.value }, detail.id);
       ElMessage.success($t('pages.common.modifySuccess'));
 
       emits('success');
@@ -41,7 +41,7 @@ const [EditWindow, editWindowApi] = useVbenModal({
         editWindowApi.lock(true);
         await getRoleList();
         // 租户表id
-        const data = editWindowApi.getData<UserResp>();
+        const data = editWindowApi.getData() as undefined | UserResp;
         if (data && data.id) {
           detailInfo.value = data;
           roleIdsRef.value = data.roleIds;

@@ -78,8 +78,8 @@ const [Drawer, drawerApi] = useVbenModal({
     if (isOpen) {
       try {
         drawerApi.lock(true);
-        const data = drawerApi.getData<UserResp>();
-        dataId.value = data.id;
+        const data = drawerApi.getData() as undefined | UserResp;
+        dataId.value = data?.id ?? '';
 
         if (data && data.id) {
           dataId.value = data.id;

@@ -118,8 +118,8 @@ const [Drawer, drawerApi] = useVbenDrawer({
     if (isOpen) {
       try {
         drawerApi.lock(true);
-        const data = drawerApi.getData<DeptResp>();
-        dataId.value = data.id;
+        const data = drawerApi.getData() as DeptResp | undefined;
+        dataId.value = data?.id ?? '';
         // 加载部门列表
         await setupDeptSelect();
         if (data && data.id) {
