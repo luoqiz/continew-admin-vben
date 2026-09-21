@@ -15,9 +15,10 @@ import { useAccessStore } from '@vben/stores';
 
 import { ElMessage } from 'element-plus';
 
+import { withAuthLifecycleLock } from '#/features/auth-session/lifecycle';
 import { useAuthStore, useTenantStore } from '#/store';
 
-import { refreshTokenApi } from './core';
+import { logoutApi, refreshTokenApi } from './core';
 import { code2statusResponseInterceptor } from './helper';
 
 const { apiURL } = useAppConfig(import.meta.env, import.meta.env.PROD);
@@ -26,35 +27,59 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
   const client = new RequestClient({
     ...options,
     baseURL,
+    // 浏览器 Refresh Token 由 HttpOnly Cookie 承载，请求必须携带凭证。
+    withCredentials: true,
   });
 
   /**
    * 重新认证逻辑
    */
-  async function doReAuthenticate() {
-    console.warn('Access token or refresh token is invalid or expired. ');
+  async function doReAuthenticate(failedGeneration?: number) {
+    console.warn('登录状态已失效，请重新登录。');
     const accessStore = useAccessStore();
     const authStore = useAuthStore();
-    accessStore.setAccessToken(null);
+    const accessToken = accessStore.accessToken;
     if (
-      preferences.app.loginExpiredMode === 'modal' &&
-      accessStore.isAccessChecked
+      preferences.app.loginExpiredMode !== 'modal' ||
+      !accessStore.isAccessChecked
     ) {
-      accessStore.setLoginExpired(true);
-    } else {
-      await authStore.logout();
+      // logout 需要在清理 Access Token 前带上它，否则后端无法清除当前登录会话。
+      await authStore.logout(true, failedGeneration);
+      return;
     }
+    // 弹窗重新认证期间清除旧令牌并关闭刷新重试，避免并发 401 不断触发刷新接口。
+    // 用户重新登录成功后会重新建立完整会话。
+    await withAuthLifecycleLock(async () => {
+      // 迟到的旧 401 到达时，新登录或刷新可能已建立下一代会话。
+      if (
+        failedGeneration !== undefined &&
+        failedGeneration !== accessStore.getAuthGeneration()
+      ) {
+        return;
+      }
+      try {
+        await logoutApi(accessToken);
+      } catch {
+        // Refresh Token 已被明确判定无效时，服务端注销失败不应阻塞重新认证。
+      }
+      accessStore.setAccessToken(null);
+      accessStore.setLoginExpired(true);
+    });
   }
 
   /**
    * 刷新token逻辑
    */
   async function doRefreshToken() {
-    const accessStore = useAccessStore();
-    const resp = await refreshTokenApi();
-    const newToken = resp.data;
-    accessStore.setAccessToken(newToken);
-    return newToken;
+    return withAuthLifecycleLock(async () => {
+      const accessStore = useAccessStore();
+      const tenantStore = useTenantStore();
+      const loginResult = await refreshTokenApi();
+      accessStore.setAccessToken(loginResult.accessToken);
+      // Refresh 响应携带 Session 固化的租户，确保刷新后前端状态与后端保持一致。
+      tenantStore.setTenantId(loginResult.tenantId);
+      return loginResult.accessToken;
+    });
   }
 
   function formatToken(token: null | string) {
@@ -68,7 +93,34 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
       const tenantStore = useTenantStore();
 
       config.headers.Authorization = formatToken(accessStore.accessToken);
-      config.headers['X-Tenant-Id'] = tenantStore.tenantId;
+      if (config.__authGeneration === undefined) {
+        config.__authGeneration = accessStore.getAuthGeneration();
+      }
+      const isLoginEndpoint = config.url?.endsWith('/auth/login');
+      const loginData = config.data;
+      const isSocialLogin =
+        isLoginEndpoint &&
+        typeof loginData === 'object' &&
+        loginData !== null &&
+        'authType' in loginData &&
+        loginData.authType === 'SOCIAL';
+      // 账号类登录使用显式租户编码；社交登录回调必须保留授权前选中的租户 ID。
+      // 刷新和退出始终以 Refresh Session 固化的租户为准。
+      const isTenantIndependentAuthEndpoint =
+        (isLoginEndpoint && !isSocialLogin) ||
+        config.url?.endsWith('/auth/refresh') ||
+        config.url?.endsWith('/auth/logout');
+      if (
+        !isTenantIndependentAuthEndpoint &&
+        tenantStore.tenantEnabled &&
+        tenantStore.tenantId
+      ) {
+        config.headers['X-Tenant-Id'] = tenantStore.tenantId;
+      } else {
+        // 重试请求复用原 headers；认证接口、租户状态关闭或租户 ID 为空时必须清除
+        // 旧值，防止刷新/退出把上一次会话的租户上下文带到服务端。
+        delete config.headers['X-Tenant-Id'];
+      }
       config.headers['Accept-Language'] = preferences.app.locale;
       return config;
     },
@@ -79,6 +131,8 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
     defaultResponseInterceptor({
       codeField: 'code',
       dataField: 'data',
+      // ContiNew 后端统一响应中的成功码为字符串 "0"，必须保持类型一致，否则
+      // 图片验证码等公开接口会被误判为失败响应，前端拿不到 data 数据。
       successCode: '0',
     }),
   );
@@ -94,6 +148,7 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
       doRefreshToken,
       enableRefreshToken: preferences.app.enableRefreshToken,
       formatToken,
+      getAuthGeneration: () => useAccessStore().getAuthGeneration(),
     }),
   );
 
@@ -116,4 +171,7 @@ export const requestClient = createRequestClient(apiURL, {
   responseReturn: 'data',
 });
 
-export const baseRequestClient = new RequestClient({ baseURL: apiURL });
+export const baseRequestClient = new RequestClient({
+  baseURL: apiURL,
+  withCredentials: true,
+});

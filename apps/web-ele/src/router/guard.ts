@@ -10,6 +10,30 @@ import { useAuthStore } from '#/store';
 
 import { generateAccess } from './access';
 
+let sessionRestoreAttempted = false;
+let sessionRestorePromise: null | Promise<boolean> = null;
+
+function restoreSessionOnce(authStore: ReturnType<typeof useAuthStore>) {
+  if (sessionRestorePromise) return sessionRestorePromise;
+  if (useAccessStore().accessToken) return Promise.resolve(true);
+  if (sessionRestoreAttempted) return Promise.resolve(false);
+  sessionRestoreAttempted = true;
+  sessionRestorePromise = authStore
+    .restoreSession()
+    .catch((error) => {
+      // 只有明确 401 才记住“本次页面已确认无会话”。限流、网络和服务端
+      // 临时故障不删除 Cookie，并允许后续进入受保护页面时重新恢复。
+      if (error?.response?.status !== 401) {
+        sessionRestoreAttempted = false;
+      }
+      return false;
+    })
+    .finally(() => {
+      sessionRestorePromise = null;
+    });
+  return sessionRestorePromise;
+}
+
 /**
  * 通用守卫配置
  * @param router
@@ -49,6 +73,15 @@ function setupAccessGuard(router: Router) {
     const accessStore = useAccessStore();
     const userStore = useUserStore();
     const authStore = useAuthStore();
+
+    // Access Token 不持久化。首次进入受保护页面时先用 HttpOnly Cookie 恢复登录态，
+    // 防止浏览器刷新页面后在 Cookie 仍有效的情况下被直接跳转到登录页。
+    if (
+      !accessStore.accessToken &&
+      !coreRouteNames.includes(to.name as string)
+    ) {
+      await restoreSessionOnce(authStore);
+    }
 
     // 基本路由，这些路由不需要进入权限拦截
     if (coreRouteNames.includes(to.name as string)) {

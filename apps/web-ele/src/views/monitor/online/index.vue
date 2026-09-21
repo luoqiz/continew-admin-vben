@@ -11,6 +11,7 @@ import { ElButton, ElMessage, ElPopconfirm, ElSpace } from 'element-plus';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { kickout, listOnlineUser } from '#/api/monitor/online';
+import { getSessionId } from '#/features/auth-session/session-id';
 import { dateRangeShortcuts } from '#/utils/dateTools';
 
 function usePackageGridSearchFormSchema(): VbenFormSchema[] {
@@ -75,8 +76,8 @@ function usePackageGridFieldColumns(): VxeTableGridOptions['columns'] {
       align: 'center',
     },
     {
-      field: 'lastActiveTime',
-      title: $t('monitor.onlineUser.lastActiveTime'),
+      field: 'lastRefreshTime',
+      title: $t('monitor.onlineUser.lastRefreshTime'),
       align: 'center',
     },
     {
@@ -121,7 +122,7 @@ const [TableGrid, tableGridApi] = useVbenVxeGrid({
       },
     },
     rowConfig: {
-      keyField: 'id',
+      keyField: 'sessionId',
       isHover: true,
     },
     toolbarConfig: {
@@ -139,11 +140,16 @@ const [TableGrid, tableGridApi] = useVbenVxeGrid({
 });
 
 const accessStore = useAccessStore();
-const currentToken = accessStore.accessToken;
+
+// 服务端同样禁止强退自己；这里提前禁用按钮，避免用户点击后才收到错误提示。
+const isCurrentSession = (sessionId: string) => {
+  const currentSessionId = getSessionId(accessStore.accessToken);
+  return !!currentSessionId && currentSessionId === sessionId;
+};
 
 // 强退
-const handleKickout = (token: string) => {
-  kickout(token).then(() => {
+const handleKickout = (sessionId: string) => {
+  kickout(sessionId).then(() => {
     tableGridApi.reload();
     ElMessage.success('强退成功');
   });
@@ -158,15 +164,15 @@ const handleKickout = (token: string) => {
           <ElPopconfirm
             :title="$t('monitor.onlineUser.kickout', [row.nickname])"
             icon-color="red"
-            @confirm="handleKickout(row.token!)"
-            :disabled="currentToken === row.token"
+            :disabled="isCurrentSession(row.sessionId)"
+            @confirm="handleKickout(row.sessionId)"
           >
             <template #reference>
               <ElButton
                 type="danger"
                 text
                 link
-                :disabled="currentToken === row.token"
+                :disabled="isCurrentSession(row.sessionId)"
               >
                 {{ $t('monitor.onlineUser.kickout') }}
               </ElButton>

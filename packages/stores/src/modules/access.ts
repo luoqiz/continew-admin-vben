@@ -6,6 +6,9 @@ import { acceptHMRUpdate, defineStore } from 'pinia';
 
 type AccessToken = null | string;
 
+// 不持久化的认证代次：每次 Access Token 变更递增，用于忽略迟到的 401 响应。
+let accessTokenGeneration = 0;
+
 interface AccessState {
   /**
    * 权限码
@@ -39,10 +42,6 @@ interface AccessState {
    * 登录是否过期
    */
   loginExpired: boolean;
-  /**
-   * 登录 accessToken
-   */
-  refreshToken: AccessToken;
 }
 
 /**
@@ -83,16 +82,19 @@ export const useAccessStore = defineStore('core-access', {
       this.accessRoutes = routes;
     },
     setAccessToken(token: AccessToken) {
+      if (this.accessToken !== token) {
+        accessTokenGeneration += 1;
+      }
       this.accessToken = token;
+    },
+    getAuthGeneration() {
+      return accessTokenGeneration;
     },
     setIsAccessChecked(isAccessChecked: boolean) {
       this.isAccessChecked = isAccessChecked;
     },
     setLoginExpired(loginExpired: boolean) {
       this.loginExpired = loginExpired;
-    },
-    setRefreshToken(token: AccessToken) {
-      this.refreshToken = token;
     },
     unlockScreen() {
       this.isLockScreen = false;
@@ -101,13 +103,7 @@ export const useAccessStore = defineStore('core-access', {
   },
   persist: {
     // 持久化
-    pick: [
-      'accessToken',
-      'refreshToken',
-      'accessCodes',
-      'isLockScreen',
-      'lockScreenPassword',
-    ],
+    pick: ['accessCodes', 'isLockScreen', 'lockScreenPassword'],
   },
   state: (): AccessState => ({
     accessCodes: [],
@@ -118,7 +114,6 @@ export const useAccessStore = defineStore('core-access', {
     isLockScreen: false,
     lockScreenPassword: undefined,
     loginExpired: false,
-    refreshToken: null,
   }),
 });
 

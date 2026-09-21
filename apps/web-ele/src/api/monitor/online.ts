@@ -6,14 +6,17 @@ const BASE_URL = '/monitor/online';
 /** 在线用户类型 */
 export interface OnlineUserResp {
   id: string;
+  sessionId: string;
+  username: string;
+  nickname: string;
+  clientType: string;
+  clientId: string;
   ip: string;
   address: string;
   browser: string;
   os: string;
-  clientType: string;
-  createTime: string;
-  nickname?: string;
-  token?: string;
+  loginTime: string;
+  lastRefreshTime: string;
 }
 export interface OnlineUserQuery {
   nickname?: string;
@@ -30,6 +33,6 @@ export function listOnlineUser(query: OnlineUserPageQuery) {
 }
 
 /** @desc 强退在线用户 */
-export function kickout(token: string) {
-  return http.delete(`${BASE_URL}/${token}`);
+export function kickout(sessionId: string) {
+  return http.delete(`${BASE_URL}/${sessionId}`);
 }
