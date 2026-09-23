@@ -227,10 +227,12 @@ watch(width, changeWindowWidth, { immediate: true });
           </el-scrollbar>
         </Card>
       </template>
-      <!-- 右侧配置表单：滚动由该容器管理，表单自身限宽居中 -->
-      <div class="h-full overflow-y-auto p-4">
-        <component :is="activeComponent" />
-      </div>
+      <!-- 右侧配置面板：白底卡片承载表单，滚动由内部容器管理 -->
+      <Card class="h-full min-h-0 overflow-hidden py-4">
+        <div class="h-full min-h-0 overflow-y-auto px-6">
+          <component :is="activeComponent" />
+        </div>
+      </Card>
     </ColPage>
   </RowPage>
 </template>
