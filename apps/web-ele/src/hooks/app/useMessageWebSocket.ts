@@ -28,8 +28,8 @@ function resolveWsBaseUrl(): string {
 }
 
 interface UseMessageWebSocketOptions {
-  /** 收到服务端推送（未读数量变化）时的回调，可用于刷新消息列表。 */
-  onMessage?: (data: string) => void;
+  /** 收到服务端推送（未读状态变化）时的回调，可用于刷新消息列表。 */
+  onMessage?: () => void;
 }
 
 /**
@@ -44,7 +44,7 @@ interface UseMessageWebSocketOptions {
 export function useMessageWebSocket(options?: UseMessageWebSocketOptions) {
   const accessStore = useAccessStore();
 
-  /** 未读消息数量，由服务端推送或主动查询更新。 */
+  /** 未读消息数量，由主动查询更新。 */
   const unreadCount = ref(0);
   const connected = ref(false);
 
@@ -57,6 +57,21 @@ export function useMessageWebSocket(options?: UseMessageWebSocketOptions) {
     socketToken = null;
     current?.close();
   };
+
+  /** 主动查询未读消息数量；已登录时顺带兜底建立 WS 连接。 */
+  async function refreshUnreadCount() {
+    if (!accessStore.accessToken) {
+      unreadCount.value = 0;
+      return;
+    }
+    connect(accessStore.accessToken);
+    try {
+      const data = await getUnreadMessageCount();
+      unreadCount.value = data?.total ?? 0;
+    } catch {
+      // 数量查询失败不阻塞页面，等待 WS 推送或下次查询
+    }
+  }
 
   const connect = (token: string) => {
     if (
@@ -78,14 +93,11 @@ export function useMessageWebSocket(options?: UseMessageWebSocketOptions) {
     nextSocket.addEventListener('open', () => {
       connected.value = true;
     });
-    nextSocket.addEventListener('message', (event: MessageEvent) => {
-      // 服务端推送的是最新未读消息数量文本
-      const data = event.data as string;
-      const count = Number.parseInt(data, 10);
-      if (!Number.isNaN(count)) {
-        unreadCount.value = count;
-        options?.onMessage?.(data);
-      }
+    nextSocket.addEventListener('message', () => {
+      // 服务端推送仅表示未读状态变化：新消息是标记"1"，标记已读才是最新数量。
+      // 统一回查真实未读数，避免把标记误当作数量展示。
+      refreshUnreadCount();
+      options?.onMessage?.();
     });
     nextSocket.addEventListener('error', () => {
       connected.value = false;
@@ -97,21 +109,6 @@ export function useMessageWebSocket(options?: UseMessageWebSocketOptions) {
         socketToken = null;
       }
     });
-  };
-
-  /** 主动查询未读消息数量；已登录时顺带兜底建立 WS 连接。 */
-  const refreshUnreadCount = async () => {
-    if (!accessStore.accessToken) {
-      unreadCount.value = 0;
-      return;
-    }
-    connect(accessStore.accessToken);
-    try {
-      const data = await getUnreadMessageCount();
-      unreadCount.value = data?.total ?? 0;
-    } catch {
-      // 数量查询失败不阻塞页面，等待 WS 推送或下次查询
-    }
   };
 
   watch(

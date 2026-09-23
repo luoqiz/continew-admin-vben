@@ -187,10 +187,9 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
       // 当前mock接口返回的错误字段是 error 或者 message
       const responseData = error?.response?.data ?? {};
       const errorMessage = responseData?.error ?? responseData?.message ?? '';
-      // 会话失效（401）时已由登录过期弹窗统一提示服务端原因，这里不再重复 toast；
-      // 认证会话接口自身失败同样交由对应业务处理。
-      const url: string | undefined = error?.config?.url;
-      if (error?.response?.status === 401 || isAuthEndpoint(url)) {
+      // 会话失效（401）时已由登录过期弹窗统一提示服务端原因，这里不再重复 toast。
+      // 其余错误（含登录请求自身失败、网络异常）仍需提示。
+      if (error?.response?.status === 401) {
         return;
       }
       // 如果没有错误信息，则会根据状态码进行提示
