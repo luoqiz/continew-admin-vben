@@ -23,85 +23,66 @@ import { listOption, resetOptionValue, updateOption } from '#/api/system';
 import { useResetReactive } from '#/hooks';
 import { fileToBase64 } from '#/utils/file';
 
+import ConfigFormItem from '../components/ConfigFormItem.vue';
+
 defineOptions({ name: 'SystemSiteConfig' });
 
 const loading = ref<boolean>(false);
 const formRef = ref<FormInstance>();
 const [form] = useResetReactive({
+  SITE_BEIAN: '',
+  SITE_COPYRIGHT: '',
+  SITE_DESCRIPTION: '',
   SITE_FAVICON: '',
   SITE_LOGO: '',
   SITE_TITLE: '',
-  SITE_COPYRIGHT: '',
 });
 
 const rules = reactive<FormRules<typeof form>>({
-  SITE_TITLE: [{ required: true, message: '请输入系统名称', trigger: 'blur' }],
-  SITE_DESCRIPTION: [
-    { required: true, message: '请输入系统描述', trigger: 'blur' },
-  ],
-  SITE_COPYRIGHT: [
-    { required: true, message: '请输入版权声明', trigger: 'blur' },
-  ],
+  SITE_COPYRIGHT: [{ required: true, message: '请输入版权声明' }],
+  SITE_DESCRIPTION: [{ required: true, message: '请输入系统描述' }],
+  SITE_TITLE: [{ required: true, message: '请输入系统名称' }],
 });
 
 const siteConfig = ref<SiteConfig>({});
 const faviconFile = ref<FileItem[]>([]);
 const logoFile = ref<FileItem[]>([]);
-// 重置
+
+const toFileItem = (url: string): FileItem => ({
+  contentType: '',
+  createTime: '',
+  createUserString: '',
+  extension: '',
+  id: '',
+  metadata: '',
+  name: '',
+  originalName: '',
+  parentPath: '',
+  path: '',
+  sha256: '',
+  size: 0,
+  status: 'success',
+  storageId: '',
+  storageName: '',
+  thumbnailMetadata: '',
+  thumbnailName: '',
+  thumbnailSize: 0,
+  thumbnailUrl: '',
+  type: 0,
+  url,
+});
+
+// 重置为服务端已保存的值
 const reset = () => {
   formRef.value?.resetFields();
-  form.SITE_FAVICON = siteConfig.value.SITE_FAVICON?.value || '';
-  form.SITE_LOGO = siteConfig.value.SITE_LOGO?.value || '';
   form.SITE_TITLE = siteConfig.value.SITE_TITLE?.value || '';
   form.SITE_DESCRIPTION = siteConfig.value.SITE_DESCRIPTION?.value || '';
   form.SITE_COPYRIGHT = siteConfig.value.SITE_COPYRIGHT?.value || '';
   form.SITE_BEIAN = siteConfig.value.SITE_BEIAN?.value || '';
-  faviconFile.value[0] = {
-    id: '',
-    name: '',
-    status: 'success',
-    url: `${siteConfig.value.SITE_FAVICON?.value}` || '',
-    parentPath: '',
-    path: '',
-    sha256: '',
-    contentType: '',
-    metadata: '',
-    thumbnailSize: 0,
-    thumbnailName: '',
-    thumbnailMetadata: '',
-    thumbnailUrl: '',
-    extension: '',
-    type: 0,
-    storageId: '',
-    storageName: '',
-    createUserString: '',
-    createTime: '',
-    originalName: '',
-    size: 0,
-  };
-  logoFile.value[0] = {
-    id: '',
-    name: '',
-    status: 'success',
-    url: `${siteConfig.value.SITE_LOGO?.value}` || '',
-    parentPath: '',
-    path: '',
-    sha256: '',
-    contentType: '',
-    metadata: '',
-    thumbnailSize: 0,
-    thumbnailName: '',
-    thumbnailMetadata: '',
-    thumbnailUrl: '',
-    extension: '',
-    type: 0,
-    storageId: '',
-    storageName: '',
-    createUserString: '',
-    createTime: '',
-    originalName: '',
-    size: 0,
-  };
+  form.SITE_FAVICON = siteConfig.value.SITE_FAVICON?.value || '';
+  form.SITE_LOGO = siteConfig.value.SITE_LOGO?.value || '';
+  faviconFile.value = [toFileItem(`${siteConfig.value.SITE_FAVICON?.value}`)];
+  logoFile.value = [toFileItem(`${siteConfig.value.SITE_LOGO?.value}`)];
 };
 
 const isUpdate = ref(false);
@@ -122,33 +103,32 @@ const queryForm = reactive({
 // 查询列表数据
 const getDataList = async () => {
   loading.value = true;
-  const data = await listOption(queryForm);
-
-  // siteConfig.value = data.reduce((obj: SiteConfig, option: OptionResp) => {
-  //   obj = { ...obj, [option.code]: option };
-  //   return obj;
-  // }, {} as SiteConfig);
-  const config = siteConfig.value as Record<string, OptionResp>;
-  for (const option of data) {
-    config[option.code] = option;
-    form[option.code] = option.value;
+  try {
+    const data = await listOption(queryForm);
+    const config = siteConfig.value as Record<string, OptionResp>;
+    for (const option of data) {
+      config[option.code] = option;
+      form[option.code] = option.value;
+    }
+    handleCancel();
+  } finally {
+    loading.value = false;
   }
-  handleCancel();
-  loading.value = false;
 };
 
-// const appStore = useAppStore();
 // 保存
 const handleSave = async () => {
-  const valid = await formRef.value?.validate();
-  if (!valid) return false;
+  const valid = await formRef.value
+    ?.validate()
+    .then(() => true)
+    .catch(() => false);
+  if (!valid) return;
   const config = siteConfig.value as Record<string, OptionResp>;
   await updateOption(
     Object.entries(form).map(([key, value]) => {
       return { id: config[key]?.id, code: key, value };
     }),
   );
-  // appStore.setSiteConfig(form);
   // 更改系统图标
   document
     .querySelector('link[rel="icon"]')
@@ -169,20 +149,18 @@ const handleResetValue = async () => {
   await resetOptionValue(queryForm);
   ElMessage.success('恢复成功');
   await getDataList();
-  // appStore.setSiteConfig(form);
 };
 const onResetValue = () => {
   ElMessageBox.confirm('确认恢复基础配置为默认值吗？', '警告', {
-    confirmButtonClass: 'el-button--danger',
-    confirmButtonText: 'OK',
-    cancelButtonText: 'Cancel',
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
     type: 'warning',
   }).then(async () => {
     await handleResetValue();
   });
 };
 
-// 上传 favicon or 上传 Logo
+// 上传 favicon 或 Logo
 const handleUploadFile = (options: UploadRequestOptions) => {
   const controller = new AbortController();
   (async function requestWrap() {
@@ -192,18 +170,16 @@ const handleUploadFile = (options: UploadRequestOptions) => {
       return false;
     }
     if (file.size > 1024 * 1024) {
-      ElMessage.error('文件大小不能超过1MB');
+      ElMessage.error('文件大小不能超过 1MB');
       return false;
     }
-    fileToBase64(file)
-      .then()
-      .then((res) => {
-        onSuccess({ url: res });
-        ElMessage.success('上传成功');
-      })
-      .catch((error) => {
-        onError(error);
-      });
+    try {
+      const res = await fileToBase64(file);
+      onSuccess({ url: res });
+      ElMessage.success('上传成功');
+    } catch (error) {
+      onError(error as never);
+    }
   })();
   return {
     abort() {
@@ -228,26 +204,21 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="gi_page" v-loading="loading">
+  <div v-loading="loading" class="mx-auto w-full max-w-[720px]">
     <el-form
       ref="formRef"
       :model="form"
       :rules="rules"
-      size="large"
-      layout="vertical"
+      auto-label-width
+      label-position="right"
       :disabled="!isUpdate"
-      class="form"
-      label-width="80px"
+      scroll-to-first-error
     >
-      <el-form-item
-        class="image-item"
-        field="SITE_LOGO"
+      <ConfigFormItem
+        prop="SITE_LOGO"
         :label="siteConfig.SITE_LOGO?.name"
         :help="siteConfig.SITE_LOGO?.description"
       >
-        <template #error>
-          {{ siteConfig.SITE_LOGO?.description }}
-        </template>
         <el-upload
           v-model:file-list="logoFile"
           list-type="picture-card"
@@ -258,23 +229,16 @@ onMounted(async () => {
           :limit="1"
         >
           <template #tip>
-            <div class="el-upload__tip">
-              jpg/png files with a size less than 1M
-            </div>
+            <div class="el-upload__tip">支持 jpg/png，大小不超过 1MB</div>
           </template>
         </el-upload>
-      </el-form-item>
+      </ConfigFormItem>
 
-      <el-form-item
-        class="image-item"
-        field="SITE_FAVICON"
+      <ConfigFormItem
+        prop="SITE_FAVICON"
         :label="siteConfig.SITE_FAVICON?.name"
-        inline-message
-        show-message
+        :help="siteConfig.SITE_FAVICON?.description"
       >
-        <template #error>
-          {{ siteConfig.SITE_FAVICON?.description }}
-        </template>
         <el-upload
           v-model:file-list="faviconFile"
           list-type="picture-card"
@@ -285,60 +249,59 @@ onMounted(async () => {
           :on-success="onSuccessUploadFavicon"
         >
           <template #tip>
-            <div class="el-upload__tip">
-              jpg/png files with a size less than 1M
-            </div>
+            <div class="el-upload__tip">支持 jpg/png，大小不超过 1MB</div>
           </template>
         </el-upload>
-      </el-form-item>
-      <el-form-item
-        class="input-item"
-        field="SITE_TITLE"
+      </ConfigFormItem>
+
+      <ConfigFormItem
+        prop="SITE_TITLE"
         :label="siteConfig.SITE_TITLE?.name"
         :help="siteConfig.SITE_TITLE?.description"
       >
         <el-input
           v-model="form.SITE_TITLE"
           placeholder="请输入系统名称"
-          :max-length="18"
+          :maxlength="18"
           show-word-limit
         />
-      </el-form-item>
-      <el-form-item
-        class="input-item"
-        field="SITE_DESCRIPTION"
+      </ConfigFormItem>
+
+      <ConfigFormItem
+        prop="SITE_DESCRIPTION"
         :label="siteConfig.SITE_DESCRIPTION?.name"
         :help="siteConfig.SITE_DESCRIPTION?.description"
       >
         <el-input
           v-model="form.SITE_DESCRIPTION"
           placeholder="请输入系统描述"
-          :auto-size="{ minRows: 1, maxRows: 3 }"
+          :autosize="{ minRows: 1, maxRows: 3 }"
           type="textarea"
         />
-      </el-form-item>
-      <el-form-item
-        class="input-item"
-        field="SITE_COPYRIGHT"
+      </ConfigFormItem>
+
+      <ConfigFormItem
+        prop="SITE_COPYRIGHT"
         :label="siteConfig.SITE_COPYRIGHT?.name"
         :help="siteConfig.SITE_COPYRIGHT?.description"
       >
         <el-input v-model="form.SITE_COPYRIGHT" placeholder="请输入版权声明" />
-      </el-form-item>
-      <el-form-item
-        field="SITE_BEIAN"
+      </ConfigFormItem>
+
+      <ConfigFormItem
+        prop="SITE_BEIAN"
         :label="siteConfig.SITE_BEIAN?.name"
         :help="siteConfig.SITE_BEIAN?.description"
       >
         <el-input
           v-model="form.SITE_BEIAN"
           placeholder="请输入备案号"
-          :max-length="30"
+          :maxlength="30"
           show-word-limit
         />
-      </el-form-item>
+      </ConfigFormItem>
     </el-form>
-    <el-space style="margin-top: 16px">
+    <div class="mt-4 flex flex-wrap gap-2">
       <el-button
         v-if="!isUpdate"
         v-access:code="['system:siteConfig:update']"
@@ -363,7 +326,6 @@ onMounted(async () => {
       <el-button v-if="isUpdate" @click="handleCancel">
         <template #icon> <SvgUndoIcon /> </template>取消
       </el-button>
-    </el-space>
+    </div>
   </div>
 </template>
-<style scoped lang="scss"></style>

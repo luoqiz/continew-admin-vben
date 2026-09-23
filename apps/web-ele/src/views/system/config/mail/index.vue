@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { FormInstance } from 'element-plus';
+import type { FormInstance, FormRules } from 'element-plus';
 
-import type { MailConfig, OptionResp } from '#/api/system';
+import type { OptionResp } from '#/api/system';
 
 import { onMounted, ref } from 'vue';
 
@@ -12,53 +12,49 @@ import {
   SvgUndoIcon,
 } from '@vben/icons';
 
-import { useWindowSize } from '@vueuse/core';
 import { ElMessage, ElMessageBox } from 'element-plus';
 
 import { listOption, resetOptionValue, updateOption } from '#/api/system';
 import { useResetReactive } from '#/hooks';
 
+import ConfigFormItem from '../components/ConfigFormItem.vue';
+
 defineOptions({ name: 'SystemMailConfig' });
-const { width } = useWindowSize();
+
 const loading = ref<boolean>(false);
 const formRef = ref<FormInstance>();
 const [form] = useResetReactive({
-  MAIL_PROTOCOL: '',
   MAIL_HOST: '',
-  MAIL_PORT: 0,
-  MAIL_USERNAME: '',
   MAIL_PASSWORD: '',
+  MAIL_PORT: 0,
+  MAIL_PROTOCOL: '',
   MAIL_SSL_ENABLED: 0,
   MAIL_SSL_PORT: 0,
+  MAIL_USERNAME: '',
 });
-const rules: FormInstance['rules'] = {
+
+const rules: FormRules<typeof form> = {
   MAIL_HOST: [{ required: true, message: '请输入值' }],
-  // MAIL_PORT: [{ required: true, message: '请输入值' }],
-  MAIL_USERNAME: [{ required: true, message: '请输入值' }],
   MAIL_PASSWORD: [{ required: true, message: '请输入值' }],
-  MAIL_SSL_PORT: [{ required: true, message: '请输入值' }],
+  MAIL_USERNAME: [{ required: true, message: '请输入值' }],
 };
 
-const mailConfig = ref<MailConfig>({
-  MAIL_PROTOCOL: undefined,
-  MAIL_HOST: undefined,
-  MAIL_PORT: undefined,
-  MAIL_USERNAME: undefined,
-  MAIL_PASSWORD: undefined,
-  MAIL_SSL_ENABLED: undefined,
-  MAIL_SSL_PORT: undefined,
-});
+/** 数值型配置项 */
+const NUMBER_CODES = new Set([
+  'MAIL_PORT',
+  'MAIL_SSL_ENABLED',
+  'MAIL_SSL_PORT',
+]);
 
-// 重置
+const mailConfig = ref<Record<string, OptionResp>>({});
+
+// 重置为服务端已保存的值
 const reset = () => {
   formRef.value?.resetFields();
-  form.MAIL_PROTOCOL = mailConfig.value.MAIL_PROTOCOL?.value || '';
-  form.MAIL_HOST = mailConfig.value.MAIL_HOST?.value || '';
-  form.MAIL_PORT = mailConfig.value.MAIL_PORT?.value || 0;
-  form.MAIL_USERNAME = mailConfig.value.MAIL_USERNAME?.value || '';
-  form.MAIL_PASSWORD = mailConfig.value.MAIL_PASSWORD?.value || '';
-  form.MAIL_SSL_ENABLED = mailConfig.value.MAIL_SSL_ENABLED?.value || 0;
-  form.MAIL_SSL_PORT = mailConfig.value.MAIL_SSL_PORT?.value || 0;
+  const config = mailConfig.value as Record<string, OptionResp>;
+  for (const key of Object.keys(form)) {
+    form[key] = (config[key]?.value as never) ?? form[key];
+  }
 };
 
 const isUpdate = ref(false);
@@ -79,45 +75,38 @@ const queryForm = {
 // 查询列表数据
 const getDataList = async () => {
   loading.value = true;
-  const data = await listOption(queryForm);
-  // mailConfig.value = data.reduce((obj: MailConfig, option: OptionResp) => {
-  //   option.value = ['MAIL_PORT', 'MAIL_SSL_ENABLED', 'MAIL_SSL_PORT'].includes(
-  //     option.code ?? 'MAIL_PORT',
-  //   )
-  //     ? Number.parseInt(option.value as string)
-  //     : option.value;
-  //   obj = { ...obj, [option.code ?? 'MAIL_PORT']: option };
-  //   return obj;
-  // }, {} as MailConfig);
-
-  const config = mailConfig.value as Record<string, OptionResp>;
-  for (const option of data) {
-    option.value = ['MAIL_PORT', 'MAIL_SSL_ENABLED', 'MAIL_SSL_PORT'].includes(
-      option.code ?? 'MAIL_PORT',
-    )
-      ? Number.parseInt(option.value as string)
-      : option.value;
-    config[option.code ?? 'MAIL_PORT'] = option as OptionResp;
-    // form[option.code ?? 'MAIL_PORT'] = option.value;
+  try {
+    const data = await listOption(queryForm);
+    const config = mailConfig.value as Record<string, OptionResp>;
+    for (const option of data) {
+      if (NUMBER_CODES.has(option.code ?? '')) {
+        option.value = Number.parseInt(option.value as string);
+      }
+      config[option.code ?? ''] = option;
+      form[option.code ?? ''] = option.value as never;
+    }
+    handleCancel();
+  } finally {
+    loading.value = false;
   }
-
-  handleCancel();
-  loading.value = false;
 };
 
 // 保存
 const handleSave = async () => {
-  const valid = await formRef.value?.validate();
-  if (!valid) return false;
+  const valid = await formRef.value
+    ?.validate()
+    .then(() => true)
+    .catch(() => false);
+  if (!valid) return;
+  const config = mailConfig.value as Record<string, OptionResp>;
   await updateOption(
     Object.entries(form).map(([key, value]) => {
-      const config = (mailConfig.value as Record<string, OptionResp>)[key];
       return {
-        id: config?.id,
         code: key,
+        description: config[key]?.description,
+        id: config[key]?.id,
+        name: `${config[key]?.name}`,
         value,
-        name: `${config?.name}`,
-        description: config?.description,
       };
     }),
   );
@@ -133,9 +122,8 @@ const handleResetValue = async () => {
 };
 const onResetValue = () => {
   ElMessageBox.confirm('确认恢复邮件配置为默认值吗？', '警告', {
-    confirmButtonClass: 'el-button--danger',
-    confirmButtonText: 'OK',
-    cancelButtonText: 'Cancel',
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
     type: 'warning',
   }).then(async () => {
     await handleResetValue();
@@ -146,88 +134,79 @@ onMounted(() => {
   getDataList();
 });
 </script>
+
 <template>
-  <div v-loading="loading">
+  <div v-loading="loading" class="mx-auto w-full max-w-[720px]">
     <el-form
       ref="formRef"
       :model="form"
       :rules="rules"
-      label-align="left"
-      label-width="180px"
-      :layout="width >= 500 ? 'horizontal' : 'vertical'"
+      auto-label-width
+      label-position="right"
       :disabled="!isUpdate"
       scroll-to-first-error
-      class="form"
     >
-      <el-form-item
-        field="MAIL_PROTOCOL"
+      <ConfigFormItem
+        prop="MAIL_PROTOCOL"
         :label="mailConfig.MAIL_PROTOCOL?.name"
         :help="mailConfig.MAIL_PROTOCOL?.description"
-        hide-asterisk
       >
         <el-select v-model="form.MAIL_PROTOCOL">
           <el-option label="SMTP" value="smtp" />
         </el-select>
-      </el-form-item>
-      <el-form-item
-        field="MAIL_HOST"
+      </ConfigFormItem>
+      <ConfigFormItem
+        prop="MAIL_HOST"
         :label="mailConfig.MAIL_HOST?.name"
         :help="mailConfig.MAIL_HOST?.description"
-        hide-asterisk
       >
         <el-input v-model="form.MAIL_HOST" />
-      </el-form-item>
-      <el-form-item
-        field="MAIL_PORT"
+      </ConfigFormItem>
+      <ConfigFormItem
+        prop="MAIL_PORT"
         :label="mailConfig.MAIL_PORT?.name"
         :help="mailConfig.MAIL_PORT?.description"
-        hide-asterisk
       >
         <el-input-number v-model="form.MAIL_PORT" :min="0" />
-      </el-form-item>
-      <el-form-item
-        field="MAIL_USERNAME"
+      </ConfigFormItem>
+      <ConfigFormItem
+        prop="MAIL_USERNAME"
         :label="mailConfig.MAIL_USERNAME?.name"
         :help="mailConfig.MAIL_USERNAME?.description"
-        hide-asterisk
       >
         <el-input v-model="form.MAIL_USERNAME" />
-      </el-form-item>
-      <el-form-item
-        field="MAIL_PASSWORD"
+      </ConfigFormItem>
+      <ConfigFormItem
+        prop="MAIL_PASSWORD"
         :label="mailConfig.MAIL_PASSWORD?.name"
         :help="mailConfig.MAIL_PASSWORD?.description"
-        hide-asterisk
       >
         <el-input v-model="form.MAIL_PASSWORD" type="password" show-password />
-      </el-form-item>
-      <el-form-item
-        field="MAIL_SSL_ENABLED"
+      </ConfigFormItem>
+      <ConfigFormItem
+        prop="MAIL_SSL_ENABLED"
         :label="mailConfig.MAIL_SSL_ENABLED?.name"
         :help="mailConfig.MAIL_SSL_ENABLED?.description"
-        hide-asterisk
       >
         <el-switch
           v-model="form.MAIL_SSL_ENABLED"
-          type="round"
           :active-value="1"
           :inactive-value="0"
           active-text="启用"
           inactive-text="禁用"
           inline-prompt
         />
-      </el-form-item>
-      <el-form-item
+      </ConfigFormItem>
+      <ConfigFormItem
         v-if="form.MAIL_SSL_ENABLED === 1"
-        field="MAIL_SSL_PORT"
+        prop="MAIL_SSL_PORT"
         :label="mailConfig.MAIL_SSL_PORT?.name"
         :help="mailConfig.MAIL_SSL_PORT?.description"
-        hide-asterisk
       >
         <el-input-number v-model="form.MAIL_SSL_PORT" :min="0" />
-      </el-form-item>
+      </ConfigFormItem>
     </el-form>
-    <el-space style="margin-bottom: 16px">
+    <div class="mt-4 flex flex-wrap gap-2">
       <el-button
         v-if="!isUpdate"
         v-access:code="['system:mailConfig:update']"
@@ -252,7 +231,6 @@ onMounted(() => {
       <el-button v-if="isUpdate" @click="handleCancel">
         <template #icon> <SvgUndoIcon /> </template>取消
       </el-button>
-    </el-space>
+    </div>
   </div>
 </template>
-<style scoped lang="scss"></style>

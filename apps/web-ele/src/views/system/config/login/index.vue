@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import type { FormInstance, FormRules } from 'element-plus';
 
-import type { LoginConfig, OptionResp } from '#/api/system';
+import type { OptionResp } from '#/api/system';
 
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, ref } from 'vue';
 
 import {
   SvgEditIcon,
@@ -12,35 +12,33 @@ import {
   SvgUndoIcon,
 } from '@vben/icons';
 
-import { useWindowSize } from '@vueuse/core';
 import { ElMessage, ElMessageBox } from 'element-plus';
 
 import { listOption, resetOptionValue, updateOption } from '#/api/system';
 import { useResetReactive } from '#/hooks';
 
+import ConfigFormItem from '../components/ConfigFormItem.vue';
+
 defineOptions({ name: 'SystemLoginConfig' });
-const { width } = useWindowSize();
 
 const loading = ref<boolean>(false);
 const formRef = ref<FormInstance>();
 const [form] = useResetReactive({
-  LOGIN_CAPTCHA_ENABLED: 1,
+  LOGIN_CAPTCHA_ENABLED: '1',
 });
 
-const rules = reactive<FormRules<typeof form>>({
-  LOGIN_CAPTCHA_ENABLED: [
-    { required: true, message: '请选择', trigger: 'blur' },
-  ],
-});
-const loginConfig = ref<LoginConfig>({
-  LOGIN_CAPTCHA_ENABLED: undefined,
-});
+const rules: FormRules<typeof form> = {
+  LOGIN_CAPTCHA_ENABLED: [{ required: true, message: '请选择' }],
+};
+const loginConfig = ref<Record<string, OptionResp>>({});
 
-// 重置
+// 重置为服务端已保存的值
 const reset = () => {
   formRef.value?.resetFields();
-  form.LOGIN_CAPTCHA_ENABLED =
-    loginConfig.value.LOGIN_CAPTCHA_ENABLED?.value || 0;
+  const config = loginConfig.value as Record<string, OptionResp>;
+  for (const key of Object.keys(form)) {
+    form[key] = (config[key]?.value as never) ?? form[key];
+  }
 };
 
 const isUpdate = ref(false);
@@ -60,16 +58,13 @@ const queryForm = {
 };
 // 查询列表数据
 const getDataList = async () => {
+  loading.value = true;
   try {
-    loading.value = true;
     const data = await listOption(queryForm);
-    // loginConfig.value = data.reduce((obj: LoginConfig, option: OptionResp) => {
-    //   obj = { ...obj, [option.code]: option };
-    //   return obj;
-    // }, {} as LoginConfig);
     const config = loginConfig.value as Record<string, OptionResp>;
     for (const option of data) {
-      config[option.code] = option as OptionResp;
+      config[option.code ?? ''] = option;
+      form[option.code ?? ''] = option.value as never;
     }
     handleCancel();
   } finally {
@@ -79,8 +74,11 @@ const getDataList = async () => {
 
 // 保存
 const handleSave = async () => {
-  const valid = await formRef.value?.validate();
-  if (!valid) return false;
+  const valid = await formRef.value
+    ?.validate()
+    .then(() => true)
+    .catch(() => false);
+  if (!valid) return;
   const config = loginConfig.value as Record<string, OptionResp>;
   await updateOption(
     Object.entries(form).map(([key, value]) => {
@@ -99,9 +97,8 @@ const handleResetValue = async () => {
 };
 const onResetValue = () => {
   ElMessageBox.confirm('确认恢复登录配置为默认值吗？', '警告', {
-    confirmButtonClass: 'el-button--danger',
-    confirmButtonText: 'OK',
-    cancelButtonText: 'Cancel',
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
     type: 'warning',
   }).then(async () => {
     await handleResetValue();
@@ -114,33 +111,32 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="gi_page" v-loading="loading">
+  <div v-loading="loading" class="mx-auto w-full max-w-[720px]">
     <el-form
       ref="formRef"
       :model="form"
       :rules="rules"
       auto-label-width
-      label-align="left"
-      :layout="width >= 500 ? 'horizontal' : 'vertical'"
+      label-position="right"
       :disabled="!isUpdate"
       scroll-to-first-error
     >
-      <el-form-item
-        field="LOGIN_CAPTCHA_ENABLED"
+      <ConfigFormItem
+        prop="LOGIN_CAPTCHA_ENABLED"
         :label="loginConfig.LOGIN_CAPTCHA_ENABLED?.name"
+        :help="loginConfig.LOGIN_CAPTCHA_ENABLED?.description"
       >
         <el-switch
           v-model="form.LOGIN_CAPTCHA_ENABLED"
-          type="round"
           active-value="1"
           inactive-value="0"
-          active-text="是"
-          inactive-text="否"
+          active-text="开启"
+          inactive-text="关闭"
           inline-prompt
         />
-      </el-form-item>
+      </ConfigFormItem>
     </el-form>
-    <el-space style="margin-bottom: 16px">
+    <div class="mt-4 flex flex-wrap gap-2">
       <el-button
         v-if="!isUpdate"
         v-access:code="['system:loginConfig:update']"
@@ -180,7 +176,6 @@ onMounted(() => {
         </template>
         取消
       </el-button>
-    </el-space>
+    </div>
   </div>
 </template>
-<style scoped lang="scss"></style>
