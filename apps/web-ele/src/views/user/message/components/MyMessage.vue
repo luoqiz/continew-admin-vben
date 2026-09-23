@@ -6,7 +6,7 @@ import type { MessageResp } from '#/api/system/user-message';
 
 import { ref } from 'vue';
 
-import { Page, useVbenModal } from '@vben/common-ui';
+import { useVbenModal } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
 import { ElLink, ElMessage, ElTag } from 'element-plus';
@@ -211,7 +211,9 @@ const onDetailModalClose = () => {
 </script>
 
 <template>
-  <Page auto-content-height>
+  <!-- 外层 ColPage 面板已提供确定高度，这里直接撑满即可，
+       不要再嵌 Page/Card，否则 vxe-grid height:auto 计算不出高度 -->
+  <div class="h-full">
     <TableGrid>
       <template #toolbar-tools>
         <ElSpace>
@@ -266,7 +268,7 @@ const onDetailModalClose = () => {
         </div>
       </template>
     </el-dialog>
-  </Page>
+  </div>
 </template>
 
 <style scoped lang="scss"></style>

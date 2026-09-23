@@ -6,7 +6,6 @@ import type { NoticeResp } from '#/api/system';
 
 import { useRouter } from 'vue-router';
 
-import { Page } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
 import { ElLink, ElTag } from 'element-plus';
@@ -130,7 +129,8 @@ const onView = (record: NoticeResp) => {
 </script>
 
 <template>
-  <Page auto-content-height>
+  <!-- 外层 ColPage 面板已提供确定高度，这里直接撑满即可 -->
+  <div class="h-full">
     <TableGrid>
       <template #title="{ row }">
         <ElLink @click="onView(row)" type="primary">
@@ -148,7 +148,7 @@ const onView = (record: NoticeResp) => {
         </ElTag>
       </template>
     </TableGrid>
-  </Page>
+  </div>
 </template>
 
 <style scoped lang="scss"></style>
