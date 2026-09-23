@@ -198,6 +198,13 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
       if (error?.response?.status === 401) {
         return;
       }
+      // 网关/代理错误（后端未启动或无响应）：响应体没有可读信息，
+      // 用可读文案替代原始状态码提示。
+      const status = error?.response?.status;
+      if (status === 502 || status === 503 || status === 504) {
+        ElMessage.error('服务不可用，请稍后重试');
+        return;
+      }
       // 如果没有错误信息，则会根据状态码进行提示
       ElMessage.error(errorMessage || msg);
     }),

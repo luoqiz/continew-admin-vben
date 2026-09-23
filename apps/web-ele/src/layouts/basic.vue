@@ -199,28 +199,22 @@ const viewAll = () => {
 const handleClick = (item: NotificationItem) => {
   // 如果通知项有链接，点击时跳转
   if (item.link) {
-    navigateTo(item.link, item.query, item.state);
+    navigateTo(item.link);
     return;
   }
   router.push('/user/message');
 };
 
-function navigateTo(
-  link: string,
-  query?: Record<string, any>,
-  state?: Record<string, any>,
-) {
+function navigateTo(link: string) {
   if (link.startsWith('http://') || link.startsWith('https://')) {
     // 外部链接，在新标签页打开
     window.open(link, '_blank');
-  } else {
-    // 内部路由链接，支持 query 参数和 state
-    router.push({
-      path: link,
-      query: query || {},
-      state,
-    });
+    return;
   }
+  // 消息模板链接自带查询串（/user/notice?id=xxx）。对象形式 push 会把内嵌
+  // 查询串并入 path 导致查询参数丢失（页面拿到 undefined 的 id），因此统一
+  // 用字符串形式跳转，由 vue-router 自行解析查询参数。
+  router.push(link);
 }
 
 watch(
