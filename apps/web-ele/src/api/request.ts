@@ -15,6 +15,7 @@ import { useAccessStore } from '@vben/stores';
 
 import { ElMessage } from 'element-plus';
 
+import { setAuthExpiredReason } from '#/features/auth-session/expired-reason';
 import { withAuthLifecycleLock } from '#/features/auth-session/lifecycle';
 import { useAuthStore, useTenantStore } from '#/store';
 
@@ -23,12 +24,34 @@ import { code2statusResponseInterceptor } from './helper';
 
 const { apiURL } = useAppConfig(import.meta.env, import.meta.env.PROD);
 
+/** 认证会话接口（401 时统一走重新认证流程，不做通用错误提示）。 */
+const AUTH_ENDPOINT_PATHS = ['/auth/login', '/auth/refresh', '/auth/logout'];
+
+function isAuthEndpoint(url?: string) {
+  return !!url && AUTH_ENDPOINT_PATHS.some((path) => url.endsWith(path));
+}
+
 function createRequestClient(baseURL: string, options?: RequestClientOptions) {
   const client = new RequestClient({
     ...options,
     baseURL,
     // 浏览器 Refresh Token 由 HttpOnly Cookie 承载，请求必须携带凭证。
     withCredentials: true,
+  });
+
+  // 会话失效原因捕获：业务请求的 401 响应体可能携带服务端原因（被顶下线/被踢下线等）。
+  // 必须先于认证拦截器记录，供重新认证时透传给登录过期弹窗展示。
+  let pendingAuthExpiredReason = '';
+  client.addResponseInterceptor({
+    rejected: (error) => {
+      const status = error?.response?.status;
+      const url: string | undefined = error?.config?.url;
+      if (status === 401 && !isAuthEndpoint(url)) {
+        const msg = error?.response?.data?.msg;
+        pendingAuthExpiredReason = typeof msg === 'string' ? msg : '';
+      }
+      throw error;
+    },
   });
 
   /**
@@ -63,6 +86,11 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
         // Refresh Token 已被明确判定无效时，服务端注销失败不应阻塞重新认证。
       }
       accessStore.setAccessToken(null);
+      if (pendingAuthExpiredReason) {
+        // 优先展示服务端给出的失效原因（被顶下线/被踢下线等）。
+        setAuthExpiredReason(pendingAuthExpiredReason);
+        pendingAuthExpiredReason = '';
+      }
       accessStore.setLoginExpired(true);
     });
   }
@@ -159,6 +187,12 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
       // 当前mock接口返回的错误字段是 error 或者 message
       const responseData = error?.response?.data ?? {};
       const errorMessage = responseData?.error ?? responseData?.message ?? '';
+      // 会话失效（401）时已由登录过期弹窗统一提示服务端原因，这里不再重复 toast；
+      // 认证会话接口自身失败同样交由对应业务处理。
+      const url: string | undefined = error?.config?.url;
+      if (error?.response?.status === 401 || isAuthEndpoint(url)) {
+        return;
+      }
       // 如果没有错误信息，则会根据状态码进行提示
       ElMessage.error(errorMessage || msg);
     }),

@@ -6,7 +6,23 @@ import { Page, useVbenDrawer } from '@vben/common-ui';
 import { ElButton, ElCard, ElCheckbox, ElMessage } from 'element-plus';
 
 import { useVbenForm } from '#/adapter/form';
-import { getAllMenusApi } from '#/api';
+
+/** 演示用的静态菜单数据：原演示调用的 /menu/all 接口后端已下线。 */
+const demoMenuApi = async () => [
+  {
+    children: [
+      { name: '用户管理', path: '/system/user', children: [] },
+      { name: '角色管理', path: '/system/role', children: [] },
+    ],
+    name: '系统管理',
+    path: '/system',
+  },
+  {
+    children: [{ name: '在线用户', path: '/monitor/online', children: [] }],
+    name: '系统监控',
+    path: '/monitor',
+  },
+];
 
 const [Form, formApi] = useVbenForm({
   commonConfig: {
@@ -32,15 +48,15 @@ const [Form, formApi] = useVbenForm({
       component: 'ApiSelect',
       // 对应组件的参数
       componentProps: {
-        // 菜单接口转options格式
+        // 菜单数据转options格式
         afterFetch: (data: { name: string; path: string }[]) => {
           return data.map((item: any) => ({
             label: item.name,
             value: item.path,
           }));
         },
-        // 菜单接口
-        api: getAllMenusApi,
+        // 菜单数据
+        api: demoMenuApi,
       },
       // 字段名
       fieldName: 'api',
@@ -51,8 +67,8 @@ const [Form, formApi] = useVbenForm({
       component: 'ApiTreeSelect',
       // 对应组件的参数
       componentProps: {
-        // 菜单接口
-        api: getAllMenusApi,
+        // 菜单数据
+        api: demoMenuApi,
         childrenField: 'children',
         // 菜单接口转options格式
         labelField: 'name',

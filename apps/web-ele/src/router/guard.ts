@@ -1,9 +1,13 @@
 import type { Router } from 'vue-router';
 
+import { START_LOCATION } from 'vue-router';
+
 import { LOGIN_PATH } from '@vben/constants';
 import { preferences } from '@vben/preferences';
 import { useAccessStore, useUserStore } from '@vben/stores';
 import { startProgress, stopProgress } from '@vben/utils';
+
+import { ElMessage } from 'element-plus';
 
 import { accessRoutes, coreRouteNames } from '#/router/routes';
 import { useAuthStore } from '#/store';
@@ -12,19 +16,29 @@ import { generateAccess } from './access';
 
 let sessionRestoreAttempted = false;
 let sessionRestorePromise: null | Promise<boolean> = null;
+/** 会话恢复发生了非终态失败（网络/服务端暂时不可用），允许用户稍后重试。 */
+let sessionRestoreRecoverableFailure = false;
 
 function restoreSessionOnce(authStore: ReturnType<typeof useAuthStore>) {
   if (sessionRestorePromise) return sessionRestorePromise;
-  if (useAccessStore().accessToken) return Promise.resolve(true);
+  if (useAccessStore().accessToken) {
+    sessionRestoreRecoverableFailure = false;
+    return Promise.resolve(true);
+  }
   if (sessionRestoreAttempted) return Promise.resolve(false);
   sessionRestoreAttempted = true;
   sessionRestorePromise = authStore
     .restoreSession()
     .catch((error) => {
+      const status = error?.response?.status;
       // 只有明确 401 才记住“本次页面已确认无会话”。限流、网络和服务端
       // 临时故障不删除 Cookie，并允许后续进入受保护页面时重新恢复。
-      if (error?.response?.status !== 401) {
+      if (status === 401) {
+        sessionRestoreRecoverableFailure = false;
+      } else {
         sessionRestoreAttempted = false;
+        sessionRestoreRecoverableFailure = true;
+        ElMessage.warning('登录状态恢复失败，请稍后重试');
       }
       return false;
     })
@@ -100,6 +114,12 @@ function setupAccessGuard(router: Router) {
       // 明确声明忽略权限访问权限，则可以访问
       if (to.meta.ignoreAccess) {
         return true;
+      }
+
+      // 会话恢复失败属于暂时性故障：首屏导航跳转登录页并保留目标地址，
+      // 服务恢复后用户可重新登录回到原页面；应用内导航保留当前页面，稍后重试即可。
+      if (sessionRestoreRecoverableFailure && from !== START_LOCATION) {
+        return false;
       }
 
       // 没有访问权限，跳转登录页面

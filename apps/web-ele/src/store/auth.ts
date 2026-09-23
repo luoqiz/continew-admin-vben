@@ -19,6 +19,7 @@ import {
   logoutApi,
   refreshTokenApi,
 } from '#/api';
+import { clearAuthExpiredReason } from '#/features/auth-session/expired-reason';
 import { withAuthLifecycleLock } from '#/features/auth-session/lifecycle';
 import { $t } from '#/locales';
 
@@ -72,11 +73,8 @@ export const useAuthStore = defineStore('auth', () => {
 
       // 如果成功获取到 accessToken
       if (accessToken) {
-        // 获取用户信息并存储到 accessStore 中
-        // const [fetchUserInfoResult, accessCodes] = await Promise.all([
-        //   fetchUserInfo(),
-        //   getAccessCodesApi(),
-        // ]);
+        // 新会话已建立，清除上一会话遗留的失效原因提示。
+        clearAuthExpiredReason();
         const fetchUserInfoResult = await fetchUserInfo();
         userInfo = fetchUserInfoResult;
 
@@ -132,6 +130,7 @@ export const useAuthStore = defineStore('auth', () => {
       }
       // 先经 action 清理令牌，确保认证代次递增；resetAllStores 不会触发该 action。
       accessStore.setAccessToken(null);
+      clearAuthExpiredReason();
       resetAllStores();
       accessStore.setLoginExpired(false);
       loggedOut = true;

@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 import type { NotificationItem } from '@vben/layouts';
 
+import type { MessageResp } from '#/api/system/user-message';
+
 import { computed, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 
@@ -18,62 +20,17 @@ import { preferences, usePreferences } from '@vben/preferences';
 import { useAccessStore, useUserStore } from '@vben/stores';
 import { openWindow } from '@vben/utils';
 
+import {
+  deleteMessage,
+  listMessage,
+  readAllMessage,
+  readMessage,
+} from '#/api/system/user-message';
+import { authExpiredReason } from '#/features/auth-session/expired-reason';
+import { useMessageWebSocket } from '#/hooks/app/useMessageWebSocket';
 import { $t } from '#/locales';
 import { useAuthStore } from '#/store';
 import LoginForm from '#/views/_core/authentication/login.vue';
-
-const notifications = ref<NotificationItem[]>([
-  {
-    id: 1,
-    avatar: 'https://avatar.vercel.sh/vercel.svg?text=VB',
-    date: '3小时前',
-    isRead: true,
-    message: '描述信息描述信息描述信息',
-    title: '收到了 14 份新周报',
-  },
-  {
-    id: 2,
-    avatar: 'https://avatar.vercel.sh/1',
-    date: '刚刚',
-    isRead: false,
-    message: '描述信息描述信息描述信息',
-    title: '朱偏右 回复了你',
-  },
-  {
-    id: 3,
-    avatar: 'https://avatar.vercel.sh/1',
-    date: '2024-01-01',
-    isRead: false,
-    message: '描述信息描述信息描述信息',
-    title: '曲丽丽 评论了你',
-  },
-  {
-    id: 4,
-    avatar: 'https://avatar.vercel.sh/satori',
-    date: '1天前',
-    isRead: false,
-    message: '描述信息描述信息描述信息',
-    title: '代办提醒',
-  },
-  {
-    id: 5,
-    avatar: 'https://avatar.vercel.sh/satori',
-    date: '1天前',
-    isRead: false,
-    message: '描述信息描述信息描述信息',
-    title: '跳转Workspace示例',
-    link: '/workspace',
-  },
-  {
-    id: 6,
-    avatar: 'https://avatar.vercel.sh/satori',
-    date: '1天前',
-    isRead: false,
-    message: '描述信息描述信息描述信息',
-    title: '跳转外部链接示例',
-    link: 'https://doc.vben.pro',
-  },
-]);
 
 const router = useRouter();
 const userStore = useUserStore();
@@ -81,8 +38,61 @@ const authStore = useAuthStore();
 const accessStore = useAccessStore();
 const { destroyWatermark, updateWatermark } = useWatermark();
 const { isDark } = usePreferences();
-const showDot = computed(() =>
-  notifications.value.some((item) => !item.isRead),
+
+/** 通知弹层展示的未读消息条数上限。 */
+const NOTIFICATION_PAGE_SIZE = 8;
+
+const notifications = ref<NotificationItem[]>([]);
+
+/** 未读数量由消息 WS 推送维护；未登录时连接自动断开。 */
+const { refreshUnreadCount, unreadCount } = useMessageWebSocket({
+  onMessage: () => {
+    loadNotifications();
+  },
+});
+
+const showDot = computed(() => unreadCount.value > 0);
+
+function toNotification(message: MessageResp): NotificationItem {
+  return {
+    avatar: preferences.app.defaultAvatar,
+    date: message.createTime,
+    id: message.id,
+    isRead: message.isRead,
+    link: message.path || undefined,
+    message: message.content,
+    title: message.title,
+  };
+}
+
+async function loadNotifications() {
+  try {
+    const page = await listMessage({
+      isRead: false,
+      page: 1,
+      size: NOTIFICATION_PAGE_SIZE,
+      sort: ['createTime,desc'],
+    });
+    notifications.value = (page?.list ?? []).map((message) =>
+      toNotification(message),
+    );
+  } catch {
+    // 列表加载失败不阻塞布局，等待 WS 推送或下次操作刷新
+  }
+}
+
+// 登录态变化时同步刷新通知数据：登录/刷新后重新拉取，登出后清空。
+watch(
+  () => accessStore.accessToken,
+  (token) => {
+    if (token) {
+      refreshUnreadCount();
+      loadNotifications();
+    } else {
+      notifications.value = [];
+    }
+  },
+  { immediate: true },
 );
 
 const menus = computed(() => [
@@ -138,31 +148,61 @@ async function handleLogout() {
 }
 
 function handleNoticeClear() {
-  notifications.value = [];
+  const ids = notifications.value.map((item) => String(item.id));
+  if (ids.length <= 0) return;
+  deleteMessage(ids)
+    .then(() => {
+      notifications.value = [];
+      refreshUnreadCount();
+    })
+    .catch(() => {});
 }
 
-function markRead(id: number | string) {
-  const item = notifications.value.find((item) => item.id === id);
-  if (item) {
+async function markRead(item: NotificationItem) {
+  try {
+    await readMessage([String(item.id)]);
     item.isRead = true;
+    notifications.value = notifications.value.filter(
+      (notice) => notice.id !== item.id,
+    );
+    refreshUnreadCount();
+  } catch {
+    // 标记失败保持原状，等待下次刷新
   }
 }
 
-function remove(id: number | string) {
-  notifications.value = notifications.value.filter((item) => item.id !== id);
+function remove(item: NotificationItem) {
+  deleteMessage([String(item.id)])
+    .then(() => {
+      notifications.value = notifications.value.filter(
+        (notice) => notice.id !== item.id,
+      );
+      refreshUnreadCount();
+    })
+    .catch(() => {});
 }
 
-function handleMakeAll() {
-  notifications.value.forEach((item) => (item.isRead = true));
+async function handleMakeAll() {
+  try {
+    await readAllMessage();
+    notifications.value = [];
+    refreshUnreadCount();
+  } catch {
+    // 全部已读失败保持原状
+  }
 }
 
-const viewAll = () => {};
+const viewAll = () => {
+  router.push('/user/message');
+};
 
 const handleClick = (item: NotificationItem) => {
   // 如果通知项有链接，点击时跳转
   if (item.link) {
     navigateTo(item.link, item.query, item.state);
+    return;
   }
+  router.push('/user/message');
 };
 
 function navigateTo(
@@ -246,8 +286,8 @@ watch(
         :dot="showDot"
         :notifications="notifications"
         @clear="handleNoticeClear"
-        @read="(item) => item.id && markRead(item.id)"
-        @remove="(item) => item.id && remove(item.id)"
+        @read="(item) => markRead(item)"
+        @remove="(item) => remove(item)"
         @make-all="handleMakeAll"
         @on-click="handleClick"
         @view-all="viewAll"
@@ -258,6 +298,12 @@ watch(
         v-model:open="accessStore.loginExpired"
         :avatar
       >
+        <div
+          v-if="authExpiredReason"
+          class="mb-3 text-center text-sm text-destructive"
+        >
+          {{ authExpiredReason }}
+        </div>
         <LoginForm />
       </AuthenticationLoginExpiredModal>
     </template>
