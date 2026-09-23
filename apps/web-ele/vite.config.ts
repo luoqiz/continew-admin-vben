@@ -37,7 +37,11 @@ export default defineConfig(async (config: any) => {
         // allowedHosts: true,
         proxy: {
           [env.VITE_API_PREFIX as string]: {
-            changeOrigin: true,
+            // 保持浏览器原始 Host（localhost:5777/5778...）转发给后端：
+            // 后端 Refresh Cookie 的来源校验在白名单未命中时会回退为
+            // "Origin 与请求自身 Host 同源即放行"，关掉 changeOrigin 后
+            // 任意开发端口都天然同源，无需为每个端口维护后端白名单。
+            changeOrigin: false,
             rewrite: (path: string) =>
               path.replace(new RegExp(`^${env.VITE_API_PREFIX}`), ''),
             // 浏览器访问 /api，代理转发到后端实际地址，保证 Refresh Token Cookie 同源可携带。
