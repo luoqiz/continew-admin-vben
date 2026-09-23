@@ -17,6 +17,9 @@ import SiteConfig from './site/index.vue';
 import SmsConfig from './sms/index.vue';
 import StorageConfig from './storage/index.vue';
 
+// 注册本目录下载的本地 svg 图标（svg:globe 等），须在渲染菜单前执行
+import '#/assets/icons/loader';
+
 defineOptions({ name: 'SystemConfig' });
 
 const { width, isDesktop } = useDevice();
@@ -54,49 +57,49 @@ interface ConfigMenu {
 
 const data: ConfigMenu[] = [
   {
-    icon: 'lucide:globe',
+    icon: 'svg:globe',
     key: 'site',
     name: '网站配置',
     permissions: ['system:siteConfig:get'],
     value: SiteConfig,
   },
   {
-    icon: 'lucide:shield-check',
+    icon: 'svg:shield-check',
     key: 'security',
     name: '安全配置',
     permissions: ['system:securityConfig:get'],
     value: SecurityConfig,
   },
   {
-    icon: 'lucide:lock-keyhole',
+    icon: 'svg:lock-keyhole',
     key: 'login',
     name: '登录配置',
     permissions: ['system:loginConfig:get'],
     value: LoginConfig,
   },
   {
-    icon: 'lucide:mail',
+    icon: 'svg:mail',
     key: 'mail',
     name: '邮件配置',
     permissions: ['system:mailConfig:get'],
     value: MailConfig,
   },
   {
-    icon: 'lucide:message-square-text',
+    icon: 'svg:message-square-text',
     key: 'sms',
     name: '短信配置',
     permissions: ['system:smsConfig:list'],
     value: SmsConfig,
   },
   {
-    icon: 'lucide:hard-drive',
+    icon: 'svg:hard-drive',
     key: 'storage',
     name: '存储配置',
     permissions: ['system:storage:list'],
     value: StorageConfig,
   },
   {
-    icon: 'lucide:smartphone',
+    icon: 'svg:smartphone',
     key: 'client',
     name: '客户端配置',
     permissions: ['system:client:list'],
