@@ -9,7 +9,7 @@ import {
 } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
-import { Card, CardContent, ColPage, RowPage } from '@vben/common-ui';
+import { Card, ColPage, RowPage } from '@vben/common-ui';
 
 import {
   getUnreadMessageCount,
@@ -155,20 +155,22 @@ watch(
     content-class="py-0"
   >
     <template #top v-if="!isDesktop">
-      <Card>
+      <Card class="h-full overflow-hidden py-4">
         <el-scrollbar class="h-full">
-          <div class="flex flex-row gap-2 px-2 py-4">
+          <div class="flex flex-row gap-2 px-2">
             <div
-              :class="`menu-title ${activeKey === item.key ? 'bg-blue-100' : ''}`"
               v-for="item in tabItems"
               :key="item.key"
-              :label="item.title"
+              class="menu-title flex-1"
+              :class="{
+                'menu-title-active': activeKey === item.key,
+              }"
+              @click="change(item.key)"
             >
               <TabPaneTitle
                 :title="item.title"
                 :count="item.count"
                 :offset="[0, 0]"
-                @click="change(item.key)"
               />
             </div>
           </div>
@@ -182,31 +184,31 @@ watch(
       content-class="p-0"
     >
       <template #left v-if="isDesktop">
-        <Card class="h-full">
+        <Card class="h-full overflow-hidden py-4">
           <el-scrollbar class="h-full">
-            <div class="flex flex-col gap-2 px-2 py-4">
+            <div class="flex flex-col gap-1 px-2">
               <div
-                :class="`menu-title ${activeKey === item.key ? 'bg-blue-100' : ''}`"
                 v-for="item in tabItems"
                 :key="item.key"
-                :label="item.title"
+                class="menu-title"
+                :class="{
+                  'menu-title-active': activeKey === item.key,
+                }"
+                @click="change(item.key)"
               >
                 <TabPaneTitle
                   :title="item.title"
                   :count="item.count"
                   :offset="[0, 10]"
-                  @click="change(item.key)"
                 />
               </div>
             </div>
           </el-scrollbar>
         </Card>
       </template>
-      <Card>
-        <CardContent>
-          <component :is="activeComponent" />
-        </CardContent>
-      </Card>
+      <!-- 右侧直接渲染列表组件：组件内部的 Page 自管高度，
+           不能再用无高度的 Card 包裹，否则表格 height:auto 计算不出高度 -->
+      <component :is="activeComponent" />
     </ColPage>
   </RowPage>
 </template>
@@ -215,13 +217,23 @@ watch(
 .menu-title {
   padding: 8px 12px;
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: 6px;
+  transition:
+    background-color 0.15s,
+    color 0.15s;
 
   &:hover {
-    opacity: 0.7; /* 透明度 */
-    filter: gray; /* filter为滤镜 gray为颜色 */
-    filter: grayscale(100); /* 将图像转换为灰度图像 */
-    transition: all 0.1s;
+    background-color: hsl(var(--accent));
+  }
+}
+
+.menu-title-active {
+  font-weight: 500;
+  color: hsl(var(--primary));
+  background-color: hsl(var(--primary) / 15%);
+
+  &:hover {
+    background-color: hsl(var(--primary) / 15%);
   }
 }
 
