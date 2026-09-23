@@ -1,9 +1,10 @@
 <script setup lang="tsx">
-import { computed, ref } from 'vue';
+import type { Component } from 'vue';
 
-import { Page } from '@vben/common-ui';
+import { computed, defineComponent, nextTick, ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
-import { VbenIcon } from '@vben-core/shadcn-ui';
+import { Card, ColPage, RowPage, VbenIcon } from '@vben/common-ui';
 
 import { useDevice } from '#/hooks';
 import has from '#/utils/has';
@@ -18,56 +19,86 @@ import StorageConfig from './storage/index.vue';
 
 defineOptions({ name: 'SystemConfig' });
 
-const { isDesktop } = useDevice();
-const tabPosition = computed(() => (isDesktop.value ? 'left' : 'top'));
+const { width, isDesktop } = useDevice();
 
-const data = [
+const colPageRef = ref<InstanceType<typeof ColPage>>();
+const rowPageRef = ref<InstanceType<typeof RowPage>>();
+
+const rowProps = ref({
+  topCollapsedWidth: 2,
+  topCollapsible: true,
+  topWidth: isDesktop ? 0 : 12,
+  resizable: false,
+  bottomWidth: isDesktop ? 100 : 88,
+  splitHandle: false,
+  splitLine: false,
+});
+
+const colProps = ref({
+  leftCollapsedWidth: 2,
+  leftCollapsible: true,
+  leftWidth: isDesktop ? 18 : 0,
+  resizable: false,
+  rightWidth: isDesktop ? 82 : 100,
+  splitHandle: false,
+  splitLine: false,
+});
+
+interface ConfigMenu {
+  icon: string;
+  key: string;
+  name: string;
+  permissions: string[];
+  value: Component;
+}
+
+const data: ConfigMenu[] = [
   {
-    name: '网站配置',
+    icon: 'lucide:globe',
     key: 'site',
-    icon: 'apps',
+    name: '网站配置',
     permissions: ['system:siteConfig:get'],
     value: SiteConfig,
   },
   {
-    name: '安全配置',
+    icon: 'lucide:shield-check',
     key: 'security',
-    icon: 'safe',
+    name: '安全配置',
     permissions: ['system:securityConfig:get'],
     value: SecurityConfig,
   },
   {
-    name: '登录配置',
+    icon: 'lucide:lock-keyhole',
     key: 'login',
-    icon: 'lock',
+    name: '登录配置',
     permissions: ['system:loginConfig:get'],
     value: LoginConfig,
   },
   {
-    name: '邮件配置',
+    icon: 'lucide:mail',
     key: 'mail',
-    icon: 'email',
+    name: '邮件配置',
     permissions: ['system:mailConfig:get'],
     value: MailConfig,
   },
   {
-    name: '短信配置',
+    icon: 'lucide:message-square-text',
     key: 'sms',
-    icon: 'message',
+    name: '短信配置',
     permissions: ['system:smsConfig:list'],
     value: SmsConfig,
   },
   {
-    name: '存储配置',
+    icon: 'lucide:hard-drive',
     key: 'storage',
-    icon: 'storage',
+    name: '存储配置',
     permissions: ['system:storage:list'],
     value: StorageConfig,
   },
   {
-    name: '客户端配置',
+    icon: 'lucide:smartphone',
     key: 'client',
-    icon: 'mobile',
+    name: '客户端配置',
     permissions: ['system:client:list'],
     value: ClientConfig,
   },
@@ -79,39 +110,124 @@ const menuList = computed(() => {
   });
 });
 
+const route = useRoute();
+const router = useRouter();
 const activeKey = ref(menuList.value[0]?.key || 'site');
+const activeComponent = computed(() => {
+  return menuList.value.find((item) => item.key === activeKey.value)?.value;
+});
+
+// 按图标 + 名称渲染菜单项（桌面左侧纵向 / 移动端顶部横向）
+const MenuItem = defineComponent({
+  props: {
+    active: { type: Boolean, default: false },
+    icon: { type: String, required: true },
+    name: { type: String, required: true },
+  },
+  setup(props) {
+    return () => (
+      <div
+        class={[
+          'flex cursor-pointer items-center gap-2 rounded-md px-3 py-2.5 text-sm transition-colors',
+          props.active
+            ? 'bg-primary/10 text-primary font-medium'
+            : 'hover:bg-accent text-foreground',
+        ]}
+      >
+        <VbenIcon class="size-5 shrink-0" icon={props.icon} />
+        <span class="truncate">{props.name}</span>
+      </div>
+    );
+  },
+});
+
+const change = (key: string) => {
+  activeKey.value = key;
+  router.replace({ path: route.path, query: { tab: key } });
+};
+
+// 监听路由参数变化，更新 activeKey（支持菜单深链 /system/config?tab=xxx）
+watch(
+  () => route.query.tab,
+  (tab) => {
+    if (tab && menuList.value.some((item) => item.key === String(tab))) {
+      activeKey.value = String(tab);
+    }
+  },
+  { immediate: true },
+);
+
+const changeWindowWidth = () => {
+  nextTick(() => {
+    if (isDesktop.value) {
+      rowPageRef?.value?.collapseTop();
+      colPageRef?.value?.expandLeft();
+    } else {
+      rowPageRef?.value?.topPanelRef?.resize(12);
+      rowPageRef?.value?.expandTop();
+      colPageRef?.value?.collapseLeft();
+    }
+  });
+};
+watch(width, changeWindowWidth, { immediate: true });
 </script>
 
 <template>
-  <Page auto-content-height>
-    <el-tabs
-      v-model="activeKey"
-      :tab-position="tabPosition"
-      stretch
-      type="border-card"
-      class="settings-tabs"
-      style="height: 100%"
-    >
-      <el-tab-pane v-for="item in menuList" :key="item.key" :name="item.key">
-        <template #label>
-          <div style="display: flex; align-items: center">
-            <VbenIcon :icon="`svg:${item.icon}`" class="mr-4px size-6" />
-            {{ item.name }}
+  <RowPage
+    auto-content-height
+    v-bind="rowProps"
+    ref="rowPageRef"
+    content-class="py-0"
+  >
+    <template #top v-if="!isDesktop">
+      <Card class="h-full overflow-hidden py-4">
+        <el-scrollbar class="h-full">
+          <div class="flex flex-row gap-2 px-2">
+            <div
+              v-for="item in menuList"
+              :key="item.key"
+              class="min-w-25 flex-1"
+              @click="change(item.key)"
+            >
+              <MenuItem
+                :active="activeKey === item.key"
+                :icon="item.icon"
+                :name="item.name"
+              />
+            </div>
           </div>
-        </template>
-        <component :is="item.value" />
-      </el-tab-pane>
-    </el-tabs>
-  </Page>
+        </el-scrollbar>
+      </Card>
+    </template>
+    <ColPage
+      auto-content-height
+      v-bind="colProps"
+      ref="colPageRef"
+      content-class="p-0"
+    >
+      <template #left v-if="isDesktop">
+        <Card class="h-full overflow-hidden py-3">
+          <el-scrollbar class="h-full">
+            <div class="flex flex-col gap-1 px-2">
+              <div
+                v-for="item in menuList"
+                :key="item.key"
+                @click="change(item.key)"
+              >
+                <MenuItem
+                  :active="activeKey === item.key"
+                  :icon="item.icon"
+                  :name="item.name"
+                />
+              </div>
+            </div>
+          </el-scrollbar>
+        </Card>
+      </template>
+      <!-- 右侧配置表单：滚动由该容器管理，表单自身限宽居中 -->
+      <div class="h-full overflow-y-auto p-4">
+        <component :is="activeComponent" />
+      </div>
+    </ColPage>
+  </RowPage>
 </template>
-
-<style scoped>
-:deep(.el-tabs--border-card > .el-tabs__content) {
-  overflow: auto !important;
-}
-
-.el-tabs--right .el-tabs__content,
-.el-tabs--left .el-tabs__content {
-  height: 100%;
-}
-</style>
