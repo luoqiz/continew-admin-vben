@@ -87,10 +87,3 @@ export async function logoutApi(accessToken?: null | string) {
   }
   return response;
 }
-
-/**
- * 获取用户权限码
- */
-export async function getAccessCodesApi() {
-  return requestClient.get<string[]>('/auth/codes');
-}
