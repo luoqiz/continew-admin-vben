@@ -13,6 +13,7 @@ import type {
   InputNumberProps,
   InputProps,
   RadioGroupProps,
+  SelectProps,
   SelectV2Props,
   SpaceProps,
   SwitchProps,
@@ -111,6 +112,12 @@ const ElSelectV2 = defineAsyncComponent(() =>
     import('element-plus/es/components/select-v2/style/css'),
   ]).then(([res]) => res.ElSelectV2),
 );
+const ElSelect = defineAsyncComponent(() =>
+  Promise.all([
+    import('element-plus/es/components/select/index'),
+    import('element-plus/es/components/select/style/css'),
+  ]).then(([res]) => res.ElSelect),
+);
 const ElSpace = defineAsyncComponent(() =>
   Promise.all([
     import('element-plus/es/components/space/index'),
@@ -200,6 +207,7 @@ export type ComponentType =
   | 'Select'
   | 'Space'
   | 'Switch'
+  | 'TenantSelect'
   | 'Textarea'
   | 'TimePicker'
   | 'TreeSelect'
@@ -223,6 +231,7 @@ export interface ComponentPropsMap {
   Select: SelectV2Props;
   Space: SpaceProps;
   Switch: SwitchProps;
+  TenantSelect: SelectProps;
   TimePicker: ElTimePickerSchemaProps;
   TreeSelect: ElTreeSelectSchemaProps;
   Upload: UploadProps;
@@ -341,6 +350,8 @@ async function initComponentAdapter() {
       }
       return h(ElSelectV2, { ...props, attrs, options }, slots);
     },
+    // 租户编码选择：支持下拉选择历史租户，也可直接输入新编码（allow-create）
+    TenantSelect: withDefaultPlaceholder(ElSelect, 'select'),
     Space: ElSpace,
     Switch: ElSwitch,
     TimePicker: (props, { attrs, slots }) => {

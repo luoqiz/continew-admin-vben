@@ -7,6 +7,7 @@
   "loginSubtitle": "请输入您的账户信息以开始管理您的项目",
   "selectAccount": "快速选择账号",
   "selectTenant": "快速选择租户",
+  "tenantPlaceholder": "选择或输入租户编码，留空使用默认租户",
   "username": "账号",
   "password": "密码",
   "usernameTip": "请输入用户名",

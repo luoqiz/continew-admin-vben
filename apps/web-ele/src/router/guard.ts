@@ -10,7 +10,7 @@ import { startProgress, stopProgress } from '@vben/utils';
 import { ElMessage } from 'element-plus';
 
 import { accessRoutes, coreRouteNames } from '#/router/routes';
-import { useAuthStore } from '#/store';
+import { useAuthStore, useTenantStore } from '#/store';
 
 import { generateAccess } from './access';
 
@@ -35,6 +35,9 @@ function restoreSessionOnce(authStore: ReturnType<typeof useAuthStore>) {
       // 临时故障不删除 Cookie，并允许后续进入受保护页面时重新恢复。
       if (status === 401) {
         sessionRestoreRecoverableFailure = false;
+        // 会话确认死亡：清理 session 来源的租户上下文，
+        // 让登录页的租户编码字段重新出现（普通租户可输入编码重登录）。
+        useTenantStore().handleSessionInvalidated();
       } else {
         sessionRestoreAttempted = false;
         sessionRestoreRecoverableFailure = true;

@@ -65,7 +65,12 @@ export const useAuthStore = defineStore('auth', () => {
           accessStore.setAccessToken(result.accessToken);
           // 租户请求头使用后端返回的最终租户 ID，避免普通租户仅提交编码登录后后续请求
           // 没有 X-Tenant-Id。
-          tenantStore.setTenantId(result.tenantId);
+          tenantStore.setSessionTenant(result.tenantId);
+          // 记录本机租户登录历史（登录页下拉数据源；空编码=默认租户不记录）。
+          tenantStore.recordTenantLogin(
+            String(params.TenantCode ?? ''),
+            result.tenantId,
+          );
         }
         return result;
       });
@@ -162,7 +167,7 @@ export const useAuthStore = defineStore('auth', () => {
       if (accessStore.accessToken) return;
       const loginResult = await refreshTokenApi();
       accessStore.setAccessToken(loginResult.accessToken);
-      tenantStore.setTenantId(loginResult.tenantId);
+      tenantStore.setSessionTenant(loginResult.tenantId);
     });
     return true;
   }

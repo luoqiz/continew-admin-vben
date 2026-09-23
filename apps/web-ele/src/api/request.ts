@@ -61,6 +61,7 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
     console.warn('登录状态已失效，请重新登录。');
     const accessStore = useAccessStore();
     const authStore = useAuthStore();
+    const tenantStore = useTenantStore();
     const accessToken = accessStore.accessToken;
     if (
       preferences.app.loginExpiredMode !== 'modal' ||
@@ -91,6 +92,9 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
         setAuthExpiredReason(pendingAuthExpiredReason);
         pendingAuthExpiredReason = '';
       }
+      // 会话确认死亡：清理 session 来源的租户上下文，
+      // 让登录过期弹窗中的租户编码字段重新出现（普通租户可输入编码重登录）。
+      tenantStore.handleSessionInvalidated();
       accessStore.setLoginExpired(true);
     });
   }
@@ -105,7 +109,9 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
       const loginResult = await refreshTokenApi();
       accessStore.setAccessToken(loginResult.accessToken);
       // Refresh 响应携带 Session 固化的租户，确保刷新后前端状态与后端保持一致。
-      tenantStore.setTenantId(loginResult.tenantId);
+      tenantStore.setSessionTenant(loginResult.tenantId);
+      // 活跃即续期：令牌刷新视为该租户在本机的持续使用，刷新历史条目的 15 天 TTL。
+      tenantStore.touchTenantActivity(loginResult.tenantId);
       return loginResult.accessToken;
     });
   }

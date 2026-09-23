@@ -7,6 +7,7 @@
   "loginSubtitle": "Enter your account details to manage your projects",
   "selectAccount": "Quick Select Account",
   "selectTenant": "Quick Select Tenant",
+  "tenantPlaceholder": "Select or enter a tenant code; leave empty for the default tenant",
   "username": "Username",
   "password": "Password",
   "usernameTip": "Please enter username",

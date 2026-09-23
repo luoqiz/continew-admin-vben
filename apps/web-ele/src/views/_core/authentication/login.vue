@@ -25,40 +25,26 @@ const captchaInfo = ref<ImageCaptchaResp>({
 
 const formSchema = computed((): VbenFormSchema[] => {
   return [
-    // {
-    //   component: 'VbenSelect',
-    //   componentProps: {
-    //     options: tenantStore.tenantOptions as BasicOption[],
-    //     placeholder: $t('authentication.selectTenant'),
-    //   },
-    //   dependencies: {
-    //     if: () => tenantStore.tenantEnabled,
-    //     triggerFields: [''],
-    //   },
-    //   fieldName: 'selectAccount',
-    //   label: $t('authentication.selectAccount'),
-    //   rules: z
-    //     .string()
-    //     .min(1, { message: $t('authentication.selectAccount') })
-    //     .optional()
-    //     .default(''),
-    // },
     {
-      component: 'VbenInput',
+      component: 'TenantSelect',
       componentProps: {
-        placeholder: $t('authentication.selectTenant'),
+        allowCreate: true,
+        clearable: true,
+        defaultFirstOption: true,
+        filterable: true,
+        options: tenantStore.loginHistory.map((item) => ({
+          label: item.code,
+          value: item.code,
+        })),
+        placeholder: $t('authentication.tenantPlaceholder'),
       },
       dependencies: {
-        if: () => tenantStore.tenantEnabled && !tenantStore.tenantId,
+        if: () =>
+          tenantStore.tenantEnabled && tenantStore.tenantIdSource !== 'domain',
         triggerFields: [''],
       },
       fieldName: 'TenantCode',
       label: $t('authentication.selectTenant'),
-      // rules: z
-      //   .string()
-      //   .min(1, { message: $t('authentication.selectTenant') })
-      //   .optional()
-      //   .default(''),
     },
     {
       component: 'VbenInput',
@@ -145,6 +131,8 @@ const getCaptcha = async () => {
 };
 
 onMounted(() => {
+  // 修剪超过 15 天未活跃的租户历史（持久化水合后执行）
+  tenantStore.pruneExpired();
   getCaptcha();
 });
 </script>
