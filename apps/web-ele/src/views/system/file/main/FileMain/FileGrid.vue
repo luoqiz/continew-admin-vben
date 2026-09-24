@@ -12,9 +12,7 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const emit = defineEmits<{
-  (e: 'click', record: FileItem): void;
-  (e: 'dblclick', record: FileItem): void;
-  (e: 'select', record: FileItem): void;
+  (e: 'click' | 'dblclick' | 'select', record: FileItem): void;
   (e: 'right-menu-click', mode: string, item: FileItem): void;
 }>();
 
@@ -99,7 +97,7 @@ const handleRightMenuClick = (mode: string, item: FileItem) => {
   flex: 1;
   margin-top: 12px;
   // overflow: scroll;
-  background: var(--color-bg-2);
+  background: hsl(var(--muted));
 }
 
 .file-grid-item {
@@ -112,7 +110,7 @@ const handleRightMenuClick = (mode: string, item: FileItem) => {
   cursor: pointer;
 
   &:hover {
-    background: var(--color-primary-light-1);
+    background: hsl(var(--primary) / 15%);
   }
 
   &:active {

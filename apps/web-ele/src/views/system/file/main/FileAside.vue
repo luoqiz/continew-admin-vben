@@ -7,6 +7,7 @@ import { ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 import { SvgAppsIcon } from '@vben/icons';
+import { $t } from '@vben/locales';
 
 import { VbenIcon } from '@vben-core/shadcn-ui';
 
@@ -41,24 +42,25 @@ const onClickItem = (item: FileTypeListItem) => {
 
 <template>
   <div>
-    <ElCard :bordered="false" :body-style="{ padding: 0 }">
+    <ElCard :body-style="{ padding: 0 }">
       <el-menu
         :default-openeds="['0']"
+        :default-active="selectedKey"
         :router="false"
-        :defalut-active="selectedKey"
       >
         <el-sub-menu index="0">
           <template #title>
             <SvgAppsIcon />
-            <span class="m-4">文件类型</span>
+            <span class="m-4">{{ $t('system.file.aside.fileType') }}</span>
           </template>
           <el-menu-item
             v-for="item in FileTypeList"
             :key="item.value.toString()"
+            :index="item.value.toString()"
             @click="onClickItem(item)"
           >
             <VbenIcon :icon="`svg:${item.icon}`" class="size-6" />
-            <span class="m-4">{{ item.name }}</span>
+            <span class="m-4">{{ $t(item.nameKey) }}</span>
           </el-menu-item>
         </el-sub-menu>
       </el-menu>

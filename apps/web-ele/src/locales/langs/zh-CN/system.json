@@ -1,4 +1,120 @@
 {
+  "file": {
+    "type": {
+      "all": "全部",
+      "audio": "音频",
+      "doc": "文档",
+      "file": "文件",
+      "folder": "文件夹",
+      "image": "图片",
+      "other": "其他",
+      "video": "视频"
+    },
+    "aside": {
+      "fileType": "文件类型"
+    },
+    "breadcrumb": {
+      "all": "全部",
+      "root": "根目录"
+    },
+    "toolbar": {
+      "batch": "批量操作",
+      "batchCancel": "取消批量",
+      "newFolder": "新建文件夹",
+      "recycleBin": "回收站",
+      "upload": "上传文件",
+      "uploadMultipart": "分片上传",
+      "uploadNormal": "普通上传",
+      "view": "视图"
+    },
+    "search": {
+      "inDir": "在当前目录下搜索名称",
+      "name": "请输入名称",
+      "recycle": "搜索名称"
+    },
+    "action": {
+      "calculate": "计算",
+      "calculating": "计算中...",
+      "clean": "清空回收站",
+      "copy": "复制",
+      "copyLink": "复制链接",
+      "openInNewTab": "在新标签页打开",
+      "rename": "重命名",
+      "restore": "还原"
+    },
+    "column": {
+      "deleteTime": "删除时间",
+      "directory": "文件目录",
+      "fileSize": "文件大小",
+      "fileType": "文件类型",
+      "name": "名称",
+      "path": "路径",
+      "progress": "进度",
+      "size": "大小",
+      "status": "状态",
+      "storageName": "存储名称",
+      "type": "类型",
+      "updateTime": "修改时间",
+      "uploadTime": "上传时间"
+    },
+    "modal": {
+      "audio": "音频播放",
+      "detail": "文件详情",
+      "newFolder": "新建文件夹",
+      "preview": "文件预览",
+      "recycleBin": "文件回收站",
+      "rename": "重命名",
+      "video": "视频播放"
+    },
+    "form": {
+      "nameRequired": "文件名不能为空",
+      "newFileName": "请输入新的文件名",
+      "newFolderName": "请输入文件夹名"
+    },
+    "statistic": {
+      "count": "数量",
+      "storage": "存储量",
+      "total": "总计：{value}"
+    },
+    "message": {
+      "batchDeleteConfirm": "是否确定删除所选的{count}个文件？",
+      "calculateFailed": "计算失败，请重试",
+      "cleanConfirm": "是否确定清空回收站？",
+      "cleanSuccess": "清空成功",
+      "deleteCanceled": "已取消删除",
+      "deleteFileConfirm": "是否确定删除文件「{name}」？",
+      "deleteFolderConfirm": "是否确定删除文件夹「{name}」？",
+      "downloadFailed": "下载失败",
+      "downloadSuccess": "下载成功",
+      "dragHint": "支持拖拽文件到此区域上传（文件夹请使用\"选择文件夹\"按钮）",
+      "dragRootHint": "提示：拖拽上传时，所有文件将上传到根目录",
+      "loadFailed": "文件加载失败",
+      "md5Calculating": "正在计算MD5...",
+      "renameSuccess": "重命名成功",
+      "restoreFileConfirm": "是否确定还原文件「{name}」？",
+      "restoreFolderConfirm": "是否确定还原文件夹「{name}」？",
+      "restoreSuccess": "还原成功",
+      "uploadFailed": "上传失败",
+      "uploadSuccess": "上传成功"
+    },
+    "uploadStatus": {
+      "canceled": "已取消",
+      "completed": "已完成",
+      "paused": "已暂停",
+      "uploading": "上传中",
+      "waiting": "等待中"
+    },
+    "tooltip": {
+      "pause": "暂停",
+      "resume": "继续",
+      "start": "开始"
+    },
+    "button": {
+      "selectFile": "选择文件",
+      "selectFolder": "选择文件夹",
+      "startUpload": "开始上传"
+    }
+  },
   "code": {
     "author": "作者名称",
     "businessName": "业务模块名称",

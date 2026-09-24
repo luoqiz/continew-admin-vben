@@ -93,6 +93,7 @@ const close = () => {
   z-index: 9999;
   width: 300px;
   // background: linear-gradient(to right, $color-theme, rgb(var(--primary-2)));
+  background: hsl(var(--card));
   border-radius: 8px;
   box-shadow: 0 2px 12px 0 rgb(0 0 0 / 10%);
 
@@ -102,7 +103,7 @@ const close = () => {
     justify-content: space-between;
     margin-bottom: 10px;
     font-size: 16px;
-    color: #fff;
+    color: hsl(var(--foreground));
     cursor: move;
     user-select: none;
 

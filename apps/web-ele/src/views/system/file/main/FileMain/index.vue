@@ -17,6 +17,7 @@ import {
   SvgSelectAllIcon,
   SvgUploadIcon,
 } from '@vben/icons';
+import { $t } from '@vben/locales';
 
 import { useWindowSize } from '@vueuse/core';
 import { ElMessage, ElMessageBox } from 'element-plus';
@@ -146,7 +147,9 @@ const onDownload = async (fileInfo: FileItem) => {
     target: '_self',
     fileName: fileInfo.originalName,
   });
-  res ? ElMessage.success('下载成功') : ElMessage.error('下载失败');
+  res
+    ? ElMessage.success($t('system.file.message.downloadSuccess'))
+    : ElMessage.error($t('system.file.message.downloadFailed'));
   search();
 };
 
@@ -155,25 +158,30 @@ const handleRightMenuClick = async (mode: string, fileInfo: FileItem) => {
   switch (mode) {
     case 'delete': {
       ElMessageBox.confirm(
-        `是否确定删除${fileInfo.type === 0 ? '文件夹' : '文件'}「${fileInfo.originalName}」？`,
-        '提示',
+        $t(
+          fileInfo.type === 0
+            ? 'system.file.message.deleteFolderConfirm'
+            : 'system.file.message.deleteFileConfirm',
+          { name: fileInfo.originalName ?? '' },
+        ),
+        $t('pages.common.tip'),
         {
           confirmButtonClass: 'el-button--danger',
-          confirmButtonText: 'OK',
-          cancelButtonText: 'Cancel',
+          confirmButtonText: $t('common.confirm'),
+          cancelButtonText: $t('common.cancel'),
           type: 'warning',
         },
       )
         .then(async () => {
           await deleteFile([fileInfo.id]);
-          ElMessage.success('删除成功');
+          ElMessage.success($t('pages.common.deleteSuccess'));
           search();
           mittBus.emit('file-total-refresh');
         })
         .catch(() => {
           ElMessage({
             type: 'info',
-            message: 'Delete canceled',
+            message: $t('system.file.message.deleteCanceled'),
           });
         });
       break;
@@ -202,18 +210,20 @@ const handleSelectFile = (item: FileItem) => {
 // 批量删除
 const handleMulDelete = () => {
   ElMessageBox.confirm(
-    `是否确定删除所选的${selectedFileIds.value.length}个文件？`,
-    '提示',
+    $t('system.file.message.batchDeleteConfirm', {
+      count: selectedFileIds.value.length,
+    }),
+    $t('pages.common.tip'),
     {
       confirmButtonClass: 'el-button--danger',
-      confirmButtonText: '确认',
-      cancelButtonText: '取消',
+      confirmButtonText: $t('common.confirm'),
+      cancelButtonText: $t('common.cancel'),
       type: 'warning',
     },
   )
     .then(async () => {
       await deleteFile(selectedFileIds.value);
-      ElMessage.success('删除成功');
+      ElMessage.success($t('pages.common.deleteSuccess'));
       search();
       mittBus.emit('file-total-refresh');
       isBatchMode.value = false;
@@ -231,11 +241,11 @@ const handleUpload = (options: UploadRequestOptions) => {
     formData.append('file', file);
     try {
       const res = await uploadFile(formData);
-      ElMessage.success('上传成功');
+      ElMessage.success($t('system.file.message.uploadSuccess'));
       onSuccess(res);
       search();
     } catch {
-      ElMessage.error('上传失败');
+      ElMessage.error($t('system.file.message.uploadFailed'));
     } finally {
       mittBus.emit('file-total-refresh');
     }
@@ -324,17 +334,24 @@ onMounted(() => {
     <el-breadcrumb class="file-main__breadcrumb">
       <el-breadcrumb-item
         v-if="queryForm.parentPath"
-        @click="handleBreadcrumbClick({ name: '根目录', path: '/' })"
+        @click="
+          handleBreadcrumbClick({
+            name: $t('system.file.breadcrumb.root'),
+            path: '/',
+          })
+        "
       >
-        根目录
+        {{ $t('system.file.breadcrumb.root') }}
       </el-breadcrumb-item>
-      <el-breadcrumb-item v-else>全部</el-breadcrumb-item>
+      <el-breadcrumb-item v-else>
+        {{ $t('system.file.breadcrumb.all') }}
+      </el-breadcrumb-item>
       <el-breadcrumb-item
         v-for="(item, index) in breadcrumbList"
         :key="index"
         @click="handleBreadcrumbClick(item)"
       >
-        {{ item.name || '根目录' }}
+        {{ item.name || $t('system.file.breadcrumb.root') }}
       </el-breadcrumb-item>
     </el-breadcrumb>
 
@@ -347,7 +364,7 @@ onMounted(() => {
             <SvgUploadIcon
               style="width: 16px; height: 16px; margin-right: 4px"
             />
-            上传文件
+            {{ $t('system.file.toolbar.upload') }}
           </el-button>
           <template #dropdown>
             <el-dropdown-menu>
@@ -360,7 +377,9 @@ onMounted(() => {
                   action=""
                   class="flex w-full items-center justify-center"
                 >
-                  <el-button link> 普通上传 </el-button>
+                  <el-button link>
+                    {{ $t('system.file.toolbar.uploadNormal') }}
+                  </el-button>
                 </el-upload>
               </el-dropdown-item>
               <el-dropdown-item index="2">
@@ -371,7 +390,7 @@ onMounted(() => {
                   @click="visible = !visible"
                   v-access:code="['system:file:multipartUpload']"
                 >
-                  分片上传
+                  {{ $t('system.file.toolbar.uploadMultipart') }}
                 </el-button>
               </el-dropdown-item>
 
@@ -391,7 +410,7 @@ onMounted(() => {
                   <template #icon>
                     <SvgFolderIcon />
                   </template>
-                  新建文件夹
+                  {{ $t('system.file.toolbar.newFolder') }}
                 </el-button>
               </el-dropdown-item>
             </el-dropdown-menu>
@@ -402,8 +421,8 @@ onMounted(() => {
             v-model="queryForm.originalName"
             :placeholder="
               queryForm.type && queryForm.type !== '0'
-                ? '请输入名称'
-                : '在当前目录下搜索名称'
+                ? $t('system.file.search.name')
+                : $t('system.file.search.inDir')
             "
             allow-clear
             style="width: 200px"
@@ -412,7 +431,7 @@ onMounted(() => {
             <template #icon>
               <SvgSearchIcon />
             </template>
-            <template #default>查询</template>
+            <template #default>{{ $t('common.query') }}</template>
           </el-button>
         </div>
       </el-space>
@@ -422,8 +441,7 @@ onMounted(() => {
         <el-button
           v-if="isBatchMode"
           :disabled="selectedFileIds.length === 0"
-          type="primary"
-          status="danger"
+          type="danger"
           @click="handleMulDelete"
         >
           <template #icon>
@@ -440,7 +458,11 @@ onMounted(() => {
             <SvgSelectAllIcon />
           </template>
           <template #default>
-            {{ isBatchMode ? '取消批量' : '批量操作' }}
+            {{
+              isBatchMode
+                ? $t('system.file.toolbar.batchCancel')
+                : $t('system.file.toolbar.batch')
+            }}
           </template>
         </el-button>
         <el-button
@@ -451,10 +473,12 @@ onMounted(() => {
           <template #icon>
             <SvgDeleteIcon />
           </template>
-          <template #default>回收站</template>
+          <template #default>
+            {{ $t('system.file.toolbar.recycleBin') }}
+          </template>
         </el-button>
         <el-button-group>
-          <el-tooltip content="视图">
+          <el-tooltip :content="$t('system.file.toolbar.view')">
             <el-button @click="toggleMode">
               <template #icon>
                 <SvgListIcon v-if="mode === 'grid'" />
@@ -510,7 +534,7 @@ onMounted(() => {
 
     <el-dialog
       v-model="visible"
-      title="分片上传"
+      :title="$t('system.file.toolbar.uploadMultipart')"
       :width="width > 1350 ? 1350 : '100%'"
       top="8vh"
       :footer="false"
@@ -535,8 +559,7 @@ onMounted(() => {
   flex-direction: column;
   height: 100%;
   overflow: hidden;
-  background: #fff;
-  // background: var(--color-bg-1);
+  background: hsl(var(--card));
   // border-radius: $radius-box;
   border-radius: 8px;
 }
@@ -548,9 +571,9 @@ onMounted(() => {
 .file-main__breadcrumb {
   padding: 16px;
   font-size: 14px;
-  color: var(--color-text-2);
-  background: var(--color-bg-2);
-  border-bottom: 1px solid var(--color-border-3);
+  color: hsl(var(--muted-foreground));
+  background: transparent;
+  border-bottom: 1px solid hsl(var(--border));
   border-radius: 4px;
 }
 
@@ -566,6 +589,6 @@ onMounted(() => {
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
-  padding: 0 var(--padding) var(--padding);
+  padding: 0 1rem 1rem;
 }
 </style>

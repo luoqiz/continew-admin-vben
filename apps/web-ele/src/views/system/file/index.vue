@@ -40,7 +40,7 @@ defineOptions({ name: 'SystemFile' });
 .file-manage {
   flex: 1;
   height: 100%;
-  padding: var(--padding);
+  padding: 1rem;
   overflow: hidden;
 }
 </style>

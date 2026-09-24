@@ -4,6 +4,8 @@ import type { FileItem } from '#/api/system';
 
 import { h } from 'vue';
 
+import { $t } from '@vben/locales';
+
 // import { createApp, h } from 'vue';
 import { ElMessageBox } from 'element-plus';
 
@@ -52,7 +54,7 @@ export function previewFileAudioModal(data: FileItem) {
   //   },
   // });
   return ElMessageBox({
-    title: '音频播放',
+    title: $t('system.file.modal.audio'),
     customStyle: {
       'max-width': '45%',
       height: '50%',

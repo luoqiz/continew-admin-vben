@@ -11,6 +11,7 @@ import {
   SvgPlayArrowIcon,
   SvgRefreshIcon,
 } from '@vben/icons';
+import { $t } from '@vben/locales';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { useMultipartUploader } from '#/hooks/modules/useMultipartUploader';
@@ -144,22 +145,22 @@ async function onDrop(e: DragEvent) {
 function statusText(status: string) {
   switch (status) {
     case 'cancelled': {
-      return '已取消';
+      return $t('system.file.uploadStatus.canceled');
     }
     case 'completed': {
-      return '已完成';
+      return $t('system.file.uploadStatus.completed');
     }
     case 'failed': {
-      return '失败';
+      return $t('common.failed');
     }
     case 'paused': {
-      return '已暂停';
+      return $t('system.file.uploadStatus.paused');
     }
     case 'uploading': {
-      return '上传中';
+      return $t('system.file.uploadStatus.uploading');
     }
     case 'waiting': {
-      return '等待中';
+      return $t('system.file.uploadStatus.waiting');
     }
     default: {
       return status;
@@ -198,13 +199,13 @@ const useFileColumns = (): VxeTableGridOptions['columns'] => {
   return [
     {
       field: 'fileName',
-      title: '名称',
+      title: $t('system.file.column.name'),
       minWidth: 280,
       slots: { default: 'fileName' },
       showOverflow: true,
     },
     {
-      title: '文件目录',
+      title: $t('system.file.column.directory'),
       field: 'relativePath',
       // slots: { default: 'relativePath' },
       showOverflow: true,
@@ -231,21 +232,33 @@ const useFileColumns = (): VxeTableGridOptions['columns'] => {
       // },
     },
     {
-      title: '文件类型',
+      title: $t('system.file.column.fileType'),
       field: 'fileType',
       slots: { default: 'fileType' },
       showOverflow: true,
     },
     {
-      title: '文件大小',
+      title: $t('system.file.column.fileSize'),
       field: 'fileSize',
       slots: { default: 'fileSize' },
       showOverflow: true,
       width: 120,
     },
-    { title: '进度', slots: { default: 'progress' }, width: 140 },
-    { title: '状态', slots: { default: 'status' }, width: 80 },
-    { title: '操作', slots: { default: 'actions' }, width: 150 },
+    {
+      title: $t('system.file.column.progress'),
+      slots: { default: 'progress' },
+      width: 140,
+    },
+    {
+      title: $t('system.file.column.status'),
+      slots: { default: 'status' },
+      width: 80,
+    },
+    {
+      title: $t('common.operation'),
+      slots: { default: 'actions' },
+      width: 150,
+    },
   ];
 };
 
@@ -294,9 +307,11 @@ watch(
         <!-- 文件/文件夹选择和全局操作按钮 -->
         <div class="upload-select-area-flex">
           <div class="upload-btns-left">
-            <el-button @click="triggerFileInput">选择文件</el-button>
+            <el-button @click="triggerFileInput">
+              {{ $t('system.file.button.selectFile') }}
+            </el-button>
             <el-button style="margin-left: 8px" @click="triggerFolderInput">
-              选择文件夹
+              {{ $t('system.file.button.selectFolder') }}
             </el-button>
             <input
               ref="fileInput"
@@ -316,22 +331,22 @@ watch(
           </div>
           <div class="upload-btns-right">
             <el-button type="primary" @click="startAllUpload">
-              开始上传
+              {{ $t('system.file.button.startUpload') }}
             </el-button>
             <el-button
               style="margin-left: 8px"
-              status="danger"
+              type="danger"
               @click="clearAllTasks"
             >
-              清空
+              {{ $t('common.clear') }}
             </el-button>
           </div>
         </div>
         <div style="margin-bottom: 8px; font-size: 13px; color: #888">
-          支持拖拽文件到此区域上传（文件夹请使用"选择文件夹"按钮）
+          {{ $t('system.file.message.dragHint') }}
           <br />
           <small style="color: #999">
-            提示：拖拽上传时，所有文件将上传到根目录
+            {{ $t('system.file.message.dragRootHint') }}
           </small>
         </div>
         <!-- 表格区域 -->
@@ -362,7 +377,9 @@ watch(
               <template #progress="{ row: record }">
                 <div class="item-center">
                   <template v-if="md5CalculatingTaskUid === record.uid">
-                    <span style="color: #888">正在计算MD5...</span>
+                    <span style="color: #888">{{
+                      $t('system.file.message.md5Calculating')
+                    }}</span>
                   </template>
                   <template v-else>
                     <el-progress
@@ -392,30 +409,39 @@ watch(
               </template>
               <template #actions="{ row: record }">
                 <el-space>
-                  <el-tooltip v-if="record.status === 'waiting'" content="开始">
+                  <el-tooltip
+                    v-if="record.status === 'waiting'"
+                    :content="$t('system.file.tooltip.start')"
+                  >
                     <el-button link @click="startTask(record)">
                       <SvgPlayArrowIcon />
                     </el-button>
                   </el-tooltip>
                   <el-tooltip
                     v-if="record.status === 'uploading'"
-                    content="暂停"
+                    :content="$t('system.file.tooltip.pause')"
                   >
                     <el-button link @click="pauseTask(record)">
                       <SvgPauseIcon />
                     </el-button>
                   </el-tooltip>
-                  <el-tooltip v-if="record.status === 'paused'" content="继续">
+                  <el-tooltip
+                    v-if="record.status === 'paused'"
+                    :content="$t('system.file.tooltip.resume')"
+                  >
                     <el-button link @click="resumeTask(record)">
                       <SvgPlayArrowIcon />
                     </el-button>
                   </el-tooltip>
-                  <el-tooltip v-if="record.status === 'failed'" content="重试">
+                  <el-tooltip
+                    v-if="record.status === 'failed'"
+                    :content="$t('common.retry')"
+                  >
                     <el-button link type="primary" @click="retryTask(record)">
                       <SvgRefreshIcon />
                     </el-button>
                   </el-tooltip>
-                  <el-tooltip content="取消">
+                  <el-tooltip :content="$t('common.cancel')">
                     <el-button
                       v-if="
                         record.status !== 'completed' &&
@@ -428,7 +454,7 @@ watch(
                       <SvgCloseIcon />
                     </el-button>
                   </el-tooltip>
-                  <el-tooltip content="删除">
+                  <el-tooltip :content="$t('common.delete')">
                     <el-button type="danger" link @click="removeTask(record)">
                       <SvgDeleteIcon />
                     </el-button>

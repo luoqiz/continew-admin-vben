@@ -4,6 +4,7 @@ import type { FilePreview } from './type';
 import { computed, onUnmounted, reactive, ref } from 'vue';
 
 import { SvgLaunchIcon } from '@vben/icons';
+import { $t } from '@vben/locales';
 
 import VueOfficeDocx from '@vue-office/docx';
 import VueOfficeExcel from '@vue-office/excel';
@@ -31,7 +32,9 @@ const filePreview = reactive<FilePreview>({
 // 弹框标题
 const modalTitle = computed(() => {
   const { fileName, fileType } = filePreview.fileInfo || {};
-  return fileName && fileType ? `${fileName}.${fileType}` : '文件预览';
+  return fileName && fileType
+    ? `${fileName}.${fileType}`
+    : $t('system.file.modal.preview');
 });
 
 // 预览
@@ -47,7 +50,7 @@ const renderedHandler = () => {
 };
 const errorHandler = () => {
   loading.value = false;
-  ElMessage.error('文件加载失败');
+  ElMessage.error($t('system.file.message.loadFailed'));
 };
 
 // 新标签页打开
@@ -59,7 +62,7 @@ const onOpen = () => {
     return;
   }
 
-  let url: null | string = null;
+  let url: null | string;
 
   if (typeof data === 'string') {
     // 如果是字符串，假设它是一个 URL，直接使用
@@ -119,7 +122,10 @@ defineExpose({ onPreview });
     <template #header>
       {{ modalTitle }}
       <div class="toolbar">
-        <el-tooltip position="tl" content="在新标签页打开">
+        <el-tooltip
+          position="tl"
+          :content="$t('system.file.action.openInNewTab')"
+        >
           <SvgLaunchIcon style="cursor: pointer" @click="onOpen" />
         </el-tooltip>
       </div>

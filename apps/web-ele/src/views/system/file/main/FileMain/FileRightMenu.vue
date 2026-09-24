@@ -2,6 +2,7 @@
 import { useSlots } from 'vue';
 
 import { useAccess } from '@vben/access';
+import { $t } from '@vben/locales';
 
 import { VbenContextMenu } from '@vben-core/shadcn-ui';
 
@@ -20,26 +21,26 @@ const menus = (data: any) => {
   return [
     {
       key: 'rename',
-      text: '重命名',
+      text: $t('system.file.action.rename'),
       disabled: !hasAccessByCodes(['system:file:update']),
       handler: () => onClickItem('rename'),
     },
     {
       key: 'details',
-      text: '详情',
+      text: $t('common.detail'),
       disabled: !hasAccessByCodes(['system:file:get']),
       handler: () => onClickItem('detail'),
     },
     {
       key: 'download',
-      text: '下载',
+      text: $t('common.download'),
       disabled: !hasAccessByCodes(['system:file:download']),
       handler: () => onClickItem('download'),
       hidden: data?.type === 0,
     },
     {
       key: 'delete',
-      text: '删除',
+      text: $t('common.delete'),
       disabled: !hasAccessByCodes(['system:file:delete']),
       handler: () => onClickItem('delete'),
     },

@@ -4,6 +4,7 @@ import type { FileItem } from '#/api/system';
 import { defineAsyncComponent, ref } from 'vue';
 
 import { SvgCopyIcon } from '@vben/icons';
+import { $t } from '@vben/locales';
 
 import { useClipboard } from '@vueuse/core';
 import { ElMessage } from 'element-plus';
@@ -29,7 +30,7 @@ const calculateDirSize = async () => {
     const data = await calcDirSize(props.data.id);
     calculatedSize.value = data.size;
   } catch {
-    ElMessage.error('计算失败，请重试');
+    ElMessage.error($t('system.file.message.calculateFailed'));
   } finally {
     isCalculating.value = false;
   }
@@ -51,18 +52,24 @@ const onCopy = (data: string) => {
     </div>
   </el-row>
   <div style="width: 90%; margin-top: 16px">
-    <el-descriptions :column="1" :border="true" label-width="80">
-      <el-descriptions-item label="名称" label-align="right">
+    <el-descriptions :column="1" :border="true" label-width="100">
+      <el-descriptions-item
+        :label="$t('system.file.column.name')"
+        label-align="right"
+      >
         {{ data.originalName }}
         <ElLink
           v-if="data.type !== 0"
-          title="复制链接"
+          :title="$t('system.file.action.copyLink')"
           @click="onCopy(data.url)"
         >
           <SvgCopyIcon />
         </ElLink>
       </el-descriptions-item>
-      <el-descriptions-item label-align="right" label="大小">
+      <el-descriptions-item
+        label-align="right"
+        :label="$t('system.file.column.size')"
+      >
         <span
           v-if="data.type === 0"
           v-access:code="['system:file:calcDirSize']"
@@ -72,7 +79,11 @@ const onCopy = (data: string) => {
             :disabled="isCalculating"
             @click="calculateDirSize"
           >
-            {{ isCalculating ? '计算中...' : '计算' }}
+            {{
+              isCalculating
+                ? $t('system.file.action.calculating')
+                : $t('system.file.action.calculate')
+            }}
           </el-link>
           <span v-else>
             {{ formatFileSize(calculatedSize) }}
@@ -80,7 +91,10 @@ const onCopy = (data: string) => {
         </span>
         <span v-else>{{ formatFileSize(data.size) }}</span>
       </el-descriptions-item>
-      <el-descriptions-item label-align="right" label="路径">
+      <el-descriptions-item
+        label-align="right"
+        :label="$t('system.file.column.path')"
+      >
         {{ `${data.parentPath === '/' ? '' : data.parentPath}/${data.name}` }}
       </el-descriptions-item>
       <el-descriptions-item
@@ -91,23 +105,29 @@ const onCopy = (data: string) => {
         <span style="word-break: break-all">{{ data.sha256 }}</span>
         <ElLink
           v-if="data.type !== 0"
-          title="复制"
+          :title="$t('system.file.action.copy')"
           @click="onCopy(data.sha256)"
         >
           <SvgCopyIcon />
         </ElLink>
       </el-descriptions-item>
-      <el-descriptions-item label-align="right" label="上传时间">
+      <el-descriptions-item
+        label-align="right"
+        :label="$t('system.file.column.uploadTime')"
+      >
         {{ data.createTime }}
       </el-descriptions-item>
       <el-descriptions-item
         v-if="data?.updateTime"
         label-align="right"
-        label="修改时间"
+        :label="$t('system.file.column.updateTime')"
       >
         {{ data?.updateTime }}
       </el-descriptions-item>
-      <el-descriptions-item label-align="right" label="存储名称">
+      <el-descriptions-item
+        label-align="right"
+        :label="$t('system.file.column.storageName')"
+      >
         {{ data.storageName }}
       </el-descriptions-item>
     </el-descriptions>

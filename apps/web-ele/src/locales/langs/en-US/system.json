@@ -1,4 +1,120 @@
 {
+  "file": {
+    "type": {
+      "all": "All",
+      "audio": "Audio",
+      "doc": "Document",
+      "file": "File",
+      "folder": "Folder",
+      "image": "Image",
+      "other": "Other",
+      "video": "Video"
+    },
+    "aside": {
+      "fileType": "File Type"
+    },
+    "breadcrumb": {
+      "all": "All",
+      "root": "Root"
+    },
+    "toolbar": {
+      "batch": "Batch",
+      "batchCancel": "Cancel Batch",
+      "newFolder": "New Folder",
+      "recycleBin": "Recycle Bin",
+      "upload": "Upload",
+      "uploadMultipart": "Multipart Upload",
+      "uploadNormal": "Normal Upload",
+      "view": "View"
+    },
+    "search": {
+      "inDir": "Search name in current directory",
+      "name": "Please enter a name",
+      "recycle": "Search name"
+    },
+    "action": {
+      "calculate": "Calculate",
+      "calculating": "Calculating...",
+      "clean": "Empty Recycle Bin",
+      "copy": "Copy",
+      "copyLink": "Copy Link",
+      "openInNewTab": "Open in new tab",
+      "rename": "Rename",
+      "restore": "Restore"
+    },
+    "column": {
+      "deleteTime": "Deleted Time",
+      "directory": "Directory",
+      "fileSize": "File Size",
+      "fileType": "File Type",
+      "name": "Name",
+      "path": "Path",
+      "progress": "Progress",
+      "size": "Size",
+      "status": "Status",
+      "storageName": "Storage Name",
+      "type": "Type",
+      "updateTime": "Modified Time",
+      "uploadTime": "Uploaded Time"
+    },
+    "modal": {
+      "audio": "Audio Player",
+      "detail": "File Details",
+      "preview": "File Preview",
+      "newFolder": "New Folder",
+      "recycleBin": "Recycle Bin",
+      "rename": "Rename",
+      "video": "Video Player"
+    },
+    "form": {
+      "nameRequired": "File name cannot be empty",
+      "newFileName": "Please enter the new file name",
+      "newFolderName": "Please enter the folder name"
+    },
+    "statistic": {
+      "count": "Count",
+      "storage": "Storage",
+      "total": "Total: {value}"
+    },
+    "message": {
+      "batchDeleteConfirm": "Are you sure you want to delete the {count} selected files?",
+      "calculateFailed": "Calculation failed, please retry",
+      "cleanConfirm": "Are you sure you want to empty the recycle bin?",
+      "cleanSuccess": "Emptied successfully",
+      "deleteCanceled": "Deletion canceled",
+      "deleteFileConfirm": "Are you sure you want to delete the file \"{name}\"?",
+      "deleteFolderConfirm": "Are you sure you want to delete the folder \"{name}\"?",
+      "downloadFailed": "Download failed",
+      "downloadSuccess": "Downloaded successfully",
+      "dragHint": "Drag files here to upload (for folders use the \"Select Folder\" button)",
+      "dragRootHint": "Tip: files dragged here will be uploaded to the root directory",
+      "loadFailed": "Failed to load file",
+      "md5Calculating": "Calculating MD5...",
+      "renameSuccess": "Renamed successfully",
+      "restoreFileConfirm": "Are you sure you want to restore the file \"{name}\"?",
+      "restoreFolderConfirm": "Are you sure you want to restore the folder \"{name}\"?",
+      "restoreSuccess": "Restored successfully",
+      "uploadFailed": "Upload failed",
+      "uploadSuccess": "Uploaded successfully"
+    },
+    "uploadStatus": {
+      "canceled": "Cancelled",
+      "completed": "Completed",
+      "paused": "Paused",
+      "uploading": "Uploading",
+      "waiting": "Waiting"
+    },
+    "tooltip": {
+      "pause": "Pause",
+      "resume": "Resume",
+      "start": "Start"
+    },
+    "button": {
+      "selectFile": "Select File",
+      "selectFolder": "Select Folder",
+      "startUpload": "Start Upload"
+    }
+  },
   "code": {
     "author": "author",
     "businessName": "business name",

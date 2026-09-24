@@ -31,25 +31,25 @@ function useGridFieldColumns(): VxeTableGridOptions['columns'] {
   return [
     { type: 'seq', width: 50, fixed: 'left' },
     {
-      title: '名称',
+      title: $t('system.file.column.name'),
       field: 'originalName',
       minWidth: 100,
       slots: { default: 'originalName' },
       showOverflow: true,
     },
     {
-      title: '类型',
+      title: $t('system.file.column.type'),
       field: 'type',
       slots: { default: 'type' },
       width: 100,
     },
     {
-      title: '大小',
+      title: $t('system.file.column.size'),
       field: 'size',
       slots: { default: 'size' },
     },
     {
-      title: '删除时间',
+      title: $t('system.file.column.deleteTime'),
       field: 'updateTime',
       width: 180,
     },
@@ -70,8 +70,9 @@ function useGridFieldColumns(): VxeTableGridOptions['columns'] {
 
 // 获取文件类型
 const getFileType = (type: number) => {
-  if (type === 0) return '文件夹';
-  return FileTypeList.find((item) => item.value === type)?.name;
+  if (type === 0) return $t('system.file.type.folder');
+  const matched = FileTypeList.find((item) => item.value === type);
+  return matched ? $t(matched.nameKey) : '';
 };
 
 // 计算文件夹大小
@@ -81,32 +82,39 @@ const calculateDirSize = async (record: FileItem) => {
     const data = await calcDirSize(record.id);
     record.size = data.size;
   } catch {
-    ElMessage.error('计算失败，请重试');
+    ElMessage.error($t('system.file.message.calculateFailed'));
   }
 };
 
 // 还原
 const onRestore = (record: FileItem) => {
   ElMessageBox.confirm(
-    `是否确定还原${record.type === 0 ? '文件夹' : '文件'}「${record.originalName}」？`,
-    '提示',
+    $t(
+      record.type === 0
+        ? 'system.file.message.restoreFolderConfirm'
+        : 'system.file.message.restoreFileConfirm',
+      {
+        name: record.originalName,
+      },
+    ),
+    $t('pages.common.tip'),
     {
       confirmButtonClass: 'el-button--danger',
-      confirmButtonText: 'OK',
-      cancelButtonText: 'Cancel',
+      confirmButtonText: $t('common.confirm'),
+      cancelButtonText: $t('common.cancel'),
       type: 'warning',
     },
   )
     .then(async () => {
       await restoreRecycleFile(record.id);
-      ElMessage.success('还原成功');
+      ElMessage.success($t('system.file.message.restoreSuccess'));
       await tableGridApi.query();
       return true;
     })
     .catch(() => {
       ElMessage({
         type: 'info',
-        message: 'Delete canceled',
+        message: $t('system.file.message.deleteCanceled'),
       });
     });
 };
@@ -114,18 +122,25 @@ const onRestore = (record: FileItem) => {
 // 删除
 const onDelete = (record: FileItem) => {
   ElMessageBox.confirm(
-    `是否确定删除${record.type === 0 ? '文件夹' : '文件'}「${record.originalName}」？`,
-    '提示',
+    $t(
+      record.type === 0
+        ? 'system.file.message.deleteFolderConfirm'
+        : 'system.file.message.deleteFileConfirm',
+      {
+        name: record.originalName,
+      },
+    ),
+    $t('pages.common.tip'),
     {
       confirmButtonClass: 'el-button--danger',
-      confirmButtonText: 'OK',
-      cancelButtonText: 'Cancel',
+      confirmButtonText: $t('common.confirm'),
+      cancelButtonText: $t('common.cancel'),
       type: 'warning',
     },
   )
     .then(async () => {
       await deleteRecycleFile(record.id);
-      ElMessage.success('删除成功');
+      ElMessage.success($t('pages.common.deleteSuccess'));
       await tableGridApi.query();
       return true;
     })
@@ -134,15 +149,19 @@ const onDelete = (record: FileItem) => {
 
 // 清空回收站
 const onClean = () => {
-  ElMessageBox.confirm('是否确定清空回收站？', '提示', {
-    confirmButtonClass: 'el-button--danger',
-    confirmButtonText: 'OK',
-    cancelButtonText: 'Cancel',
-    type: 'warning',
-  })
+  ElMessageBox.confirm(
+    $t('system.file.message.cleanConfirm'),
+    $t('pages.common.tip'),
+    {
+      confirmButtonClass: 'el-button--danger',
+      confirmButtonText: $t('common.confirm'),
+      cancelButtonText: $t('common.cancel'),
+      type: 'warning',
+    },
+  )
     .then(async () => {
       await cleanRecycleBin();
-      ElMessage.success('清空成功');
+      ElMessage.success($t('system.file.message.cleanSuccess'));
       await tableGridApi.query();
       return true;
     })
@@ -163,7 +182,7 @@ function useGridSearchFormSchema(): VbenFormSchema[] {
   return [
     {
       fieldName: 'originalName',
-      label: '搜索名称',
+      label: $t('system.file.search.recycle'),
       component: 'Input',
     },
   ];
@@ -231,7 +250,7 @@ const [TableGrid, tableGridApi] = useVbenVxeGrid({
 </script>
 
 <template>
-  <Modal class="h-[90%] w-[90%]" title="文件回收站">
+  <Modal class="h-[90%] w-[90%]" :title="$t('system.file.modal.recycleBin')">
     <TableGrid>
       <template #toolbar-tools>
         <el-button
@@ -240,7 +259,7 @@ const [TableGrid, tableGridApi] = useVbenVxeGrid({
           @click="onClean"
         >
           <SvgDelete />
-          清空回收站
+          {{ $t('system.file.action.clean') }}
         </el-button>
       </template>
       <template #originalName="{ row }">
@@ -259,7 +278,7 @@ const [TableGrid, tableGridApi] = useVbenVxeGrid({
       <template #size="{ row }">
         <span v-if="row.type === 0" v-access:code="['system:file:calcDirSize']">
           <el-link v-if="row.size === null" @click="calculateDirSize(row)">
-            计算
+            {{ $t('system.file.action.calculate') }}
           </el-link>
           <span v-else>
             {{ formatFileSize(row.size) }}
@@ -271,7 +290,7 @@ const [TableGrid, tableGridApi] = useVbenVxeGrid({
         <el-space>
           <span v-access:code="['system:fileRecycle:restore']">
             <ElButton type="warning" text link @click="onRestore(row)">
-              还原
+              {{ $t('system.file.action.restore') }}
             </ElButton>
           </span>
           <span v-access:code="['system:fileRecycle:delete']">

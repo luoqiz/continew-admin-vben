@@ -4,6 +4,8 @@ import type { FileStatisticsResp } from '#/api/system';
 import { onMounted, ref } from 'vue';
 import VCharts from 'vue-echarts';
 
+import { $t } from '@vben/locales';
+
 import { PieChart } from 'echarts/charts';
 import {
   GridComponent,
@@ -38,7 +40,8 @@ const totalData = ref<FileStatisticsResp>({
 });
 const chartData = ref<Array<{ name: string; size: string; value: number }>>([]);
 const statisticValueStyle = { color: '#5856D6', 'font-size': '18px' };
-const { chartOption } = useChart(() => {
+// useChart 的回调自带 isDark 参数（computed 驱动，切主题自动重渲染）
+const { chartOption } = useChart((isDark) => {
   return {
     grid: {
       left: 0,
@@ -53,13 +56,13 @@ const { chartOption } = useChart(() => {
       itemWidth: 6,
       itemHeight: 6,
       textStyle: {
-        color: '#4E5969',
+        color: isDark ? 'rgba(255, 255, 255, 0.65)' : '#4E5969',
       },
     },
     tooltip: {
       show: true,
       formatter(params: any) {
-        return `总计：${params.value}<br>${params.data.size}`;
+        return `${$t('system.file.statistic.total', { value: params.value })}<br>${params.data.size}`;
       },
     },
     series: [
@@ -94,7 +97,7 @@ const getStatisticsData = async () => {
     resData?.data.forEach((fs: FileStatisticsResp) => {
       const matchedItem = FileTypeList.find((item) => item.value === fs.type);
       chartData.value.unshift({
-        name: matchedItem ? matchedItem.name : '',
+        name: matchedItem ? $t(matchedItem.nameKey) : '',
         value: fs.number,
         size: formatFileSize(fs.size),
       });
@@ -117,7 +120,7 @@ onMounted(() => {
     <div class="statistic-space">
       <el-statistic
         class="statistic-item"
-        title="存储量"
+        :title="$t('system.file.statistic.storage')"
         :value="totalData.size"
         :value-style="statisticValueStyle"
       >
@@ -126,14 +129,14 @@ onMounted(() => {
       <el-divider direction="vertical" border-style="solid" />
       <el-statistic
         class="statistic-item"
-        title="数量"
+        :title="$t('system.file.statistic.count')"
         :value="totalData.number"
         :value-style="statisticValueStyle"
       />
     </div>
     <div v-if="chartData.length > 0" class="w-full justify-center align-middle">
       <el-divider />
-      <div class="border border-red-950">
+      <div class="border rounded-md">
         <VCharts
           :option="chartOption"
           autoresize
@@ -160,6 +163,6 @@ onMounted(() => {
   box-sizing: border-box;
   padding: 20px;
   margin-top: 10px;
-  background-color: var(--color-bg-1);
+  background-color: hsl(var(--card));
 }
 </style>

@@ -5,6 +5,7 @@ import type { FileItem } from '#/api/system';
 import { watch } from 'vue';
 
 import { SvgCopyIcon } from '@vben/icons';
+import { $t } from '@vben/locales';
 
 import { useClipboard } from '@vueuse/core';
 import { ElMessage } from 'element-plus';
@@ -14,7 +15,6 @@ import { calcDirSize } from '#/api/system';
 import { formatFileSize } from '#/utils/file';
 
 import FileImage from '../../components/FileImage.vue';
-// import { $t } from '#/locales';
 import FileRightMenu from './FileRightMenu.vue';
 
 const props = withDefaults(defineProps<Props>(), {
@@ -41,7 +41,7 @@ const calculateDirSize = async (record: FileItem) => {
     const data = await calcDirSize(record.id);
     record.size = data.size;
   } catch {
-    ElMessage.error('计算失败，请重试');
+    ElMessage.error($t('system.file.message.calculateFailed'));
   }
 };
 
@@ -71,25 +71,25 @@ const useFileColumns = () => {
     { type: 'seq', width: 50, fixed: 'left' },
     {
       field: 'originalName',
-      title: '名称',
+      title: $t('system.file.column.name'),
       minWidth: 280,
       slots: { default: 'originalName' },
       fixed: 'left',
     },
     {
       field: 'size',
-      title: '大小',
+      title: $t('system.file.column.size'),
       width: 160,
       slots: { default: 'size' },
     },
     {
       field: 'storageName',
-      title: '存储名称',
+      title: $t('system.file.column.storageName'),
       width: 200,
     },
     {
       field: 'updateTime',
-      title: '修改时间',
+      title: $t('system.file.column.updateTime'),
       width: 200,
     },
   ];
@@ -163,7 +163,7 @@ const onCopy = (data: string) => {
             {{ row.originalName }}
             <ElLink
               v-if="row.type !== 0"
-              title="复制链接"
+              :title="$t('system.file.action.copyLink')"
               @click="onCopy(row.url)"
             >
               <SvgCopyIcon class="ml-2" />
@@ -174,7 +174,7 @@ const onCopy = (data: string) => {
       <template #size="{ row }">
         <span v-if="row.type === 0" v-access:code="['system:file:calcDirSize']">
           <el-link v-if="row.size === null" @click="calculateDirSize(row)">
-            计算
+            {{ $t('system.file.action.calculate') }}
           </el-link>
           <span v-else>
             {{ formatFileSize(row.size) }}
