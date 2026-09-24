@@ -11,12 +11,8 @@ import { useRoute, useRouter } from 'vue-router';
 
 import { Card, ColPage, RowPage } from '@vben/common-ui';
 
-import {
-  getUnreadMessageCount,
-  getUnreadNoticeCount,
-} from '#/api/system/user-message';
 import { useDevice } from '#/hooks';
-import mittBus from '#/utils/mitt';
+import { useMessageStore } from '#/store';
 
 import MyMessage from './components/MyMessage.vue';
 import MyNotice from './components/MyNotice.vue';
@@ -29,8 +25,7 @@ const colPageRef = ref<InstanceType<typeof ColPage>>();
 
 const rowPageRef = ref<InstanceType<typeof RowPage>>();
 
-const unreadMessageCount = ref(0);
-const unreadNoticeCount = ref(0);
+const messageStore = useMessageStore();
 
 const rowProps = ref({
   topCollapsedWidth: 2,
@@ -74,27 +69,12 @@ const TabPaneTitle = defineComponent({
 });
 
 const tabItems = computed(() => [
-  { key: 'msg', title: '我的消息', count: unreadMessageCount.value },
-  { key: 'notice', title: '我的公告', count: unreadNoticeCount.value },
+  { key: 'msg', title: '我的消息', count: messageStore.unreadMessageCount },
+  { key: 'notice', title: '我的公告', count: messageStore.unreadNoticeCount },
 ]);
 
-const getMessageData = async () => {
-  const data = await getUnreadMessageCount();
-  unreadMessageCount.value = data.total;
-};
-
-const getNoticeData = async () => {
-  const data = await getUnreadNoticeCount();
-  unreadNoticeCount.value = data.total;
-};
-
 onMounted(() => {
-  getMessageData();
-  getNoticeData();
-  mittBus.on('count-refresh', () => {
-    getMessageData();
-    getNoticeData();
-  });
+  messageStore.refreshUnreadCounts();
 });
 
 const menuList = [

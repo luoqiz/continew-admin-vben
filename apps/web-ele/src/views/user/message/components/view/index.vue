@@ -7,6 +7,7 @@ import { useTabs } from '@vben/hooks';
 
 import { getUserNotice } from '#/api/system/user-message';
 import { useResetReactive } from '#/hooks';
+import { useMessageStore } from '#/store';
 
 import AiEditor from './components/index.vue';
 
@@ -15,6 +16,7 @@ defineOptions({ name: 'UserNotice' });
 const route = useRoute();
 const router = useRouter();
 const { closeCurrentTab } = useTabs();
+const messageStore = useMessageStore();
 
 const { id } = route.query;
 const containerRef = ref<HTMLElement | null>();
@@ -36,6 +38,8 @@ const onOpen = async (id: string) => {
   resetForm();
   const data = await getUserNotice(id);
   Object.assign(form, data);
+  // 查看即已读：刷新共享未读计数，铃铛与消息中心徽标保持一致
+  messageStore.refreshUnreadCounts();
 };
 
 onMounted(() => {

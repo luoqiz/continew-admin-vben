@@ -32,7 +32,8 @@ export function deleteMessage(ids: Array<string>) {
 
 /** @desc 标记已读 */
 export function readMessage(ids: Array<string>) {
-  return http.patch(`${BASE_URL}/read`, { data: { ids } });
+  // http.patch 的第二个参数就是请求体，不要再包一层 data
+  return http.patch(`${BASE_URL}/read`, { ids });
 }
 
 /** @desc 全部已读 */

@@ -27,15 +27,16 @@ import {
   readMessage,
 } from '#/api/system/user-message';
 import { authExpiredReason } from '#/features/auth-session/expired-reason';
-import { useMessageWebSocket } from '#/hooks/app/useMessageWebSocket';
+import { subscribeWebSocketMessage } from '#/features/websocket/websocket-service';
 import { $t } from '#/locales';
-import { useAuthStore } from '#/store';
+import { useAuthStore, useMessageStore } from '#/store';
 import LoginForm from '#/views/_core/authentication/login.vue';
 
 const router = useRouter();
 const userStore = useUserStore();
 const authStore = useAuthStore();
 const accessStore = useAccessStore();
+const messageStore = useMessageStore();
 const { destroyWatermark, updateWatermark } = useWatermark();
 const { isDark } = usePreferences();
 
@@ -44,14 +45,7 @@ const NOTIFICATION_PAGE_SIZE = 8;
 
 const notifications = ref<NotificationItem[]>([]);
 
-/** 未读数量由消息 WS 推送维护；未登录时连接自动断开。 */
-const { refreshUnreadCount, unreadCount } = useMessageWebSocket({
-  onMessage: () => {
-    loadNotifications();
-  },
-});
-
-const showDot = computed(() => unreadCount.value > 0);
+const showDot = computed(() => messageStore.unreadMessageCount > 0);
 
 function toNotification(message: MessageResp): NotificationItem {
   return {
@@ -82,11 +76,12 @@ async function loadNotifications() {
 }
 
 // 登录态变化时同步刷新通知数据：登录/刷新后重新拉取，登出后清空。
+// WS 连接的生命周期由 websocket-service 依据 accessToken 自行管理。
 watch(
   () => accessStore.accessToken,
   (token) => {
     if (token) {
-      refreshUnreadCount();
+      messageStore.refreshUnreadCounts();
       loadNotifications();
     } else {
       notifications.value = [];
@@ -94,6 +89,11 @@ watch(
   },
   { immediate: true },
 );
+
+// WS 推送到达 → 同步弹层列表；未读计数由 message store 自己的订阅统一回查
+subscribeWebSocketMessage(() => {
+  loadNotifications();
+});
 
 const menus = computed(() => [
   {
@@ -153,7 +153,7 @@ function handleNoticeClear() {
   deleteMessage(ids)
     .then(() => {
       notifications.value = [];
-      refreshUnreadCount();
+      messageStore.refreshUnreadCounts();
     })
     .catch(() => {});
 }
@@ -165,7 +165,7 @@ async function markRead(item: NotificationItem) {
     notifications.value = notifications.value.filter(
       (notice) => notice.id !== item.id,
     );
-    refreshUnreadCount();
+    messageStore.refreshUnreadCounts();
   } catch {
     // 标记失败保持原状，等待下次刷新
   }
@@ -177,7 +177,7 @@ function remove(item: NotificationItem) {
       notifications.value = notifications.value.filter(
         (notice) => notice.id !== item.id,
       );
-      refreshUnreadCount();
+      messageStore.refreshUnreadCounts();
     })
     .catch(() => {});
 }
@@ -186,7 +186,7 @@ async function handleMakeAll() {
   try {
     await readAllMessage();
     notifications.value = [];
-    refreshUnreadCount();
+    messageStore.refreshUnreadCounts();
   } catch {
     // 全部已读失败保持原状
   }
@@ -197,7 +197,8 @@ const viewAll = () => {
 };
 
 const handleClick = (item: NotificationItem) => {
-  // 如果通知项有链接，点击时跳转
+  // 点击通知即视为已读：标记消息并刷新铃铛/徽标计数，再跳转目标页面
+  markRead(item);
   if (item.link) {
     navigateTo(item.link);
     return;

@@ -20,11 +20,13 @@ import {
 } from '#/api/system/user-message';
 import { DictTag } from '#/components/dict';
 import { useDict } from '#/hooks';
-import mittBus from '#/utils/mitt';
+import { useMessageStore } from '#/store';
 
 import MyMessageDetailModal from './MyMessageDetailModal.vue';
 
 defineOptions({ name: 'UserMyMessage' });
+
+const messageStore = useMessageStore();
 
 const { message_type_enum } = useDict('message_type_enum');
 
@@ -163,6 +165,7 @@ const onDelete = () => {
     return ElMessage.warning('请选择数据');
   }
   deleteMessage(selectedKeys);
+  messageStore.refreshUnreadCounts();
   tableGridApi.reload();
 };
 
@@ -174,6 +177,7 @@ const onRead = async () => {
   }
   await readMessage(selectedKeys);
   ElMessage.success('操作成功');
+  messageStore.refreshUnreadCounts();
   tableGridApi.reload();
 };
 
@@ -187,6 +191,7 @@ const readAll = async () => {
   await readAllMessage();
   dialogVisible.value = false;
   ElMessage.success('操作成功');
+  messageStore.refreshUnreadCounts();
   tableGridApi.reload();
 };
 
@@ -205,7 +210,7 @@ const [DetailModal, formModalApi] = useVbenModal({
 
 // 表格更新回调
 const onDetailModalClose = () => {
-  mittBus.emit('count-refresh');
+  messageStore.refreshUnreadCounts();
   tableGridApi.reload();
 };
 </script>
