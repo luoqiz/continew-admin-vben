@@ -113,7 +113,7 @@ const commit = async (status: number) => {
 onMounted(async () => {
   try {
     dataId.value = route.query?.id;
-    if (dataId.value && dataId.value) {
+    if (dataId.value) {
       const res = await getNotice(dataId.value);
       editorFormApi.form.setValues(res);
       if (res.status === 3) {
@@ -130,30 +130,33 @@ onMounted(async () => {
 </script>
 <template>
   <Page auto-content-height>
-    <Card class="flex h-full flex-col">
-      <CardHeader>
+    <Card class="flex h-full flex-col overflow-hidden">
+      <CardHeader class="shrink-0 border-b">
         <CardTitle class="flex flex-row items-center justify-between">
           <div class="flex flex-row items-center">
-            <span @click="onBack" style="cursor: pointer">
+            <span
+              class="flex cursor-pointer items-center rounded p-1 transition-colors hover:bg-accent"
+              @click="onBack"
+            >
               <MsArrowBackIos class="size-6" />
             </span>
-            <span>
+            <span class="ml-1 text-base font-medium">
               {{ $t('system.notice.listTitle') }} |
               {{ isUpdate ? $t('common.edit') : $t('common.create') }}
             </span>
           </div>
-          <div v-if="!disabledEdit">
+          <div v-if="!disabledEdit" class="flex flex-wrap gap-2">
             <ElButton @click="commit(1)" type="primary"> 保存为草稿 </ElButton>
             <ElButton @click="commit(3)" type="primary"> 发布 </ElButton>
             <ElButton @click="reset" type="warning"> 重置 </ElButton>
             <ElButton @click="onBack" type="danger"> 取消 </ElButton>
           </div>
           <div v-else>
-            <ElButton disabled type="warnning"> 已发布不可编辑 </ElButton>
+            <ElButton disabled type="warning"> 已发布不可编辑 </ElButton>
           </div>
         </CardTitle>
       </CardHeader>
-      <CardContent class="h-full flex-1">
+      <CardContent class="h-full min-h-0 flex-1 overflow-y-auto">
         <EditorForm>
           <!-- <template #content>
             <div style="height: 500px">

@@ -1,9 +1,16 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
-import { Card, CardHeader, CardTitle, Page } from '@vben/common-ui';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  Page,
+} from '@vben/common-ui';
 import { useTabs } from '@vben/hooks';
+import { MsArrowBackIos } from '@vben/icons';
 
 import { getUserNotice } from '#/api/system/user-message';
 import { useResetReactive } from '#/hooks';
@@ -19,7 +26,6 @@ const { closeCurrentTab } = useTabs();
 const messageStore = useMessageStore();
 
 const { id } = route.query;
-const containerRef = ref<HTMLElement | null>();
 const [form, resetForm] = useResetReactive({
   title: '',
   createUserString: '',
@@ -49,18 +55,24 @@ onMounted(() => {
 
 <template>
   <Page auto-content-height>
-    <Card ref="containerRef" class="detail" style="height: 100%">
-      <CardHeader>
-        <CardTitle>
-          <el-affix :target="containerRef as HTMLElement">
-            <el-page-header title="通知公告" content="查看" @back="onBack" />
-          </el-affix>
+    <Card class="flex h-full flex-col overflow-hidden">
+      <!-- 头部与公告新增/编辑页保持同一模式：返回图标 + 标题 -->
+      <CardHeader class="shrink-0 border-b">
+        <CardTitle class="flex flex-row items-center justify-between">
+          <div class="flex flex-row items-center">
+            <span
+              class="flex cursor-pointer items-center rounded p-1 transition-colors hover:bg-accent"
+              @click="onBack"
+            >
+              <MsArrowBackIos class="size-6" />
+            </span>
+            <span class="ml-1 text-base font-medium">通知公告 | 查看</span>
+          </div>
         </CardTitle>
       </CardHeader>
-
-      <div class="detail-content">
-        <h1 class="title bottom-4">{{ form?.title }}</h1>
-        <div class="info text-gray-500">
+      <CardContent class="detail-content min-h-0 flex-1 overflow-y-auto">
+        <h1 class="title mb-4">{{ form?.title }}</h1>
+        <div class="info mb-6">
           <el-space>
             <span>
               <el-icon><user-icon /></el-icon>
@@ -81,10 +93,8 @@ onMounted(() => {
             </span>
           </el-space>
         </div>
-        <div style="flex: 1">
-          <AiEditor v-model="form.content" />
-        </div>
-      </div>
+        <AiEditor v-model="form.content" />
+      </CardContent>
     </Card>
   </Page>
 </template>
@@ -97,12 +107,8 @@ onMounted(() => {
   }
 
   .info {
-    margin-top: 16px;
-    text-align: center;
-  }
-
-  .icon {
-    margin-right: 3px;
+    display: flex;
+    justify-content: center;
   }
 }
 </style>
