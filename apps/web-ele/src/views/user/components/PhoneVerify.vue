@@ -121,10 +121,12 @@ const submitForm = async () => {
     await updateUserPhone({
       phone: editFormApi.form.values.phone,
       captcha: editFormApi.form.values.captcha,
-      oldPassword: encryptByRsa(editFormApi.form.values.oldPassword) as string,
+      oldPassword: encryptByRsa(editFormApi.form.values.password) as string,
     });
     ElMessage.success('修改成功');
+    return true;
   }
+  return false;
 };
 defineExpose({
   onCaptchaSuccess,

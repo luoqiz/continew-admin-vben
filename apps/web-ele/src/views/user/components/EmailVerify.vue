@@ -111,12 +111,14 @@ const submitForm = async () => {
   const validate = await editFormApi.form.validate();
   if (validate) {
     await updateUserEmail({
-      email: editFormApi.form.values.phone,
+      email: editFormApi.form.values.email,
       captcha: editFormApi.form.values.captcha,
-      oldPassword: encryptByRsa(editFormApi.form.values.oldPassword) as string,
+      oldPassword: encryptByRsa(editFormApi.form.values.password) as string,
     });
     ElMessage.success('修改成功');
+    return true;
   }
+  return false;
 };
 defineExpose({
   onCaptchaSuccess,

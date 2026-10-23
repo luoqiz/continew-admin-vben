@@ -4,9 +4,14 @@ import type { ModeItem } from '../profile/type';
 import type { BehaviorCaptchaReq } from '#/api';
 
 import { computed, ref } from 'vue';
+import { useRouter } from 'vue-router';
 
 import { useVbenModal } from '@vben/common-ui';
-import { $t } from '@vben/locales';
+import { LOGIN_PATH } from '@vben/constants';
+import { resetAllStores, useAccessStore } from '@vben/stores';
+
+import { clearAuthExpiredReason } from '#/features/auth-session/expired-reason';
+import { useAuthStore } from '#/store';
 
 import EmailVerify from './EmailVerify.vue';
 import PhoneVerify from './PhoneVerify.vue';
@@ -15,11 +20,43 @@ import PwdModify from './PwdModify.vue';
 const captchaType = ref('blockPuzzle');
 const captchaMode = ref('pop');
 const modalInfo = ref<ModeItem>();
+const VerifyRef = ref<InstanceType<any>>();
+const formRef = ref<InstanceType<any>>();
+const accessStore = useAccessStore();
+const authStore = useAuthStore();
+const router = useRouter();
 const [VerifyModel, modalApi] = useVbenModal({
   centered: true,
   showCancelButton: true,
   showConfirmButton: true,
   bordered: true,
+  async onConfirm() {
+    modalApi.setState({ confirmLoading: true });
+    try {
+      const success = await formRef.value?.submitForm();
+      // 只有显式返回 true 才算成功：子组件校验不通过、ref 尚未就绪都不应关闭弹窗
+      if (success !== true) {
+        return;
+      }
+      modalApi.close();
+      if (modalInfo.value?.type === 'password') {
+        // 后端改密后会踢出全部会话，这里只做本地清理并回登录页：
+        // 再调 /auth/logout 会带着已失效的令牌拿到 401，多触发一次重新认证
+        accessStore.setAccessToken(null);
+        clearAuthExpiredReason();
+        resetAllStores();
+        accessStore.setLoginExpired(false);
+        await router.replace(LOGIN_PATH);
+      } else {
+        // 绑定/更换手机号、邮箱后必须刷新用户信息，否则个人中心仍显示旧值
+        await authStore.fetchUserInfo();
+      }
+    } catch {
+      // 子组件内部已提示具体错误，保持弹窗打开
+    } finally {
+      modalApi.setState({ confirmLoading: false });
+    }
+  },
   onOpenChange(isOpen) {
     if (isOpen) {
       const data = modalApi.getData() as ModeItem | undefined;
@@ -30,13 +67,8 @@ const [VerifyModel, modalApi] = useVbenModal({
   },
 });
 
-// 弹窗标题
-const getWindowTitle = computed(() => {
-  return `${$t('pages.common.reset')} ${modalInfo.value?.title} ${$t('tenant.management.adminPassword')}`;
-});
-
-const VerifyRef = ref<InstanceType<any>>();
-const formRef = ref<InstanceType<any>>();
+// 弹窗标题（原实现拼接了租户管理员的文案，在个人中心显示为「重置 安全手机 管理员用户密码」）
+const getWindowTitle = computed(() => `修改${modalInfo.value?.title ?? ''}`);
 
 // 行为验证码弹窗
 const onCaptcha = async () => {

@@ -64,7 +64,9 @@ const submitForm = async () => {
       newPassword: encryptByRsa(form.newPassword) || '',
     });
     ElMessage.success('修改成功');
+    return true;
   }
+  return false;
 };
 defineExpose({
   submitForm,
