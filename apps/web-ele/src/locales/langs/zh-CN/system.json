@@ -357,6 +357,8 @@
     "activeTimeout": "Token最低活跃频率",
     "timeout": "Token有效期",
     "refreshTokenTimeout": "刷新Token超时时间",
+    "refreshTokenIdleTimeout": "刷新Token闲置失效（秒，0 表示不限制）",
+    "refreshTokenIdleTimeoutHelp": "只统计业务请求，页面挂机不算活跃；填 0 表示不限制",
     "refreshTokenMode": "刷新Token传输模式",
     "refreshTokenModeCookie": "Cookie（Web）",
     "refreshTokenModeBody": "响应体（App / 小程序）",

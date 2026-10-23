@@ -50,6 +50,14 @@ export function useClientEditFormSchema(): VbenFormSchema[] {
       rules: 'required',
     },
     {
+      label: $t('system.client.refreshTokenIdleTimeout') || '刷新Token闲置失效',
+      fieldName: 'refreshTokenIdleTimeout',
+      component: 'InputNumber',
+      componentProps: { min: 0 },
+      defaultValue: 0,
+      help: $t('system.client.refreshTokenIdleTimeoutHelp'),
+    },
+    {
       label: $t('system.client.refreshTokenMode') || '刷新Token传输模式',
       fieldName: 'refreshTokenMode',
       component: 'Select',
@@ -141,6 +149,11 @@ export function useClientGridFieldColumns(): VxeTableGridOptions['columns'] {
     {
       field: 'refreshTokenTimeout',
       title: $t('system.client.refreshTokenTimeout'),
+      align: 'center',
+    },
+    {
+      field: 'refreshTokenIdleTimeout',
+      title: $t('system.client.refreshTokenIdleTimeout'),
       align: 'center',
     },
     {

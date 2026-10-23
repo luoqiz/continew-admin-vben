@@ -260,6 +260,8 @@ export interface ClientResp {
   status: string;
   isConcurrent: boolean;
   refreshTokenTimeout: number;
+  /** Refresh Token 闲置失效（单位：秒，0 表示不限制） */
+  refreshTokenIdleTimeout: number;
   refreshTokenMode: 'BODY' | 'COOKIE';
   createUser: string;
   createTime: string;
@@ -278,6 +280,8 @@ export interface ClientDetailResp {
   status: string;
   isConcurrent: boolean;
   refreshTokenTimeout: number;
+  /** Refresh Token 闲置失效（单位：秒，0 表示不限制） */
+  refreshTokenIdleTimeout: number;
   refreshTokenMode: 'BODY' | 'COOKIE';
   createUser: string;
   createTime: string;

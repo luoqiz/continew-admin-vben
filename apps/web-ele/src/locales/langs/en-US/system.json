@@ -332,6 +332,8 @@
     "activeTimeout": "Active Timeout",
     "timeout": "Timeout",
     "refreshTokenTimeout": "Refresh Token Timeout",
+    "refreshTokenIdleTimeout": "Refresh Token Idle Timeout (seconds, 0 = unlimited)",
+    "refreshTokenIdleTimeoutHelp": "Only business requests count as activity; an open page does not. 0 = unlimited",
     "refreshTokenMode": "Refresh Token Transport",
     "refreshTokenModeCookie": "Cookie (Web)",
     "refreshTokenModeBody": "Response Body (App / Mini Program)",
