@@ -7,7 +7,13 @@ import { Page } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 import { useAccessStore } from '@vben/stores';
 
-import { ElButton, ElMessage, ElPopconfirm, ElSpace } from 'element-plus';
+import {
+  ElButton,
+  ElMessage,
+  ElPopconfirm,
+  ElSpace,
+  ElTag,
+} from 'element-plus';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { kickout, listOnlineUser } from '#/api/monitor/online';
@@ -30,6 +36,18 @@ function usePackageGridSearchFormSchema(): VbenFormSchema[] {
         format: 'YYYY-MM-DD HH:mm:ss',
         valueFormat: 'YYYY-MM-DD HH:mm:ss',
         shortcuts: dateRangeShortcuts,
+      },
+    },
+    {
+      fieldName: 'online',
+      label: $t('monitor.onlineUser.searchOnline'),
+      component: 'Select',
+      componentProps: {
+        allowClear: true,
+        options: [
+          { label: $t('monitor.onlineUser.online'), value: true },
+          { label: $t('monitor.onlineUser.idle'), value: false },
+        ],
       },
     },
   ];
@@ -76,9 +94,30 @@ function usePackageGridFieldColumns(): VxeTableGridOptions['columns'] {
       align: 'center',
     },
     {
+      field: 'lastActiveTime',
+      title: $t('monitor.onlineUser.lastActiveTime'),
+      align: 'center',
+      // 没有活跃记录时后端会用最近刷新时间推算，展示上标为估算值
+      formatter: ({ cellValue, row }) =>
+        row.activeTimeExact ? cellValue : `≈ ${cellValue}`,
+    },
+    {
+      field: 'idleExpireTime',
+      title: $t('monitor.onlineUser.expireTime'),
+      align: 'center',
+      // 未配置闲置失效时回落到会话绝对到期时间
+      formatter: ({ row }) => row.idleExpireTime || row.sessionExpireTime,
+    },
+    {
       field: 'lastRefreshTime',
       title: $t('monitor.onlineUser.lastRefreshTime'),
       align: 'center',
+    },
+    {
+      field: 'online',
+      title: $t('monitor.onlineUser.status'),
+      align: 'center',
+      slots: { default: 'status' },
     },
     {
       align: 'center',
@@ -159,6 +198,17 @@ const handleKickout = (sessionId: string) => {
 <template>
   <Page auto-content-height>
     <TableGrid>
+      <template #status="{ row }">
+        <ElTag v-if="row.idleExpired" size="small" type="danger">
+          {{ $t('monitor.onlineUser.idleExpired') }}
+        </ElTag>
+        <ElTag v-else-if="row.online" size="small" type="success">
+          {{ $t('monitor.onlineUser.online') }}
+        </ElTag>
+        <ElTag v-else size="small" type="warning">
+          {{ $t('monitor.onlineUser.idle') }}
+        </ElTag>
+      </template>
       <template #action="{ row }">
         <ElSpace v-access:code="['monitor:online:kickout']">
           <ElPopconfirm

@@ -7,8 +7,15 @@
     "os": "Terminal System",
     "nickname": "User Nickname",
     "loginTime": "Login Time",
-    "lastRefreshTime": "Last Refresh Time",
-    "kickout": "Kick Out {0}"
+    "lastActiveTime": "Last Active",
+    "lastRefreshTime": "Last Token Refresh",
+    "kickout": "Kick Out {0}",
+    "expireTime": "Expected Expiry",
+    "status": "Status",
+    "online": "Online",
+    "idle": "Idle",
+    "idleExpired": "Idle, Pending Logout",
+    "searchOnline": "Online Status"
   },
   "loginLog": {
     "title": "Login Log",

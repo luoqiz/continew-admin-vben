@@ -22,10 +22,17 @@
     "clientType": "终端类型",
     "ip": "登录 IP",
     "kickout": "强退{0}",
-    "lastRefreshTime": "最后刷新时间",
+    "lastActiveTime": "最后活跃",
+    "lastRefreshTime": "最近令牌刷新",
     "loginTime": "登录时间",
     "nickname": "用户昵称",
-    "os": "终端系统"
+    "os": "终端系统",
+    "expireTime": "预计失效",
+    "status": "状态",
+    "online": "在线",
+    "idle": "闲置",
+    "idleExpired": "闲置超时待失效",
+    "searchOnline": "是否在线"
   },
   "operationLog": {
     "account": "用户账号",
