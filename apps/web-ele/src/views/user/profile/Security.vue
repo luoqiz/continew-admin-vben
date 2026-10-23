@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { ModeItem } from './type';
 
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 
 import {
   Card,
@@ -26,8 +26,8 @@ import VerifyModel from '../components/VerifyModel.vue';
 
 const userStore = useUserStore();
 const userInfo = computed(() => userStore.userInfo);
-const modeList = ref<ModeItem[]>([]);
-modeList.value = [
+// 用 computed 而非初始化时赋值：绑定/更换手机号或邮箱后需要跟随 userInfo 刷新
+const modeList = computed<ModeItem[]>(() => [
   {
     title: '安全手机',
     icon: SvgPhoneColorIcon,
@@ -59,7 +59,7 @@ modeList.value = [
     status: !!userInfo.value?.pwdResetTime,
     statusString: userInfo.value?.pwdResetTime ? '已设置' : '未设置',
   },
-];
+]);
 
 const [VerifyModelCmpt, verifyModelApi] = useVbenModal({
   connectedComponent: VerifyModel,
