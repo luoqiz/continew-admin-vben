@@ -1,6 +1,8 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 
+import { z } from '@vben/common-ui';
+
 import { useDict } from '#/hooks';
 import { $t } from '#/locales';
 
@@ -53,9 +55,20 @@ export function useClientEditFormSchema(): VbenFormSchema[] {
       label: $t('system.client.refreshTokenIdleTimeout') || '刷新Token闲置失效',
       fieldName: 'refreshTokenIdleTimeout',
       component: 'InputNumber',
-      componentProps: { min: 0 },
+      componentProps: { min: 0, max: 315_360_000, precision: 0 },
       defaultValue: 0,
       help: $t('system.client.refreshTokenIdleTimeoutHelp'),
+      // 与后端 ClientServiceImpl 保持一致：1~59 秒会把客户端锁死，提交前就拦下来
+      rules: z.coerce
+        .number()
+        .nullish()
+        .refine(
+          (value) =>
+            value === null || value === undefined || value === 0 || value >= 60,
+          {
+            message: '需为 0（不限制）或不小于 60 秒',
+          },
+        ),
     },
     {
       label: $t('system.client.refreshTokenMode') || '刷新Token传输模式',
@@ -155,6 +168,7 @@ export function useClientGridFieldColumns(): VxeTableGridOptions['columns'] {
       field: 'refreshTokenIdleTimeout',
       title: $t('system.client.refreshTokenIdleTimeout'),
       align: 'center',
+      formatter: ({ cellValue }) => (cellValue ? `${cellValue} 秒` : '不限制'),
     },
     {
       field: 'refreshTokenMode',
