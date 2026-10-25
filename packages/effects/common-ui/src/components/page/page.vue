@@ -44,10 +44,7 @@ const contentStyle = computed<StyleValue>(() => {
       )
     "
   >
-    <div
-      v-if="$slots.header"
-      :class="cn('relative shrink-0', headerClass)"
-    >
+    <div v-if="$slots.header" :class="cn('relative shrink-0', headerClass)">
       <slot name="header"></slot>
     </div>
     <div

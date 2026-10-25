@@ -9,7 +9,7 @@
   },
   "dashboard": {
     "title": "概览",
-    "analytics": "分析页",
+    "analytics": "访问分析",
     "workspace": "工作台"
   }
 }

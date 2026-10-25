@@ -37,21 +37,21 @@
     "upload": "Click to upload"
   },
   "captcha": {
-    "title": "Please complete the security verification",
-    "sliderSuccessText": "Passed",
-    "sliderDefaultText": "Slider and drag",
-    "alt": "Supports img tag src attribute value",
-    "sliderRotateDefaultTip": "Click picture to refresh",
-    "sliderTranslateDefaultTip": "Click picture to refresh",
-    "sliderRotateFailTip": "Validation failed",
-    "sliderRotateSuccessTip": "Validation successful, time {0} seconds",
-    "sliderTranslateFailTip": "Validation failed",
-    "sliderTranslateSuccessTip": "Validation successful, time {0} seconds",
-    "refreshAriaLabel": "Refresh captcha",
+    "title": "Complete the security check",
+    "sliderSuccessText": "Verified",
+    "sliderDefaultText": "Drag the slider",
+    "alt": "Supports the src attribute of img",
+    "sliderRotateDefaultTip": "Click the image to refresh",
+    "sliderTranslateDefaultTip": "Click the image to refresh",
+    "sliderRotateFailTip": "Verification failed",
+    "sliderRotateSuccessTip": "Verified in {0}s",
+    "sliderTranslateFailTip": "Verification failed",
+    "sliderTranslateSuccessTip": "Verified in {0}s",
+    "refreshAriaLabel": "Refresh the code",
     "confirmAriaLabel": "Confirm selection",
     "confirm": "Confirm",
     "pointAriaLabel": "Click point",
-    "clickInOrder": "Please click in order"
+    "clickInOrder": "Click in order"
   },
   "iconPicker": {
     "placeholder": "Select an icon",
@@ -126,11 +126,11 @@
     "http": {
       "requestTimeout": "The request timed out. Please try again later.",
       "networkError": "A network error occurred. Please check your internet connection and try again.",
-      "badRequest": "Bad Request. Please check your input and try again.",
-      "unauthorized": "Unauthorized. Please log in to continue.",
-      "forbidden": "Forbidden. You do not have permission to access this resource.",
-      "notFound": "Not Found. The requested resource could not be found.",
-      "internalServerError": "Internal Server Error. Something went wrong on our end. Please try again later."
+      "badRequest": "Invalid request. Please check and try again.",
+      "unauthorized": "Session expired. Please sign in again.",
+      "forbidden": "You do not have permission to perform this action.",
+      "notFound": "Not found. The requested resource does not exist.",
+      "internalServerError": "The service is busy. Please try again later."
     }
   },
   "widgets": {
@@ -170,5 +170,25 @@
       "setTimezone": "Set Timezone",
       "setSuccess": "Timezone set successfully"
     }
+  },
+  "about": {
+    "author": "Author",
+    "basicInfo": "Basic information",
+    "buildTime": "Last build time",
+    "clickToView": "Open",
+    "description": "A modern out-of-the-box admin solution built with Vue 3, Vite, TailwindCSS and TypeScript, with strict code standards and rich configuration options. It is also a great example for learning frontend engineering.",
+    "devDeps": "Development dependencies",
+    "docUrl": "Docs",
+    "homepage": "Homepage",
+    "license": "License",
+    "previewUrl": "Preview",
+    "prodDeps": "Production dependencies",
+    "title": "About",
+    "version": "Version"
+  },
+  "workbench": {
+    "pending": "Pending",
+    "project": "Projects",
+    "team": "Team"
   }
 }

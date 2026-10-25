@@ -13,9 +13,9 @@
     "adminPassword": "Admin Password",
     "packageId": "Package",
     "createUser": "Create User",
-    "createTime": "Create Time",
+    "createTime": "Created At",
     "updateUser": "Update User",
-    "updateTime": "Update Time",
+    "updateTime": "Updated At",
     "newPassword": "New Password"
   },
   "package": {
@@ -27,8 +27,8 @@
     "description": "Description",
     "status": "Status",
     "createUser": "Create User",
-    "createTime": "Create Time",
+    "createTime": "Created At",
     "updateUser": "Update User",
-    "updateTime": "Update Time"
+    "updateTime": "Updated At"
   }
 }
