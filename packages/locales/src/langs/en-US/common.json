@@ -23,12 +23,10 @@
   "showSearchPanel": "Show search panel",
   "hideSearchPanel": "Hide search panel",
   "notShow": "Don't Show",
-  "hideSearchPanel": "Hide search panel",
   "operation": "Operation",
   "config": "Config",
   "success": "Success",
   "failed": "Failed",
-  "detail": "Detail",
   "select": "Select",
   "upload": "Upload",
   "download": "Download",
@@ -40,6 +38,9 @@
   "gender": {
     "male": "Male",
     "female": "Female",
-    "Confidential": "Confidential"
-  }
+    "confidential": "Confidential"
+  },
+  "status": "Status",
+  "disabledSuccess": "Disabled successfully",
+  "enabledSuccess": "Enabled successfully"
 }

@@ -143,5 +143,7 @@ export {
   loadLocaleMessages,
   loadLocalesMap,
   loadLocalesMapFromDir,
+  // 供 testing 入口复用：测试若自建语言包副本会与生产映射规则漂移。
+  localesMap,
   setupI18n,
 };

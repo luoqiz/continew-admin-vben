@@ -8,19 +8,19 @@ export function useStorageEditFormSchema(): VbenFormSchema[] {
   const { storage_type_enum } = useDict('storage_type_enum');
   return [
     {
-      label: $t('system.storage.name') || '名称',
+      label: $t('system.storage.name'),
       fieldName: 'name',
       component: 'Input',
       rules: 'required',
     },
     {
-      label: $t('system.storage.code') || '编码',
+      label: $t('system.storage.code'),
       fieldName: 'code',
       component: 'Input',
       rules: 'required',
     },
     {
-      label: $t('system.storage.type') || '类型',
+      label: $t('system.storage.type'),
       fieldName: 'type',
       component: 'ApiSelect',
       componentProps: { options: storage_type_enum?.value },
@@ -36,12 +36,12 @@ export function useStorageEditFormSchema(): VbenFormSchema[] {
     { label: 'Bucket', fieldName: 'bucketName', component: 'Input' },
     { label: '域名', fieldName: 'domain', component: 'Input' },
     {
-      label: $t('system.storage.recycleBinEnabled') || '启用回收站',
+      label: $t('system.storage.recycleBinEnabled'),
       fieldName: 'recycleBinEnabled',
       component: 'Switch',
     },
     {
-      label: $t('system.storage.recycleBinPath') || '回收站路径',
+      label: $t('system.storage.recycleBinPath'),
       fieldName: 'recycleBinPath',
       component: 'Input',
     },
@@ -53,7 +53,7 @@ export function useStorageEditFormSchema(): VbenFormSchema[] {
       componentProps: { autoSize: true },
     },
     {
-      label: $t('system.storage.status') || '状态',
+      label: $t('system.storage.status'),
       fieldName: 'status',
       component: 'RadioGroup',
       componentProps: {
@@ -70,17 +70,17 @@ export function useStorageGridSearchFormSchema(): VbenFormSchema[] {
   return [
     {
       fieldName: 'name',
-      label: $t('system.storage.name') || '名称',
+      label: $t('system.storage.name'),
       component: 'Input',
     },
     {
       fieldName: 'code',
-      label: $t('system.storage.code') || '编码',
+      label: $t('system.storage.code'),
       component: 'Input',
     },
     {
       fieldName: 'type',
-      label: $t('system.storage.type') || '类型',
+      label: $t('system.storage.type'),
       component: 'ApiSelect',
     },
   ];

@@ -245,7 +245,10 @@
     "cancelRoleConfirm": "确定取消{0}的[{1}]角色?",
     "permission": "功能权限",
     "user": "角色用户",
-    "permissionSave": "保存权限"
+    "permissionSave": "保存权限",
+    "remark": "备注",
+    "roleName": "角色名称",
+    "setPermissions": "设置权限"
   },
   "user": {
     "avatar": "头像",
@@ -318,7 +321,8 @@
     "type": "类型",
     "recycleBinEnabled": "启用回收站",
     "recycleBinPath": "回收站路径",
-    "setDefault": "设为默认"
+    "setDefault": "设为默认",
+    "status": "状态"
   },
   "notice": {
     "listTitle": "公告管理",
@@ -338,16 +342,6 @@
     "updateUser": "修改人",
     "updateTime": "修改时间",
     "tenantId": "租户ID"
-  },
-  "storage": {
-    "listTitle": "存储配置",
-    "name": "名称",
-    "code": "编码",
-    "type": "类型",
-    "recycleBinEnabled": "启用回收站",
-    "recycleBinPath": "回收站路径",
-    "setDefault": "设为默认",
-    "status": "状态"
   },
   "client": {
     "listTitle": "客户端配置",

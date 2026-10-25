@@ -73,7 +73,7 @@ const handleSetDefault = async (row: SmsConfigResp) => {
 
 <template>
   <Page auto-content-height>
-    <TableGrid :table-title="$t('system.sms.listTitle') || '短信配置'">
+    <TableGrid :table-title="$t('system.sms.listTitle')">
       <template #toolbar-tools>
         <ElSpace>
           <ElButton type="primary" @click="handleAdd">

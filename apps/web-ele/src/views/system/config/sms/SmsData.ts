@@ -8,13 +8,13 @@ export function useSmsEditFormSchema(): VbenFormSchema[] {
   const { sms_supplier } = useDict('sms_supplier');
   return [
     {
-      label: $t('system.sms.name') || '名称',
+      label: $t('system.sms.name'),
       fieldName: 'name',
       component: 'Input',
       rules: 'required',
     },
     {
-      label: $t('system.sms.supplier') || '厂商',
+      label: $t('system.sms.supplier'),
       fieldName: 'supplier',
       component: 'ApiSelect',
       componentProps: {
@@ -43,7 +43,7 @@ export function useSmsEditFormSchema(): VbenFormSchema[] {
       component: 'Input',
     },
     {
-      label: $t('system.sms.status') || '状态',
+      label: $t('system.sms.status'),
       fieldName: 'status',
       component: 'RadioGroup',
       componentProps: {
@@ -67,13 +67,13 @@ export function useSmsGridSearchFormSchema(): VbenFormSchema[] {
   return [
     {
       fieldName: 'name',
-      label: $t('system.sms.name') || '名称',
+      label: $t('system.sms.name'),
       component: 'Input',
     },
     { fieldName: 'accessKey', label: 'Access Key', component: 'Input' },
     {
       fieldName: 'supplier',
-      label: $t('system.sms.supplier') || '厂商',
+      label: $t('system.sms.supplier'),
       component: 'ApiSelect',
       componentProps: {
         // will be resolved by ApiSelect options in runtime
@@ -103,7 +103,7 @@ export function useSmsGridFieldColumns(): VxeTableGridOptions['columns'] {
     { field: 'templateId', title: '模板 ID', align: 'center' },
     {
       field: 'status',
-      title: $t('common.status') || '状态',
+      title: $t('common.status'),
       align: 'center',
       slots: { default: 'status' },
     },

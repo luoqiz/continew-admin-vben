@@ -66,7 +66,7 @@ const handleDelete = async (row: ClientResp) => {
 
 <template>
   <Page auto-content-height>
-    <TableGrid :table-title="$t('system.client.listTitle') || '客户端配置'">
+    <TableGrid :table-title="$t('system.client.listTitle')">
       <template #toolbar-tools>
         <ElSpace>
           <ElButton type="primary" @click="handleAdd">

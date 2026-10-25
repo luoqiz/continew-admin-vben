@@ -130,7 +130,13 @@
     "parentMenuId": "Parent Menu Id",
     "tableName": "table name",
     "tablePrefix": "table prefix",
-    "updateTime": "update time"
+    "updateTime": "update time",
+    "dialogType": "Dialog Type",
+    "entityName": "Entity Name",
+    "listType": "List Type",
+    "treeId": "Tree Code",
+    "treeLabel": "Tree Label",
+    "treePid": "Parent Tree Code"
   },
   "dept": {
     "listTitle": "System Dept Manager",
@@ -143,7 +149,8 @@
     "sort": "Sort",
     "status": "Status",
     "updateTime": "Update time",
-    "updateUserString": "Update"
+    "updateUserString": "Update",
+    "id": ""
   },
   "dict": {
     "code": "code",
@@ -182,7 +189,6 @@
     "createTime": "Create time",
     "createUserString": "Creator",
     "icon": "Icon",
-    "id": "",
     "isCache": "Is cache",
     "isExternal": "Is external",
     "isHidden": "Is hidden",
@@ -220,7 +226,10 @@
     "cancelRoleConfirm": "Are you sure you want to cancel the [{1}] role for {0}?",
     "permission": "Permission",
     "user": "User",
-    "permissionSave": "Save Permission"
+    "permissionSave": "Save Permission",
+    "remark": "Remark",
+    "roleName": "Role name",
+    "setPermissions": "Set permissions"
   },
   "user": {
     "listTitle": "System User Manager",
@@ -259,14 +268,14 @@
   },
   "smsLog": {
     "listTitle": "SMS Log",
-    "configId": "",
-    "phone": "",
-    "params": "",
-    "status": "",
-    "resMsg": "",
-    "createUser": "",
-    "createTime": "",
-    "createUserString": ""
+    "configId": "Config ID",
+    "phone": "Phone Number",
+    "params": "Parameters",
+    "status": "Send Status",
+    "resMsg": "Response Data",
+    "createUser": "Operator",
+    "createTime": "Created At",
+    "createUserString": "Operator"
   },
   "sms": {
     "listTitle": "SMS Config",
@@ -293,7 +302,8 @@
     "type": "Type",
     "recycleBinEnabled": "Recycle Bin Enabled",
     "recycleBinPath": "Recycle Bin Path",
-    "setDefault": "Set Default"
+    "setDefault": "Set Default",
+    "status": "Status"
   },
   "notice": {
     "listTitle": "sys_notice manage",
@@ -313,16 +323,6 @@
     "updateUser": "Update User",
     "updateTime": "Update Time",
     "tenantId": "Tenant Id"
-  },
-  "storage": {
-    "listTitle": "Storage Config",
-    "name": "Name",
-    "code": "Code",
-    "type": "Type",
-    "recycleBinEnabled": "Recycle Bin Enabled",
-    "recycleBinPath": "Recycle Bin Path",
-    "setDefault": "Set Default",
-    "status": "Status"
   },
   "client": {
     "listTitle": "Client Config",
@@ -356,9 +356,29 @@
       "title": "Title Or Content",
       "type": "Msg Type",
       "isRead": "Msg Status"
+    },
+    "tips": {
+      "markAllReadTips": "Are you sure you want to mark all messages as read?"
     }
   },
-  "tips": {
-    "markAllReadTips": "Are you sure you want to mark all messages as read?"
+  "tips": {},
+  "genField": {
+    "columnName": "Column Name",
+    "columnSize": "Column Size",
+    "columnType": "Column Type",
+    "comment": "Comment",
+    "createTime": "Created At",
+    "dictCode": "Dictionary Code",
+    "fieldName": "Field Name",
+    "fieldSort": "Field Order",
+    "fieldType": "Field Type",
+    "formType": "Form Type",
+    "id": "",
+    "isRequired": "Required",
+    "queryType": "Query Type",
+    "showInForm": "Show in Form",
+    "showInList": "Show in List",
+    "showInQuery": "Show in Query",
+    "tableName": "Table Name"
   }
 }

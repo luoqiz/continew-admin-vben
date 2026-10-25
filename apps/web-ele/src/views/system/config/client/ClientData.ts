@@ -16,35 +16,35 @@ export function useClientEditFormSchema(): VbenFormSchema[] {
     );
   return [
     {
-      label: $t('system.client.clientType') || '客户端类型',
+      label: $t('system.client.clientType'),
       fieldName: 'clientType',
       component: 'ApiSelect',
       componentProps: { options: client_type?.value },
       rules: 'required',
     },
     {
-      label: $t('system.client.authType') || '认证类型',
+      label: $t('system.client.authType'),
       fieldName: 'authType',
       component: 'ApiSelect',
       componentProps: { options: auth_type_enum?.value, multiple: true },
       rules: 'required',
     },
     {
-      label: $t('system.client.activeTimeout') || 'Token最低活跃频率',
+      label: $t('system.client.activeTimeout'),
       fieldName: 'activeTimeout',
       component: 'InputNumber',
       componentProps: { min: -1 },
       rules: 'required',
     },
     {
-      label: $t('system.client.timeout') || 'Token有效期',
+      label: $t('system.client.timeout'),
       fieldName: 'timeout',
       component: 'InputNumber',
       componentProps: { min: -1 },
       rules: 'required',
     },
     {
-      label: $t('system.client.refreshTokenTimeout') || '刷新Token超时时间',
+      label: $t('system.client.refreshTokenTimeout'),
       fieldName: 'refreshTokenTimeout',
       component: 'InputNumber',
       componentProps: { min: 60 },
@@ -52,7 +52,7 @@ export function useClientEditFormSchema(): VbenFormSchema[] {
       rules: 'required',
     },
     {
-      label: $t('system.client.refreshTokenIdleTimeout') || '刷新Token闲置失效',
+      label: $t('system.client.refreshTokenIdleTimeout'),
       fieldName: 'refreshTokenIdleTimeout',
       component: 'InputNumber',
       componentProps: { min: 0, max: 315_360_000, precision: 0 },
@@ -71,7 +71,7 @@ export function useClientEditFormSchema(): VbenFormSchema[] {
         ),
     },
     {
-      label: $t('system.client.refreshTokenMode') || '刷新Token传输模式',
+      label: $t('system.client.refreshTokenMode'),
       fieldName: 'refreshTokenMode',
       component: 'Select',
       componentProps: {
@@ -90,30 +90,30 @@ export function useClientEditFormSchema(): VbenFormSchema[] {
       rules: 'required',
     },
     {
-      label: $t('system.client.isConcurrent') || '多地登录',
+      label: $t('system.client.isConcurrent'),
       fieldName: 'isConcurrent',
       component: 'Switch',
     },
     {
-      label: $t('system.client.replacedRange') || '下线范围',
+      label: $t('system.client.replacedRange'),
       fieldName: 'replacedRange',
       component: 'ApiSelect',
       componentProps: { options: replaced_range_enum?.value },
     },
     {
-      label: $t('system.client.maxLoginCount') || '登录数量',
+      label: $t('system.client.maxLoginCount'),
       fieldName: 'maxLoginCount',
       component: 'InputNumber',
       componentProps: { min: -1 },
     },
     {
-      label: $t('system.client.overflowLogoutMode') || '溢出处理',
+      label: $t('system.client.overflowLogoutMode'),
       fieldName: 'overflowLogoutMode',
       component: 'ApiSelect',
       componentProps: { options: logout_mode_enum?.value },
     },
     {
-      label: $t('system.client.status') || '状态',
+      label: $t('system.client.status'),
       fieldName: 'status',
       component: 'RadioGroup',
       componentProps: {
@@ -131,7 +131,7 @@ export function useClientGridSearchFormSchema(): VbenFormSchema[] {
   return [
     {
       fieldName: 'clientType',
-      label: $t('system.client.clientType') || '客户端类型',
+      label: $t('system.client.clientType'),
       component: 'ApiSelect',
       componentProps: { options: client_type?.value },
     },

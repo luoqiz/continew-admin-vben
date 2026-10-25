@@ -41,5 +41,6 @@
     "male": "男",
     "female": "女",
     "confidential": "保密"
-  }
+  },
+  "status": "状态"
 }

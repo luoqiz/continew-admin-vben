@@ -71,7 +71,7 @@ const handleSetDefault = async (row: StorageResp) => {
 
 <template>
   <Page auto-content-height>
-    <TableGrid :table-title="$t('system.storage.listTitle') || '存储配置'">
+    <TableGrid :table-title="$t('system.storage.listTitle')">
       <template #toolbar-tools>
         <ElSpace>
           <ElButton type="primary" @click="handleAdd">
