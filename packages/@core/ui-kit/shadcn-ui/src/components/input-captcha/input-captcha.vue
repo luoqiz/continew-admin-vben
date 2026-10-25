@@ -5,6 +5,8 @@ import { Input as VbenInput } from '../../ui/input';
 
 interface Props {
   captcha?: string;
+  /** 过期遮罩文案，由调用方传入（组件层不硬编码语言） */
+  expiredText?: string;
   expireTime?: number;
   label?: string;
   loading?: boolean;
@@ -13,9 +15,10 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   captcha: '',
-  label: '验证码',
+  expiredText: '',
+  label: '',
   loading: false,
-  placeholder: '请输入验证码',
+  placeholder: '',
   expireTime: 0,
 });
 
@@ -94,7 +97,7 @@ watch(
         <span class="captcha-loading"></span>
       </div>
       <div v-if="expired" class="overlay" @click="onRefreshClick">
-        <p>已过期，请刷新</p>
+        <p>{{ expiredText }}</p>
       </div>
     </div>
   </div>

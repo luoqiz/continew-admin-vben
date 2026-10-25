@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { $t } from '@vben/locales';
+
 import { VbenAvatar } from '@vben-core/shadcn-ui';
 
 interface Props {
@@ -30,16 +32,20 @@ withDefaults(defineProps<Props>(), {
     <div class="mt-4 flex flex-1 justify-end md:mt-0">
       <slot name="actions">
         <div class="flex flex-col justify-center text-right">
-          <span class="text-foreground/80"> 待办 </span>
+          <span class="text-foreground/80">{{
+            $t('ui.workbench.pending')
+          }}</span>
           <span class="text-2xl">2/10</span>
         </div>
 
         <div class="mx-12 flex flex-col justify-center text-right md:mx-16">
-          <span class="text-foreground/80"> 项目 </span>
+          <span class="text-foreground/80">{{
+            $t('ui.workbench.project')
+          }}</span>
           <span class="text-2xl">8</span>
         </div>
         <div class="mr-4 flex flex-col justify-center text-right md:mr-10">
-          <span class="text-foreground/80"> 团队 </span>
+          <span class="text-foreground/80">{{ $t('ui.workbench.team') }}</span>
           <span class="text-2xl">300</span>
         </div>
       </slot>

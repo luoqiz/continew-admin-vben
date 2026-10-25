@@ -14,8 +14,8 @@
     "show": "Show",
     "hide": "Hide",
     "createUser": "Create User",
-    "createTime": "Create Time",
+    "createTime": "Created At",
     "updateUser": "Update User",
-    "updateTime": "Update Time"
+    "updateTime": "Updated At"
   }
 }

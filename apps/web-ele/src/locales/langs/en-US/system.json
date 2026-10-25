@@ -54,7 +54,7 @@
       "status": "Status",
       "storageName": "Storage Name",
       "type": "Type",
-      "updateTime": "Modified Time",
+      "updateTime": "Updated At",
       "uploadTime": "Uploaded Time"
     },
     "modal": {
@@ -98,7 +98,7 @@
       "uploadSuccess": "Uploaded successfully"
     },
     "uploadStatus": {
-      "canceled": "Cancelled",
+      "canceled": "Canceled",
       "completed": "Completed",
       "paused": "Paused",
       "uploading": "Uploading",
@@ -120,8 +120,8 @@
     "businessName": "business name",
     "classNamePrefix": "class name prefix",
     "comment": "comment",
-    "config": "config",
-    "createTime": "create time",
+    "config": "Config",
+    "createTime": "Created At",
     "id": "id",
     "isOverride": "is overide",
     "list": "code genrate table list",
@@ -130,11 +130,11 @@
     "parentMenuId": "Parent Menu Id",
     "tableName": "table name",
     "tablePrefix": "table prefix",
-    "updateTime": "update time"
+    "updateTime": "Updated At"
   },
   "dept": {
     "listTitle": "System Dept Manager",
-    "createTime": "Create time",
+    "createTime": "Created At",
     "createUserString": "Creator",
     "description": "Description",
     "isSystem": "Is system",
@@ -142,18 +142,18 @@
     "parentId": "Parent Dept",
     "sort": "Sort",
     "status": "Status",
-    "updateTime": "Update time",
+    "updateTime": "Updated At",
     "updateUserString": "Update"
   },
   "dict": {
     "code": "code",
-    "createTime": "Create time",
+    "createTime": "Created At",
     "createUserString": "Creator",
     "description": "Description",
     "isSystem": "Is system",
     "list": "Dict type list",
     "name": "name",
-    "updateTime": "Update time",
+    "updateTime": "Updated At",
     "updateUserString": "Updater",
     "search": {
       "key": "Search Name Or Code"
@@ -161,7 +161,7 @@
   },
   "dictItem": {
     "color": "Color",
-    "createTime": "Create time",
+    "createTime": "Created At",
     "createUserString": "Creator",
     "description": "Description",
     "dictId": "Dict type id",
@@ -170,7 +170,7 @@
     "list": "Dict item list",
     "sort": "Sort",
     "status": "Status",
-    "updateTime": "Update time",
+    "updateTime": "Updated At",
     "updateUserString": "Updater",
     "search": {
       "description": "Label Or Description"
@@ -179,7 +179,7 @@
   "menu": {
     "listTitle": "System Menu Manager",
     "component": "Component path",
-    "createTime": "Create time",
+    "createTime": "Created At",
     "createUserString": "Creator",
     "icon": "Icon",
     "id": "",
@@ -195,12 +195,12 @@
     "sort": "Sort",
     "status": "Status",
     "type": "Type",
-    "updateTime": "Update time",
+    "updateTime": "Updated At",
     "updateUserString": "Update"
   },
   "role": {
     "code": "Code",
-    "createTime": "Create Time",
+    "createTime": "Created At",
     "createUser": "Create User",
     "dataScope": "Data Scope",
     "deptCheckStrictly": "Dept Check Strictly",
@@ -212,7 +212,7 @@
     "name": "Name",
     "sort": "Sort",
     "tenantId": "Tenant Name",
-    "updateTime": "Update Time",
+    "updateTime": "Updated At",
     "updateUser": "Update User",
     "searchKey": "Search Name Or Code",
     "cancelAssignment": "Cancel Assignment",
@@ -239,9 +239,9 @@
     "pwdReset": "Password Reset",
     "deptId": "Dept Id",
     "createUser": "Create User",
-    "createTime": "Create Time",
+    "createTime": "Created At",
     "updateUser": "Update User",
-    "updateTime": "Update Time",
+    "updateTime": "Updated At",
     "tenantId": "Tenant Id",
     "roleIds": "Role",
     "searchKey": "Username, Nickname or Description",
@@ -259,14 +259,14 @@
   },
   "smsLog": {
     "listTitle": "SMS Log",
-    "configId": "",
-    "phone": "",
-    "params": "",
-    "status": "",
-    "resMsg": "",
-    "createUser": "",
-    "createTime": "",
-    "createUserString": ""
+    "configId": "Config ID",
+    "phone": "Phone Number",
+    "params": "Parameters",
+    "status": "Send Status",
+    "resMsg": "Response Data",
+    "createUser": "Operator",
+    "createTime": "Created At",
+    "createUserString": "Operator"
   },
   "sms": {
     "listTitle": "SMS Config",
@@ -293,7 +293,8 @@
     "type": "Type",
     "recycleBinEnabled": "Recycle Bin Enabled",
     "recycleBinPath": "Recycle Bin Path",
-    "setDefault": "Set Default"
+    "setDefault": "Set Default",
+    "status": "Status"
   },
   "notice": {
     "listTitle": "sys_notice manage",
@@ -309,20 +310,10 @@
     "isTop": "Is Top",
     "status": "Status",
     "createUser": "Create User",
-    "createTime": "Create Time",
+    "createTime": "Created At",
     "updateUser": "Update User",
-    "updateTime": "Update Time",
+    "updateTime": "Updated At",
     "tenantId": "Tenant Id"
-  },
-  "storage": {
-    "listTitle": "Storage Config",
-    "name": "Name",
-    "code": "Code",
-    "type": "Type",
-    "recycleBinEnabled": "Recycle Bin Enabled",
-    "recycleBinPath": "Recycle Bin Path",
-    "setDefault": "Set Default",
-    "status": "Status"
   },
   "client": {
     "listTitle": "Client Config",
@@ -349,7 +340,7 @@
     "isRead": "Status",
     "createUserString": "Publisher",
     "publishTime": "Publish Time",
-    "createTime": "Create Time",
+    "createTime": "Created At",
     "markRead": "Mark Read",
     "markAllRead": "Mark All Read",
     "search": {

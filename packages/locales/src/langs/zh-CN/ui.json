@@ -124,13 +124,13 @@
     "offlineErrorDesc": "抱歉，无法连接到互联网，请检查您的网络连接并重试。",
     "comingSoon": "即将推出",
     "http": {
-      "requestTimeout": "请求超时，请稍后再试。",
+      "requestTimeout": "请求超时，请稍后重试。",
       "networkError": "网络异常，请检查您的网络连接后重试。",
-      "badRequest": "请求错误。请检查您的输入并重试。",
-      "unauthorized": "登录认证过期，请重新登录后继续。",
-      "forbidden": "禁止访问, 您没有权限访问此资源。",
-      "notFound": "未找到, 请求的资源不存在。",
-      "internalServerError": "内部服务器错误，请稍后再试。"
+      "badRequest": "请求参数不正确，请检查后重试。",
+      "unauthorized": "登录已过期，请重新登录。",
+      "forbidden": "没有权限执行此操作。",
+      "notFound": "未找到，请求的资源不存在。",
+      "internalServerError": "系统繁忙，请稍后重试。"
     }
   },
   "widgets": {
@@ -170,5 +170,25 @@
       "setTimezone": "设置时区",
       "setSuccess": "时区设置成功"
     }
+  },
+  "about": {
+    "author": "作者",
+    "basicInfo": "基本信息",
+    "buildTime": "最后构建时间",
+    "clickToView": "点击查看",
+    "description": "是一个现代化开箱即用的中后台解决方案，采用最新的技术栈，包括 Vue 3.0、Vite、TailwindCSS 和 TypeScript 等前沿技术，代码规范严谨，提供丰富的配置选项，也可以作为学习前端技术的极佳示例。",
+    "devDeps": "开发环境依赖",
+    "docUrl": "文档地址",
+    "homepage": "主页",
+    "license": "开源许可协议",
+    "previewUrl": "预览地址",
+    "prodDeps": "生产环境依赖",
+    "title": "关于项目",
+    "version": "版本号"
+  },
+  "workbench": {
+    "pending": "待办",
+    "project": "项目",
+    "team": "团队"
   }
 }
