@@ -232,6 +232,12 @@ export interface StorageResp {
   endpoint: string;
   bucketName: string;
   domain: string;
+  /** 分片上传阈值（字节） */
+  multipartUploadThreshold: null | number;
+  /** 分片上传大小（字节） */
+  multipartUploadPartSize: null | number;
+  /** 本地分片临时目录 */
+  multipartTempDir: null | string;
   recycleBinEnabled: boolean;
   recycleBinPath: string;
   description: string;
@@ -244,9 +250,10 @@ export interface StorageResp {
   updateTime: string;
 }
 export interface StorageQuery {
+  /** 关键词，后端按名称/编码/描述模糊匹配 */
   description?: string;
+  status?: number;
   type?: number;
-  sort: Array<string>;
 }
 
 /** 客户端类型 */
