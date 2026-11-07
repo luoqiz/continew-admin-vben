@@ -9,6 +9,7 @@ import { startProgress, stopProgress } from '@vben/utils';
 
 import { ElMessage } from 'element-plus';
 
+import { ensureTenantContext } from '#/features/tenant-context';
 import { accessRoutes, coreRouteNames } from '#/router/routes';
 import { useAuthStore, useTenantStore } from '#/store';
 
@@ -97,7 +98,11 @@ function setupAccessGuard(router: Router) {
       !accessStore.accessToken &&
       !coreRouteNames.includes(to.name as string)
     ) {
-      await restoreSessionOnce(authStore);
+      const restored = await restoreSessionOnce(authStore);
+      // 会话恢复成功后等待租户能力开关就绪，确保后续业务请求带上 X-Tenant-Id。
+      // 探测是旁路：不参与会话恢复的 promise 链，异常不外抛、不改变恢复结果。
+      // 已登录场景只刷新开关（不查域名），最多等待一个 status 请求。
+      if (restored) await ensureTenantContext();
     }
 
     // 基本路由，这些路由不需要进入权限拦截
@@ -109,6 +114,9 @@ function setupAccessGuard(router: Router) {
             preferences.app.defaultHomePath,
         );
       }
+      // 进入登录页（含登出、会话失效回跳）：探测租户开关与域名绑定。
+      // 触发点唯一，替代 App.vue 的 onMounted + 路由 watch 双触发。
+      if (to.path === LOGIN_PATH) void ensureTenantContext();
       return true;
     }
 
