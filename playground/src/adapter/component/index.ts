@@ -73,6 +73,8 @@ import { isEmpty } from '@vben/utils';
 import { message, Modal, notification } from 'antdv-next';
 
 import { upload_file } from '#/api/examples/upload';
+
+import { createThemeAwareButton } from './theme-aware-button';
 type AdapterUploadProps = UploadProps & {
   aspectRatio?: string;
   crop?: boolean;
@@ -268,11 +270,6 @@ async function previewImage(
     return;
   }
 
-  const [ImageComponent, PreviewGroupComponent] = await Promise.all([
-    Image,
-    PreviewGroup,
-  ]);
-
   // 过滤图片文件并生成预览
   const imageFiles = (unref(fileList) || []).filter((f) => isImageFile(f));
 
@@ -293,7 +290,7 @@ async function previewImage(
       return () => {
         if (isUnmounted) return null;
         return h(
-          PreviewGroupComponent,
+          PreviewGroup,
           {
             classes: { popup: { root: '!z-2000' } },
             preview: {
@@ -315,7 +312,7 @@ async function previewImage(
           },
           () =>
             imageFiles.map((imgFile) =>
-              h(ImageComponent, {
+              h(Image, {
                 key: imgFile.uid,
                 src: imgFile.url || imgFile.preview,
               }),
@@ -340,7 +337,9 @@ function cropImage(file: File, aspectRatio: string | undefined) {
     let objectUrl: null | string = null;
 
     const open = ref<boolean>(true);
-    const cropperRef = ref<InstanceType<typeof VCropper> | null>(null);
+    const cropperRef = ref<null | {
+      getCropImage: () => Promise<Blob | string | undefined>;
+    }>(null);
 
     function closeModal() {
       open.value = false;
@@ -716,9 +715,7 @@ async function initComponentAdapter() {
     CheckboxGroup,
     DatePicker,
     // 自定义默认按钮
-    DefaultButton: (props, { attrs, slots }) => {
-      return h(Button, { ...props, attrs, type: 'default' }, slots);
-    },
+    DefaultButton: createThemeAwareButton(Button, 'default'),
     Divider,
     IconPicker: withDefaultPlaceholder(IconPicker, 'select', {
       iconSlot: 'addonAfter',
@@ -730,9 +727,7 @@ async function initComponentAdapter() {
     InputPassword: withDefaultPlaceholder(InputPassword, 'input'),
     Mentions: withDefaultPlaceholder(Mentions, 'input'),
     // 自定义主要按钮
-    PrimaryButton: (props, { attrs, slots }) => {
-      return h(Button, { ...props, attrs, type: 'primary' }, slots);
-    },
+    PrimaryButton: createThemeAwareButton(Button, 'primary'),
     Radio,
     RadioGroup,
     RangePicker,
@@ -741,7 +736,7 @@ async function initComponentAdapter() {
       imageUpload: {
         upload: (file: any, onProgress: any) => {
           return new Promise((resolve, reject) => {
-            upload_file({
+            void upload_file({
               file,
               onProgress({ percent }) {
                 onProgress?.(percent);

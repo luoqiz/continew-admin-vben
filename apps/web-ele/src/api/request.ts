@@ -3,14 +3,11 @@
  */
 import type { RequestClientOptions } from '@vben/request';
 
+import type { ContinewRequestConfig } from './continew-interceptors';
+
 import { useAppConfig } from '@vben/hooks';
 import { preferences } from '@vben/preferences';
-import {
-  authenticateResponseInterceptor,
-  defaultResponseInterceptor,
-  errorMessageResponseInterceptor,
-  RequestClient,
-} from '@vben/request';
+import { defaultResponseInterceptor } from '@vben/request';
 import { useAccessStore } from '@vben/stores';
 
 import { ElMessage } from 'element-plus';
@@ -19,6 +16,11 @@ import { setAuthExpiredReason } from '#/features/auth-session/expired-reason';
 import { withAuthLifecycleLock } from '#/features/auth-session/lifecycle';
 import { useAuthStore, useTenantStore } from '#/store';
 
+import {
+  continewAuthenticateResponseInterceptor,
+  continewErrorMessageResponseInterceptor,
+} from './continew-interceptors';
+import { ContinewRequestClient } from './continew-request-client';
 import { logoutApi, refreshTokenApi } from './core';
 import { code2statusResponseInterceptor } from './helper';
 
@@ -32,9 +34,12 @@ function isAuthEndpoint(url?: string) {
 }
 
 function createRequestClient(baseURL: string, options?: RequestClientOptions) {
-  const client = new RequestClient({
+  const client = new ContinewRequestClient({
     ...options,
     baseURL,
+    // ContiNew 后端约定数组参数按重复 key 序列化；复用上游内置的 repeat 策略，
+    // 不侵入 RequestClient.get。
+    paramsSerializer: 'repeat',
     // 浏览器 Refresh Token 由 HttpOnly Cookie 承载，请求必须携带凭证。
     withCredentials: true,
   });
@@ -127,8 +132,9 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
       const tenantStore = useTenantStore();
 
       config.headers.Authorization = formatToken(accessStore.accessToken);
-      if (config.__authGeneration === undefined) {
-        config.__authGeneration = accessStore.getAuthGeneration();
+      const requestConfig = config as ContinewRequestConfig & typeof config;
+      if (requestConfig.__authGeneration === undefined) {
+        requestConfig.__authGeneration = accessStore.getAuthGeneration();
       }
       const isLoginEndpoint = config.url?.endsWith('/auth/login');
       const loginData = config.data;
@@ -176,7 +182,7 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
 
   // token过期的处理
   client.addResponseInterceptor(
-    authenticateResponseInterceptor({
+    continewAuthenticateResponseInterceptor({
       client,
       doReAuthenticate,
       doRefreshToken,
@@ -188,7 +194,7 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
 
   // 通用的错误处理,如果没有进入上面的错误处理逻辑，就会进入这里
   client.addResponseInterceptor(
-    errorMessageResponseInterceptor((msg: string, error) => {
+    continewErrorMessageResponseInterceptor((msg: string, error) => {
       // 这里可以根据业务进行定制,你可以拿到 error 内的信息进行定制化处理，根据不同的 code 做不同的提示，而不是直接使用 message.error 提示 msg
       // 当前mock接口返回的错误字段是 error 或者 message
       const responseData = error?.response?.data ?? {};
@@ -217,7 +223,7 @@ export const requestClient = createRequestClient(apiURL, {
   responseReturn: 'data',
 });
 
-export const baseRequestClient = new RequestClient({
+export const baseRequestClient = new ContinewRequestClient({
   baseURL: apiURL,
   withCredentials: true,
 });

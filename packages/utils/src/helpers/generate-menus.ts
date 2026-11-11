@@ -27,12 +27,9 @@ function generateMenus(
     // 获取最终的路由路径
     const path = finalRoutesMap[route.name as string] ?? route.path ?? '';
 
-    const {
-      meta = {} as RouteMeta,
-      name: routeName,
-      redirect,
-      children = [],
-    } = route;
+    const { meta, name: routeName, redirect, children = [] } = route;
+    // vue-router 的 RouteMeta 是宽松索引类型，这里收窄为带字段名的类型再解构。
+    const metaRecord = (meta ?? {}) as RouteMeta;
     const {
       activeIcon,
       badge,
@@ -42,9 +39,9 @@ function generateMenus(
       icon,
       link,
       order,
-      title = '',
+      title,
       query,
-    } = meta;
+    } = metaRecord;
 
     // 确保菜单名称不为空
     const name = (title || routeName || '') as string;
@@ -77,9 +74,9 @@ function generateMenus(
       parent: route.parent,
       parents: route.parents,
       path: resultPath,
-      show: !meta.hideInMenu,
+      show: !metaRecord.hideInMenu,
       children: resultChildren,
-    } as MenuRecordRaw;
+    };
   });
 
   // 对菜单进行排序，避免order=0时被替换成999的问题

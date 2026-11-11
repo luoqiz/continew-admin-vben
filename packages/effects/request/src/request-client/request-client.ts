@@ -46,11 +46,11 @@ class RequestClient {
   // 是否正在刷新token
   public isRefreshing = false;
   public postSSE: SSE['postSSE'];
-  // 刷新等待队列：刷新失败时必须 reject，避免请求永久 pending。
-  public refreshTokenQueue: {
-    reject: (error: unknown) => void;
-    resolve: (token: string) => void;
-  }[] = [];
+  // 刷新token队列
+  public refreshTokenQueue: ((
+    token: null | string,
+    error?: unknown,
+  ) => void)[] = [];
   public requestSSE: SSE['requestSSE'];
   public upload: FileUploader['upload'];
 
@@ -110,11 +110,7 @@ class RequestClient {
    * GET请求方法
    */
   public get<T = any>(url: string, config?: RequestClientConfig): Promise<T> {
-    return this.request<T>(url, {
-      ...config,
-      paramsSerializer: (obj) => qs.stringify(obj, { arrayFormat: 'repeat' }),
-      method: 'GET',
-    });
+    return this.request<T>(url, { ...config, method: 'GET' });
   }
 
   /**
@@ -122,17 +118,6 @@ class RequestClient {
    */
   public getBaseUrl() {
     return this.instance.defaults.baseURL;
-  }
-
-  /**
-   * PATCH请求方法
-   */
-  public patch<T = any>(
-    url: string,
-    data?: any,
-    config?: RequestClientConfig,
-  ): Promise<T> {
-    return this.request<T>(url, { ...config, data, method: 'PATCH' });
   }
 
   /**

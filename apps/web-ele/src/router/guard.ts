@@ -65,7 +65,7 @@ function setupCommonGuard(router: Router) {
 
     // 页面加载进度条
     if (!to.meta.loaded && preferences.transition.progress) {
-      startProgress();
+      void startProgress();
     }
     return true;
   });
@@ -77,7 +77,7 @@ function setupCommonGuard(router: Router) {
 
     // 关闭页面加载进度条
     if (preferences.transition.progress) {
-      stopProgress();
+      void stopProgress();
     }
   });
 }
@@ -94,10 +94,7 @@ function setupAccessGuard(router: Router) {
 
     // Access Token 不持久化。首次进入受保护页面时先用 HttpOnly Cookie 恢复登录态，
     // 防止浏览器刷新页面后在 Cookie 仍有效的情况下被直接跳转到登录页。
-    if (
-      !accessStore.accessToken &&
-      !coreRouteNames.includes(to.name as string)
-    ) {
+    if (!accessStore.accessToken && !coreRouteNames.includes(to.name)) {
       const restored = await restoreSessionOnce(authStore);
       // 会话恢复成功后等待租户能力开关就绪，确保后续业务请求带上 X-Tenant-Id。
       // 探测是旁路：不参与会话恢复的 promise 链，异常不外抛、不改变恢复结果。
@@ -106,7 +103,7 @@ function setupAccessGuard(router: Router) {
     }
 
     // 基本路由，这些路由不需要进入权限拦截
-    if (coreRouteNames.includes(to.name as string)) {
+    if (coreRouteNames.includes(to.name)) {
       if (to.path === LOGIN_PATH && accessStore.accessToken) {
         return decodeURIComponent(
           (to.query?.redirect as string) ||

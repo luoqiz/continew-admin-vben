@@ -7,16 +7,18 @@ import { isFunction } from '@vben/utils';
 import axios from 'axios';
 
 export const defaultResponseInterceptor = ({
+  // 已发布包的运行时契约：JS 消费方可能省略任一参数，省略时按上游
+  // 语义回落到 code/data/0，参数类型因此标可选（默认值类型合法）。
   codeField = 'code',
   dataField = 'data',
   successCode = 0,
 }: {
   /** 响应数据中代表访问结果的字段名 */
-  codeField: string;
+  codeField?: string;
   /** 响应数据中装载实际数据的字段名，或者提供一个函数从响应数据中解析需要返回的数据 */
-  dataField: ((response: any) => any) | string;
+  dataField?: ((response: any) => any) | string;
   /** 当codeField所指定的字段值与successCode相同时，代表接口访问成功。如果提供一个函数，则返回true代表接口访问成功 */
-  successCode: ((code: any) => boolean) | number | string;
+  successCode?: ((code: any) => boolean) | number | string;
 }): ResponseInterceptorConfig => {
   return {
     fulfilled: (response) => {
@@ -50,51 +52,41 @@ export const authenticateResponseInterceptor = ({
   doRefreshToken,
   enableRefreshToken,
   formatToken,
-  getAuthGeneration,
 }: {
   client: RequestClient;
-  doReAuthenticate: (failedGeneration?: number) => Promise<void>;
+  doReAuthenticate: () => Promise<void>;
   doRefreshToken: () => Promise<string>;
   enableRefreshToken: boolean;
   formatToken: (token: string) => null | string;
-  getAuthGeneration?: () => number;
 }): ResponseInterceptorConfig => {
   return {
     rejected: async (error) => {
       const { config, response } = error;
-      if (!axios.isAxiosError(error) || response?.status !== 401) {
-        throw error;
-      }
-      if (!config?.url) {
-        throw error;
-      }
-      const requestUrl = config.url;
-      const isAuthEndpoint =
-        requestUrl.endsWith('/auth/login') ||
-        requestUrl.endsWith('/auth/refresh') ||
-        requestUrl.endsWith('/auth/logout');
-      // 登录失败只表示本次凭证无效，不能注销当前可能仍有效的会话。
-      if (requestUrl.endsWith('/auth/login')) {
+      // 如果不是 401 错误，直接抛出异常
+      if (response?.status !== 401) {
         throw error;
       }
       // 判断是否启用了 refreshToken 功能
       // 如果没有启用或者已经是重试请求了，直接跳转到重新登录
-      if (!enableRefreshToken || config.__isRetryRequest || isAuthEndpoint) {
-        await doReAuthenticate(config.__authGeneration);
+      if (!enableRefreshToken || config.__isRetryRequest) {
+        await doReAuthenticate();
         throw error;
       }
       // 如果正在刷新 token，则将请求加入队列，等待刷新完成
       if (client.isRefreshing) {
         return new Promise((resolve, reject) => {
-          client.refreshTokenQueue.push({
-            resolve: (newToken: string) => {
-              config.__isRetryRequest = true;
-              config.__authGeneration = getAuthGeneration?.();
-              config.headers = config.headers || {};
-              config.headers.Authorization = formatToken(newToken);
-              resolve(client.request(config.url, { ...config }));
-            },
-            reject,
+          client.refreshTokenQueue.push((newToken, refreshError) => {
+            if (!newToken) {
+              // Replaying the request without a token would only fail with
+              // another 401 and start a second refresh attempt.
+              reject(refreshError ?? new Error('Token refresh failed'));
+              return;
+            }
+            config.headers.Authorization = formatToken(newToken);
+            // Without the retry flag a queued request that keeps answering 401
+            // would open a second refresh cycle once `isRefreshing` is false.
+            config.__isRetryRequest = true;
+            resolve(client.request(config.url, { ...config }));
           });
         });
       }
@@ -106,26 +98,21 @@ export const authenticateResponseInterceptor = ({
 
       try {
         const newToken = await doRefreshToken();
-        config.__authGeneration = getAuthGeneration?.();
 
         // 处理队列中的请求
-        client.refreshTokenQueue.forEach((item) => item.resolve(newToken));
+        client.refreshTokenQueue.forEach((callback) => callback(newToken));
         // 清空队列
         client.refreshTokenQueue = [];
 
-        return client.request(requestUrl, { ...config });
+        return client.request(error.config.url, { ...error.config });
       } catch (refreshError) {
-        client.refreshTokenQueue.forEach((item) => item.reject(refreshError));
+        // 如果刷新 token 失败，处理错误（如强制登出或跳转登录页面）
+        client.refreshTokenQueue.forEach((callback) =>
+          callback(null, refreshError),
+        );
         client.refreshTokenQueue = [];
-
-        // 只有 Refresh Token 被服务端明确判定无效时才重新认证。403、429、5xx
-        // 和网络异常保留现有登录态，使后续请求可以重新尝试刷新。
-        if (
-          axios.isAxiosError(refreshError) &&
-          refreshError.response?.status === 401
-        ) {
-          await doReAuthenticate(config.__authGeneration);
-        }
+        console.error('Refresh token failed, please login again.');
+        await doReAuthenticate();
 
         throw refreshError;
       } finally {
@@ -156,19 +143,12 @@ export const errorMessageResponseInterceptor = (
         return Promise.reject(error);
       }
 
-      let errorMessage: string =
-        error?.response?.data?.msg || error?.message || '';
+      let errorMessage: string;
       const status = error?.response?.status;
 
       switch (status) {
         case 400: {
-          try {
-            const { responseReturn } = error.config;
-            errorMessage = error?.response[responseReturn].msg;
-          } catch {}
-          if (!errorMessage) {
-            errorMessage = $t('ui.fallback.http.badRequest');
-          }
+          errorMessage = $t('ui.fallback.http.badRequest');
           break;
         }
         case 401: {
@@ -188,9 +168,7 @@ export const errorMessageResponseInterceptor = (
           break;
         }
         default: {
-          if (!errorMessage) {
-            errorMessage = $t('ui.fallback.http.internalServerError');
-          }
+          errorMessage = $t('ui.fallback.http.internalServerError');
         }
       }
       makeErrorMessage?.(errorMessage, error);

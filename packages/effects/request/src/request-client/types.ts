@@ -6,12 +6,6 @@ import type {
 } from 'axios';
 
 type ExtendOptions<T = any> = {
-  /** 请求发起时的认证代次，用于拒绝迟到的认证失败覆盖新会话。 */
-  __authGeneration?: number;
-  /** 当前请求是否已经因 Access Token 失效重试过。 */
-  __isRetryRequest?: boolean;
-  /** Refresh Token 请求自身失败时禁止递归刷新。 */
-  __skipRefresh?: boolean;
   /**
    * 参数序列化方式。预置的有
    * - brackets: ids[]=1&ids[]=2&ids[]=3
@@ -59,8 +53,8 @@ interface RequestInterceptorConfig {
   fulfilled?: (
     config: ExtendOptions & InternalAxiosRequestConfig,
   ) =>
-    | (ExtendOptions & InternalAxiosRequestConfig<any>)
-    | Promise<ExtendOptions & InternalAxiosRequestConfig<any>>;
+    | (ExtendOptions & InternalAxiosRequestConfig)
+    | Promise<ExtendOptions & InternalAxiosRequestConfig>;
   rejected?: (error: any) => any;
 }
 
