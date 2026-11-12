@@ -52,6 +52,10 @@ vite.config.ts.*
 .history
 .cursor
 
+# 自动生成的类型声明（上游不纳入版本控制，本地由 unplugin 生成）
+apps/*/auto-imports.d.ts
+apps/*/components.d.ts
+
 # AI
 .agent
 .agents
