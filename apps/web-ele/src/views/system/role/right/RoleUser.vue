@@ -162,12 +162,12 @@ const handleAssign = () => {
   roleUserAssignApi.open();
 };
 
+// 首次数据由 proxyConfig.autoLoad 加载；immediate 会在 Grid 挂载前调用 query，导致报错。
 watch(
   () => props.roleId,
   async () => {
     await tableGridApi.query();
   },
-  { immediate: true },
 );
 </script>
 <template>

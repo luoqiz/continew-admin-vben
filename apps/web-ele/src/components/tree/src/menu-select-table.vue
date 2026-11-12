@@ -92,12 +92,11 @@ const gridOptions: VxeGridProps = {
     keyField: 'id',
   },
   /**
-   * 开启虚拟滚动
-   * 数据量小可以选择关闭
-   * 如果遇到样式问题(空白、错位 滚动等)可以选择关闭虚拟滚动
+   * 树表 transform=false 与纵向虚拟滚动互斥，必须关闭虚拟滚动。
+   * 数据量较大时也不宜开启，否则 vxe-table 会报错并强制关闭。
    */
   scrollY: {
-    enabled: true,
+    enabled: false,
     gt: 0,
   },
   treeConfig: {

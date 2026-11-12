@@ -115,8 +115,11 @@ const [TableGrid, tableGridApi] = useVbenVxeGrid({
           });
           for (let index = 0; index < res.list.length; index++) {
             const user = res.list[index];
+            if (!user) {
+              continue;
+            }
             // 此处disabled表示该用户已分配该角色，复选框为选中状态
-            user!.disabled = user!.roleIds?.includes(props.roleId);
+            user.disabled = user.roleIds?.includes(props.roleId);
           }
           return res;
         },
@@ -165,6 +168,12 @@ const [TableGrid, tableGridApi] = useVbenVxeGrid({
   },
 });
 
+// Grid 随弹窗销毁/重建，挂载前调用 query 会报错；首次数据由 autoLoad 加载。
+async function refreshGrid() {
+  if (typeof tableGridApi.grid?.commitProxy !== 'function') return;
+  await tableGridApi.query();
+}
+
 const [EditWindow, editWindowApi] = useVbenModal({
   async onConfirm() {
     editWindowApi.lock();
@@ -195,7 +204,7 @@ const [EditWindow, editWindowApi] = useVbenModal({
   },
   async onOpenChange(isOpen) {
     if (isOpen) {
-      await tableGridApi.query();
+      await refreshGrid();
     }
   },
 });
@@ -204,12 +213,12 @@ const getWindowTitle = computed(() => {
   return `${$t('system.role.assignRole', [props?.roleName])} `;
 });
 
+// 首次数据由 proxyConfig.autoLoad 加载；immediate 会在 Grid 挂载前调用 query，导致报错。
 watch(
   () => props.roleId,
   async () => {
-    await tableGridApi.query();
+    await refreshGrid();
   },
-  { immediate: true },
 );
 </script>
 <template>

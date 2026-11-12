@@ -40,6 +40,10 @@ const [Grid, gridApi] = useVbenVxeGrid({
       childrenField: 'children',
       transform: false,
     },
+    // 树表 transform=false 与纵向虚拟滚动互斥，显式关闭避免 vxe-table 报错。
+    scrollY: {
+      enabled: false,
+    },
     proxyConfig: {
       response: {
         list: 'list',
