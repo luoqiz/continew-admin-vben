@@ -18,11 +18,8 @@ pre-commit:
     - name: oxfmt
       glob: '*.{js,jsx,ts,tsx,vue,cjs,mjs,cts,mts,json,jsonc,md}'
       # 同步上游等大批量合并时暂存文件可达数百个，一次性展开 {staged_files}
-      # 会超出 Windows 命令行长度限制；这里改为按 40 个文件分批执行。
-      run: |
-        git diff --cached --name-only --diff-filter=ACMR \
-          | grep -E '\.(js|jsx|ts|tsx|vue|cjs|mjs|cts|mts|json|jsonc|md)$' \
-          | xargs -n 40 pnpm exec oxfmt --threads=4 --no-error-on-unmatched-pattern
+      # 会超出 Windows 命令行长度限制，故由脚本按 40 个一批调用。
+      run: node scripts/format-staged.mjs
       stage_fixed: true
     - name: eslint
       glob: '*.{js,jsx,ts,tsx,vue,cjs,mjs,cts,mts}'
